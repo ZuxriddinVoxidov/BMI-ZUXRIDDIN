@@ -40,9 +40,9 @@ export default function DashboardHeader() {
       {/* User */}
       <div className="flex items-center gap-2 pl-2 border-l border-gray-200">
         <div className="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">
-          AK
+          ZV
         </div>
-        <span className="text-sm font-medium text-gray-700">Admin</span>
+        <span className="text-sm font-medium text-gray-700">Zuxriddin V.</span>
       </div>
     </header>
   )

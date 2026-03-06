@@ -2,7 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
-import { BarChart3, Bell, Palette, Play } from 'lucide-react'
+import { Play } from 'lucide-react'
+import Link from 'next/link'
 
 export default function HeroSection() {
   return (
@@ -38,51 +39,7 @@ export default function HeroSection() {
           </span>
         </motion.div>
 
-        {/* Floating Cards */}
-        <motion.div
-          initial={{ opacity: 0, x: -60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="hidden lg:flex absolute top-32 left-8 items-center gap-3 bg-white/15 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20"
-        >
-          <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
-            <Bell size={16} className="text-white" />
-          </div>
-          <div className="text-left">
-            <p className="text-white text-sm font-semibold">Alibek Toshmatov</p>
-            <p className="text-white/70 text-xs">a&apos;zo bo&apos;ldi</p>
-          </div>
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, x: 60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="hidden lg:flex absolute top-28 right-8 items-center gap-3 bg-white/15 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20"
-        >
-          <div className="w-8 h-8 bg-indigo-400 rounded-full flex items-center justify-center">
-            <BarChart3 size={16} className="text-white" />
-          </div>
-          <div className="text-left">
-            <p className="text-white text-sm font-semibold">Bugungi davomat</p>
-            <p className="text-white/70 text-xs">94% ✓</p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: -60 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.7 }}
-          className="hidden lg:flex absolute bottom-48 left-8 items-center gap-3 bg-white/15 backdrop-blur-md rounded-2xl px-4 py-3 border border-white/20"
-        >
-          <div className="w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center">
-            <Palette size={16} className="text-white" />
-          </div>
-          <div className="text-left">
-            <p className="text-white text-sm font-semibold">Yangi to&apos;garak</p>
-            <p className="text-white/70 text-xs">Robototexnika qo&apos;shildi</p>
-          </div>
-        </motion.div>
 
         {/* Main Heading */}
         <motion.h1
@@ -114,20 +71,23 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14"
         >
-          <Button
-            size="lg"
-            className="bg-white text-indigo-600 hover:bg-gray-100 rounded-full px-8 py-6 text-base font-semibold shadow-xl"
-          >
-            Bepul Boshlash
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-white/40 text-white hover:bg-white/10 rounded-full px-8 py-6 text-base font-semibold backdrop-blur-sm"
-          >
-            <Play size={18} className="mr-2 fill-white" />
-            Demo Ko&apos;rish
-          </Button>
+          <Link href="/login">
+            <Button
+              size="lg"
+              className="bg-white text-indigo-600 hover:bg-gray-100 rounded-full px-8 py-6 text-base font-semibold shadow-xl"
+            >
+              Bepul Boshlash
+            </Button>
+          </Link>
+          <a href="#clubs">
+            <Button
+              size="lg"
+              className="border border-white/40 bg-white/10 text-white hover:bg-white/20 rounded-full px-8 py-6 text-base font-semibold backdrop-blur-sm"
+            >
+              <Play size={18} className="mr-2 fill-white" />
+              Demo Ko&apos;rish
+            </Button>
+          </a>
         </motion.div>
 
         {/* Stats Bar */}
@@ -138,8 +98,8 @@ export default function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-4 sm:gap-6"
         >
           {[
-            { icon: '🏫', value: '200+', label: 'Maktab' },
             { icon: '👥', value: "15 000+", label: "O'quvchi" },
+            { icon: '🎯', value: "850+", label: "To'garak" },
             { icon: '⭐', value: '4.9', label: 'Reyting' },
           ].map((stat) => (
             <div

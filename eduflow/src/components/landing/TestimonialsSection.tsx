@@ -5,25 +5,25 @@ import { Star } from 'lucide-react'
 
 const testimonials = [
   {
-    name: 'Aziz Karimov',
-    role: 'Direktor — 1-sonli Akademik litsey, Toshkent',
-    initials: 'AK',
+    name: 'Alibek Toshmatov',
+    role: "9-sinf o'quvchisi, Toshkent",
+    initials: 'AT',
     color: 'bg-indigo-100 text-indigo-600',
-    text: "\"EduFlow platformasi maktabimizda to'garaklar boshqaruvini tubdan o'zgartirdi. Davomat nazorati avtomatlashdi, o'quvchilar faolligi 40% ga oshdi. Juda qulay va zamonaviy tizim!\"",
+    text: "\"EduFlow platformasi orqali to'garaklarga yozilish juda oson bo'ldi. Mening o'sish daraxtim har kuni o'sib bormoqda va bu meni yanada ko'proq harakat qilishga undaydi!\"",
   },
   {
-    name: 'Dilorom Hasanova',
-    role: "Mudir — 15-sonli umumta'lim maktabi, Samarqand",
-    initials: 'DH',
+    name: 'Zulfiya Karimova',
+    role: "10-sinf o'quvchisi, Samarqand",
+    initials: 'ZK',
     color: 'bg-emerald-100 text-emerald-600',
-    text: "\"O'qituvchilarimiz uchun davomat olish juda osonlashdi. Hisobotlar avtomatik tuziladi, ota-onalar ham real vaqtda ma'lumot olishadi. Ajoyib platforma!\"",
+    text: "\"Haftalik jadvalimni ko'rish juda qulay. Qaysi to'garakka qaysi kuni borishni aniq bilaman. Davomatim 95% ga yetdi — juda faxrlanaman!\"",
   },
   {
-    name: 'Mansur Toshpulatov',
-    role: "Direktor — Innovatsion ta'lim markazi, Namangan",
-    initials: 'MT',
+    name: 'Jasur Umarov',
+    role: "8-sinf o'quvchisi, Namangan",
+    initials: 'JU',
     color: 'bg-cyan-100 text-cyan-600',
-    text: "\"EduFlow bilan o'quvchilarimizning o'sishini kuzatish nihoyatda qulay bo'ldi. Daraxt animatsiyasi bolalarga juda yoqadi va ularni ko'proq harakat qilishga undaydi!\"",
+    text: "\"Robototexnika to'garagiga a'zo bo'lganimdan beri juda ko'p narsa o'rgandim. EduFlow orqali ishlarimni yuklash va o'qituvchimdan baho olish juda qiziqarli!\"",
   },
 ]
 
@@ -40,10 +40,10 @@ export default function TestimonialsSection() {
           className="text-center mb-14"
         >
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
-            Direktorlar fikri
+            O&apos;quvchilar fikri
           </h2>
           <p className="text-gray-500 max-w-lg mx-auto">
-            O&apos;zbekiston bo&apos;ylab 200+ maktab direktori EduFlow ni tavsiyalaydi
+            15 000+ o&apos;quvchi EduFlow dan foydalanmoqda
           </p>
         </motion.div>
 
