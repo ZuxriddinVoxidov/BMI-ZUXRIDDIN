@@ -33,11 +33,26 @@ export default async function StudentLayout({
 
   const points = pointsData?.total_points || 0
 
+  // Fetch notifications
+  const { data: notifications } = await supabase
+    .from('notifications')
+    .select('id, message, is_read, created_at')
+    .eq('user_id', profile?.id)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  const unreadCount = (notifications || []).filter((n: Record<string, unknown>) => !n.is_read).length
+
   return (
     <div className="min-h-screen bg-gray-50/50">
       <StudentSidebar fullName={fullName} points={points} />
       <div className="ml-[250px] transition-all duration-300">
-        <StudentHeader fullName={fullName} />
+        <StudentHeader
+          fullName={fullName}
+          profileId={profile?.id || ''}
+          notifications={(notifications || []) as { id: string; message: string; is_read: boolean; created_at: string }[]}
+          unreadCount={unreadCount}
+        />
         <main className="p-6">{children}</main>
       </div>
     </div>

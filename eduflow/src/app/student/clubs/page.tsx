@@ -1,12 +1,10 @@
+import StudentClubs from '@/components/dashboard/student/StudentClubs'
 import { createClient } from '@/lib/supabase/server'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 export default async function StudentClubsPage() {
   const supabase = createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { data: profile } = await supabase
@@ -15,58 +13,33 @@ export default async function StudentClubsPage() {
     .eq('user_id', user.id)
     .single()
 
+  if (!profile) redirect('/login')
+
   const { data: enrollments } = await supabase
     .from('enrollments')
-    .select('*, club:clubs(*)')
-    .eq('student_id', profile?.id)
-    .eq('status', 'approved')
+    .select(`
+      *,
+      club:clubs(
+        *,
+        teacher:profiles!teacher_id(full_name)
+      )
+    `)
+    .eq('student_id', profile.id)
+    .order('created_at', { ascending: false })
 
-  const hasData = enrollments && enrollments.length > 0
+  // Fetch existing reviews
+  const { data: reviews } = await supabase
+    .from('reviews')
+    .select('club_id, rating, comment')
+    .eq('student_id', profile.id)
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-extrabold text-gray-900">Mening To&apos;garaklarim</h1>
-
-      {hasData ? (
-        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {enrollments.map((e: Record<string, unknown>) => {
-            const club = e.club as Record<string, unknown> | null
-            if (!club) return null
-            return (
-              <div key={e.id as string} className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                <div className="bg-gradient-to-r from-indigo-500 to-blue-500 px-6 py-5">
-                  <h3 className="text-white font-bold text-lg">{club.name as string}</h3>
-                </div>
-                <div className="px-6 py-5 space-y-2">
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {(club.description as string) || "Ta'rif mavjud emas"}
-                  </p>
-                  <p className="text-xs text-gray-400">📅 {(club.schedule as string) || 'Jadval belgilanmagan'}</p>
-                  <p className="text-xs text-gray-400">Kategoriya: {(club.category as string) || '—'}</p>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center min-h-[50vh]">
-          <div className="w-[120px] h-[120px] bg-indigo-50 rounded-full flex items-center justify-center mb-6">
-            <span className="text-5xl">🎯</span>
-          </div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
-            Hali to&apos;garaklarga a&apos;zo emassiz
-          </h2>
-          <p className="text-gray-500 text-center max-w-md mb-8">
-            Quyidagi to&apos;garaklar katalogidan o&apos;zingizga mos to&apos;garakni tanlang
-          </p>
-          <Link
-            href="/student/explore"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-6 py-3 font-semibold transition-colors"
-          >
-            Katalogga o&apos;tish →
-          </Link>
-        </div>
-      )}
+      <StudentClubs
+        enrollments={(enrollments || []) as Record<string, unknown>[]}
+        existingReviews={(reviews || []) as Record<string, unknown>[]}
+      />
     </div>
   )
 }

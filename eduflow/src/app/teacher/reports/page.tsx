@@ -1,104 +1,53 @@
-'use client'
+import TeacherReports from '@/components/dashboard/teacher/TeacherReports'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
-import { motion } from 'framer-motion'
-import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis, YAxis,
-} from 'recharts'
+export default async function TeacherReportsPage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-const weeklyData = [
-  { name: 'Dush', attendance: 92 },
-  { name: 'Sesh', attendance: 88 },
-  { name: 'Chor', attendance: 95 },
-  { name: 'Pay', attendance: 90 },
-  { name: 'Jum', attendance: 87 },
-]
+  const { data: profile } = await supabase
+    .from('profiles').select('id').eq('user_id', user.id).single()
+  if (!profile) redirect('/login')
 
-const monthlyData = [
-  { name: 'Okt', attendance: 85 },
-  { name: 'Noy', attendance: 88 },
-  { name: 'Dek', attendance: 82 },
-  { name: 'Yan', attendance: 90 },
-  { name: 'Fev', attendance: 92 },
-  { name: 'Mar', attendance: 91 },
-]
+  const { data: myClubs } = await supabase
+    .from('clubs').select('id, name').eq('teacher_id', profile.id)
+  const myClubIds = myClubs?.map(c => c.id) || []
 
-const studentPerformance = [
-  { name: 'Alibek T.', value: 95 },
-  { name: 'Malika Y.', value: 92 },
-  { name: 'Sardor X.', value: 88 },
-  { name: 'Nilufar R.', value: 85 },
-  { name: 'Bobur M.', value: 78 },
-]
-
-export default function TeacherReportsPage() {
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Hisobotlar</h1>
-
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Weekly Chart */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Haftalik davomat</h3>
-          <div className="h-[280px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis domain={[70, 100]} tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px' }} />
-                <Bar dataKey="attendance" fill="#6366f1" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
-
-        {/* Monthly Chart */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Oylik trend</h3>
-          <div className="h-[280px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis domain={[70, 100]} tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px' }} />
-                <Line type="monotone" dataKey="attendance" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: '#6366f1', r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
+  if (myClubIds.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <span className="text-5xl mb-4">📊</span>
+        <h3 className="text-lg font-bold text-gray-900">Hisobot uchun ma&apos;lumot yo&apos;q</h3>
+        <p className="text-sm text-gray-500 mt-1">Sizga to&apos;garak biriktirilgach hisobotlar chiqadi</p>
       </div>
+    )
+  }
 
-      {/* Student Performance */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        className="bg-white rounded-2xl p-6 border border-gray-100">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">O&apos;quvchilar samaradorligi</h3>
-        <div className="space-y-3">
-          {studentPerformance.map((s, i) => (
-            <div key={s.name} className="flex items-center gap-4">
-              <span className="w-24 text-sm font-medium text-gray-600">{s.name}</span>
-              <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${s.value}%` }}
-                  transition={{ delay: 0.3 + i * 0.1, duration: 0.6 }}
-                  className="h-full bg-indigo-500 rounded-full"
-                />
-              </div>
-              <span className="text-sm font-bold text-gray-900 w-12 text-right">{s.value}%</span>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-    </div>
+  // Get attendance data from last 6 months
+  const sixMonthsAgo = new Date()
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+
+  const { data: attendanceData } = await supabase
+    .from('attendance')
+    .select('date, status, student_id, club_id')
+    .in('club_id', myClubIds)
+    .gte('date', sixMonthsAgo.toISOString().split('T')[0])
+    .order('date', { ascending: true })
+
+  // Get enrolled students
+  const { data: enrollments } = await supabase
+    .from('enrollments')
+    .select('student:profiles!student_id(id, full_name), club:clubs(name)')
+    .in('club_id', myClubIds)
+    .eq('status', 'approved')
+
+  return (
+    <TeacherReports
+      attendanceData={attendanceData || []}
+      enrollments={(enrollments || []) as unknown as { student: Record<string, unknown>; club: Record<string, unknown> }[]}
+      clubs={myClubs || []}
+    />
   )
 }

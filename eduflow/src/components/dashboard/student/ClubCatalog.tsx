@@ -115,6 +115,8 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
             const status = getEnrollmentStatus(club.id as string)
             const category = (club.category as string)?.toLowerCase() || ''
             const maxStudents = (club.max_students as number) || 30
+            const enrolledCount = (club.enrolled_count as number) || 0
+            const progressPct = Math.min(Math.round((enrolledCount / maxStudents) * 100), 100)
 
             return (
               <div
@@ -123,13 +125,13 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
               >
                 <div className="p-6">
                   {/* Category Badge */}
-                  {club.category && (
+                  {Boolean(club.category) && (
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
                         categoryColors[category] || 'bg-gray-100 text-gray-700'
                       }`}
                     >
-                      {club.category as string}
+                      {String(club.category)}
                     </span>
                   )}
 
@@ -158,12 +160,12 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
                   <div className="mb-4">
                     <div className="flex justify-between text-xs text-gray-400 mb-1">
                       <span>O&apos;quvchilar</span>
-                      <span>0/{maxStudents}</span>
+                      <span>{enrolledCount}/{maxStudents}</span>
                     </div>
                     <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-indigo-500 rounded-full"
-                        style={{ width: '0%' }}
+                        className="h-full bg-indigo-500 rounded-full transition-all"
+                        style={{ width: `${progressPct}%` }}
                       />
                     </div>
                   </div>

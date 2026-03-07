@@ -1,58 +1,80 @@
-'use client'
+import TeacherHome from '@/components/dashboard/teacher/TeacherHome'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
-import { motion } from 'framer-motion'
-import { Calendar, ClipboardCheck, Monitor, Users } from 'lucide-react'
+export default async function TeacherPage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-const stats = [
-  { label: 'Faol to\'garaklar', value: '2', icon: Monitor, color: 'bg-indigo-50 text-indigo-600' },
-  { label: 'Jami o\'quvchilar', value: '42', icon: Users, color: 'bg-emerald-50 text-emerald-600' },
-  { label: 'O\'rtacha davomat', value: '91%', icon: ClipboardCheck, color: 'bg-amber-50 text-amber-600' },
-]
+  const { data: profile } = await supabase
+    .from('profiles').select('*').eq('user_id', user.id).single()
+  if (!profile) redirect('/login')
 
-const upcoming = [
-  { club: 'Robototexnika', day: 'Bugun', time: '14:00', room: '205-xona', students: 24 },
-  { club: 'Musiqa', day: 'Ertaga', time: '15:00', room: '108-xona', students: 22 },
-]
+  const { data: myClubs } = await supabase
+    .from('clubs')
+    .select('*')
+    .eq('teacher_id', profile.id)
 
-export default function TeacherHomePage() {
+  const myClubIds = myClubs?.map(c => c.id) || []
+
+  // Count approved enrollments per club
+  let enrollmentCounts: Record<string, number> = {}
+  if (myClubIds.length > 0) {
+    const { data: enrollments } = await supabase
+      .from('enrollments')
+      .select('club_id')
+      .in('club_id', myClubIds)
+      .eq('status', 'approved')
+    enrollments?.forEach(e => {
+      enrollmentCounts[e.club_id] = (enrollmentCounts[e.club_id] || 0) + 1
+    })
+  }
+
+  // Attach counts to clubs
+  const clubsWithCounts = (myClubs || []).map(c => ({
+    ...c,
+    studentCount: enrollmentCounts[c.id] || 0,
+  }))
+
+  const today = new Date().toISOString().split('T')[0]
+  let todayPresentCount = 0
+  if (myClubIds.length > 0) {
+    const { count } = await supabase
+      .from('attendance')
+      .select('*', { count: 'exact', head: true })
+      .in('club_id', myClubIds)
+      .eq('date', today)
+      .eq('status', 'present')
+    todayPresentCount = count || 0
+  }
+
+  let totalRewards = 0
+  if (myClubIds.length > 0) {
+    const { count } = await supabase
+      .from('teacher_rewards')
+      .select('*', { count: 'exact', head: true })
+      .eq('teacher_id', profile.id)
+    totalRewards = count || 0
+  }
+
+  const { data: recentRewards } = await supabase
+    .from('teacher_rewards')
+    .select('*, student:profiles!student_id(full_name), club:clubs(name)')
+    .eq('teacher_id', profile.id)
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  const totalStudents = clubsWithCounts.reduce((sum, c) => sum + c.studentCount, 0)
+
   return (
-    <div className="space-y-6">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400 rounded-2xl p-6 sm:p-8">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-1">Salom, Sardor! 👋</h1>
-        <p className="text-white/70">Bugun 1 ta dars bor. Muvaffaqiyatlar!</p>
-      </motion.div>
-
-      <div className="grid grid-cols-3 gap-4">
-        {stats.map((s, i) => (
-          <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-            className="bg-white rounded-2xl p-5 border border-gray-100">
-            <div className={`w-10 h-10 ${s.color} rounded-xl flex items-center justify-center mb-3`}>
-              <s.icon size={20} />
-            </div>
-            <p className="text-2xl font-extrabold text-gray-900">{s.value}</p>
-            <p className="text-xs text-gray-500">{s.label}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-        className="bg-white rounded-2xl p-6 border border-gray-100">
-        <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Calendar size={20} className="text-indigo-600" /> Kelayotgan darslar
-        </h3>
-        <div className="space-y-3">
-          {upcoming.map((u, i) => (
-            <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-              <div>
-                <p className="font-semibold text-gray-900">{u.club}</p>
-                <p className="text-sm text-gray-500">{u.day} · {u.time} · {u.room}</p>
-              </div>
-              <span className="text-sm font-medium text-indigo-600">{u.students} o&apos;quvchi</span>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-    </div>
+    <TeacherHome
+      teacherName={profile.full_name}
+      clubs={clubsWithCounts}
+      totalStudents={totalStudents}
+      todayPresent={todayPresentCount}
+      totalRewards={totalRewards}
+      recentRewards={recentRewards || []}
+    />
   )
 }

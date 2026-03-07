@@ -12,7 +12,7 @@ import {
     Users,
 } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const navItems = [
@@ -24,9 +24,32 @@ const navItems = [
   { label: 'Profil', href: '/teacher/profile', icon: User },
 ]
 
-export default function TeacherSidebar() {
+export default function TeacherSidebar({
+  fullName,
+  clubCount,
+}: {
+  fullName: string
+  clubCount: number
+}) {
   const pathname = usePathname()
+  const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
+
+  const initials = fullName
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+
+  const firstName = fullName.split(' ')[0]
+
+  async function handleLogout() {
+    const { createClient } = await import('@/lib/supabase/client')
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
 
   return (
     <aside
@@ -51,12 +74,16 @@ export default function TeacherSidebar() {
       <div className={cn('px-4 py-4 border-b border-gray-100', collapsed && 'px-2')}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
-            SX
+            {initials}
           </div>
           {!collapsed && (
             <div>
-              <p className="font-semibold text-sm text-gray-900">Salom, Sardor 👋</p>
-              <p className="text-xs text-gray-500">O&apos;qituvchi</p>
+              <p className="font-semibold text-sm text-gray-900">
+                {firstName} 👋
+              </p>
+              <p className="text-xs text-gray-500">
+                O&apos;qituvchi · {clubCount} to&apos;garak
+              </p>
             </div>
           )}
         </div>
@@ -71,26 +98,38 @@ export default function TeacherSidebar() {
               href={item.href}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all',
-                isActive ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                isActive
+                  ? 'bg-indigo-600 text-white'
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                 collapsed && 'justify-center px-2'
               )}
             >
               <item.icon size={20} className="flex-shrink-0" />
               {!collapsed && <span>{item.label}</span>}
-              {isActive && !collapsed && <div className="w-1.5 h-1.5 bg-white rounded-full ml-auto" />}
+              {isActive && !collapsed && (
+                <div className="w-1.5 h-1.5 bg-white rounded-full ml-auto" />
+              )}
             </Link>
           )
         })}
       </nav>
 
       <div className="px-3 py-4 border-t border-gray-100 space-y-1">
-        <button className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full transition-all">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full transition-all"
+        >
           <LogOut size={20} />
           {!collapsed && <span>Chiqish</span>}
         </button>
-        <button onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-50 w-full transition-all">
-          <ChevronLeft size={20} className={cn('transition-transform', collapsed && 'rotate-180')} />
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-gray-50 w-full transition-all"
+        >
+          <ChevronLeft
+            size={20}
+            className={cn('transition-transform', collapsed && 'rotate-180')}
+          />
           {!collapsed && <span>Yig&apos;ish</span>}
         </button>
       </div>

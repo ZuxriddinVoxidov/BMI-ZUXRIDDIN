@@ -51,3 +51,15 @@ export async function applyToClub(clubId: string) {
   revalidatePath('/student')
   return { success: true }
 }
+
+export async function cancelApplication(enrollmentId: string) {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('enrollments')
+    .delete()
+    .eq('id', enrollmentId)
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/student/clubs')
+  revalidatePath('/student/explore')
+  return { success: true }
+}
