@@ -6,59 +6,63 @@ export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const supabase = createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { data: adminProfile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('user_id', user.id)
-    .single()
-
+    .from('profiles').select('*').eq('user_id', user.id).single()
   if (!adminProfile) redirect('/login')
+
+  const schoolId = adminProfile.school_id
+  const today = new Date().toISOString().split('T')[0]
+  const thisMonthStart = new Date()
+  thisMonthStart.setDate(1)
+  const thisMonthStr = thisMonthStart.toISOString().split('T')[0]
 
   const [
     { count: studentsCount },
     { count: teachersCount },
     { count: clubsCount },
     { count: pendingCount },
+    { count: todayPresentCount },
+    { count: todayAbsentCount },
+    { count: thisMonthEnrollments },
     { data: recentApplications },
     { data: recentClubs },
+    { data: topStudents },
   ] = await Promise.all([
-    supabase
-      .from('profiles')
+    supabase.from('profiles')
       .select('*', { count: 'exact', head: true })
-      .eq('school_id', adminProfile.school_id)
-      .eq('role', 'student'),
-    supabase
-      .from('profiles')
+      .eq('school_id', schoolId).eq('role', 'student'),
+    supabase.from('profiles')
       .select('*', { count: 'exact', head: true })
-      .eq('school_id', adminProfile.school_id)
-      .eq('role', 'teacher'),
-    supabase
-      .from('clubs')
+      .eq('school_id', schoolId).eq('role', 'teacher'),
+    supabase.from('clubs')
       .select('*', { count: 'exact', head: true })
-      .eq('school_id', adminProfile.school_id),
-    supabase
-      .from('enrollments')
+      .eq('school_id', schoolId),
+    supabase.from('enrollments')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'pending'),
-    supabase
-      .from('enrollments')
-      .select(
-        '*, student:profiles!student_id(full_name), club:clubs(name, category)'
-      )
+    supabase.from('attendance')
+      .select('*', { count: 'exact', head: true })
+      .eq('date', today).eq('status', 'present'),
+    supabase.from('attendance')
+      .select('*', { count: 'exact', head: true })
+      .eq('date', today).eq('status', 'absent'),
+    supabase.from('enrollments')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', thisMonthStr),
+    supabase.from('enrollments')
+      .select('*, student:profiles!student_id(full_name), club:clubs(name, category)')
       .eq('status', 'pending')
-      .order('created_at', { ascending: false })
-      .limit(5),
-    supabase
-      .from('clubs')
+      .order('created_at', { ascending: false }).limit(5),
+    supabase.from('clubs')
       .select('*, teacher:profiles!teacher_id(full_name)')
-      .eq('school_id', adminProfile.school_id)
-      .order('created_at', { ascending: false })
-      .limit(4),
+      .eq('school_id', schoolId)
+      .order('created_at', { ascending: false }).limit(4),
+    supabase.from('student_points')
+      .select('total_points, student:profiles!student_id(full_name, grade)')
+      .order('total_points', { ascending: false }).limit(5),
   ])
 
   return (
@@ -67,8 +71,12 @@ export default async function DashboardPage() {
       teachersCount={teachersCount || 0}
       clubsCount={clubsCount || 0}
       pendingCount={pendingCount || 0}
+      todayPresentCount={todayPresentCount || 0}
+      todayAbsentCount={todayAbsentCount || 0}
+      thisMonthEnrollments={thisMonthEnrollments || 0}
       recentApplications={recentApplications || []}
       recentClubs={recentClubs || []}
+      topStudents={topStudents || []}
       adminName={adminProfile.full_name}
     />
   )

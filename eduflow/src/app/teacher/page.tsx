@@ -41,14 +41,22 @@ export default async function TeacherPage() {
 
   const today = new Date().toISOString().split('T')[0]
   let todayPresentCount = 0
+  let todayTotalCount = 0
   if (myClubIds.length > 0) {
-    const { count } = await supabase
+    const { count: presentCount } = await supabase
       .from('attendance')
       .select('*', { count: 'exact', head: true })
       .in('club_id', myClubIds)
       .eq('date', today)
       .eq('status', 'present')
-    todayPresentCount = count || 0
+    todayPresentCount = presentCount || 0
+
+    const { count: totalCount } = await supabase
+      .from('attendance')
+      .select('*', { count: 'exact', head: true })
+      .in('club_id', myClubIds)
+      .eq('date', today)
+    todayTotalCount = totalCount || 0
   }
 
   let totalRewards = 0
@@ -75,6 +83,7 @@ export default async function TeacherPage() {
       clubs={clubsWithCounts}
       totalStudents={totalStudents}
       todayPresent={todayPresentCount}
+      todayTotal={todayTotalCount}
       totalRewards={totalRewards}
       recentRewards={recentRewards || []}
     />

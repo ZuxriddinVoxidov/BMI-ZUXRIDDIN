@@ -9,24 +9,20 @@ interface Props {
   clubs: Record<string, unknown>[]
   totalStudents: number
   todayPresent: number
+  todayTotal: number
   totalRewards: number
   recentRewards: Record<string, unknown>[]
 }
 
 export default function TeacherHome({
-  teacherName,
-  clubs,
-  totalStudents,
-  todayPresent,
-  totalRewards,
-  recentRewards,
+  teacherName, clubs, totalStudents, todayPresent, todayTotal, totalRewards, recentRewards,
 }: Props) {
   const firstName = (teacherName || "O'qituvchi").split(' ')[0]
 
   const stats = [
     { label: "To'garaklarim", value: clubs.length.toString(), icon: Monitor, color: 'bg-indigo-50 text-indigo-600', href: '/teacher/clubs' },
     { label: "Jami o'quvchilar", value: totalStudents.toString(), icon: Users, color: 'bg-blue-50 text-blue-600', href: '/teacher/students' },
-    { label: 'Bugungi davomat', value: todayPresent.toString(), icon: ClipboardCheck, color: 'bg-emerald-50 text-emerald-600', href: '/teacher/attendance' },
+    { label: 'Bugungi davomat', value: todayTotal > 0 ? `${todayPresent}/${todayTotal}` : 'Olinmagan', icon: ClipboardCheck, color: 'bg-emerald-50 text-emerald-600', href: '/teacher/attendance' },
     { label: "Berilgan rag'batlar", value: totalRewards.toString(), icon: Award, color: 'bg-amber-50 text-amber-600', href: '/teacher/reports' },
   ]
 

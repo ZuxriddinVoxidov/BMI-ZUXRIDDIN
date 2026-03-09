@@ -298,9 +298,9 @@ export default function LoginPage() {
           className="relative z-10 flex items-center gap-6"
         >
           {[
-            { value: "15 000+", label: "O'quvchi" },
-            { value: '850+', label: "To'garak" },
-            { value: '120+', label: 'Maktab' },
+            { value: "500+", label: "O'quvchi" },
+            { value: '20+', label: "To'garak" },
+            { value: '46', label: 'Maktab' },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <p className="text-xl font-bold text-white">{s.value}</p>
