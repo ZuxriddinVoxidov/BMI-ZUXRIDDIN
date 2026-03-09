@@ -12,6 +12,15 @@ import { createClient } from '@/lib/supabase/server'
 export default async function Home() {
   const supabase = createClient()
 
+  const { data: clubs } = await supabase
+    .from('clubs')
+    .select(`
+      *,
+      teacher:profiles!teacher_id(full_name),
+      enrollments:enrollments(count)
+    `)
+    .order('created_at', { ascending: false })
+
   const { data: reviews } = await supabase
     .from('reviews')
     .select(`
@@ -26,7 +35,8 @@ export default async function Home() {
     <main className="min-h-screen">
       <Navbar />
       <HeroSection />
-      <ClubsSection />
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <ClubsSection clubs={(clubs || []) as any[]} />
       <FeaturesSection />
       <StatsSection />
       <TestimonialsSection reviews={(reviews || []) as Record<string, unknown>[]} />

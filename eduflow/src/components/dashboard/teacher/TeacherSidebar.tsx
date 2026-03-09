@@ -1,5 +1,6 @@
 'use client'
 
+import { logout } from '@/app/actions/auth'
 import { cn } from '@/lib/utils'
 import {
     BarChart3,
@@ -14,7 +15,7 @@ import {
     X,
 } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
 const navItems = [
@@ -34,7 +35,6 @@ export default function TeacherSidebar({
   clubCount: number
 }) {
   const pathname = usePathname()
-  const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -46,13 +46,6 @@ export default function TeacherSidebar({
     .slice(0, 2)
 
   const firstName = fullName.split(' ')[0]
-
-  async function handleLogout() {
-    const { createClient } = await import('@/lib/supabase/client')
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/login')
-  }
 
   return (
     <>
@@ -143,7 +136,7 @@ export default function TeacherSidebar({
 
       <div className="px-3 py-4 border-t border-gray-100 space-y-1">
         <button
-          onClick={handleLogout}
+          onClick={() => logout()}
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full transition-all"
         >
           <LogOut size={20} />

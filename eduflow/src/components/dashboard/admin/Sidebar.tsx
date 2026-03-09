@@ -1,5 +1,6 @@
 'use client'
 
+import { logout } from '@/app/actions/auth'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
@@ -123,7 +124,7 @@ export default function Sidebar() {
 
       {/* Bottom */}
       <div className="px-3 py-4 border-t border-gray-100 space-y-1">
-        <button className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full transition-all">
+        <button onClick={() => logout()} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full transition-all">
           <LogOut size={20} />
           {!collapsed && <span>Chiqish</span>}
         </button>

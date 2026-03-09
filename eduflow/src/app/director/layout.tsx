@@ -1,4 +1,5 @@
 import AIChatWidget from '@/components/ai/AIChatWidget'
+import LogoutButton from '@/components/LogoutButton'
 import { createClient } from '@/lib/supabase/server'
 import { Bell } from 'lucide-react'
 import { redirect } from 'next/navigation'
@@ -42,6 +43,7 @@ export default async function DirectorLayout({ children }: { children: React.Rea
           <button className="relative p-2 rounded-xl hover:bg-gray-100 transition-colors">
             <Bell size={20} className="text-gray-500" />
           </button>
+          <LogoutButton />
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm">
               {initials}

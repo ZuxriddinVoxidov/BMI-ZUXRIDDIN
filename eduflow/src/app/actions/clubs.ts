@@ -12,12 +12,14 @@ export async function createClub(formData: {
   max_students: number
   description?: string
   school_id: string
+  emoji?: string
 }) {
   const supabase = createClient()
   const { error } = await supabase.from('clubs').insert(formData)
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/clubs')
   revalidatePath('/student/explore')
+  revalidatePath('/')
   return { success: true }
 }
 
@@ -31,6 +33,7 @@ export async function updateClub(
     room?: string
     max_students: number
     description?: string
+    emoji?: string
   }
 ) {
   const supabase = createClient()
@@ -38,6 +41,7 @@ export async function updateClub(
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/clubs')
   revalidatePath('/student/explore')
+  revalidatePath('/')
   return { success: true }
 }
 

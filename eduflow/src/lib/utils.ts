@@ -66,3 +66,56 @@ export function getCategoryColor(category: string): string {
   return colors[category] || 'bg-gray-100 text-gray-700'
 }
 
+export const CATEGORY_EMOJIS: Record<string, string[]> = {
+  'Texnologiya': ['💻', '🤖', '⚡', '🔧', '🖥️', '📱'],
+  'Sport': ['⚽', '🏀', '🏊', '🎾', '🏋️', '🥊', '🏃'],
+  "San'at": ['🎨', '✏️', '🖌️', '🎭', '📸', '🎪'],
+  'Fan': ['🔬', '🧪', '🧬', '🌍', '🔭', '⚗️'],
+  'Til': ['📚', '🗣️', '✍️', '📖', '🌐', '💬'],
+  'Musiqa': ['🎵', '🎸', '🎹', '🥁', '🎺', '🎻'],
+  'Boshqa': ['⭐', '🌟', '🎯', '🏆', '🌈', '💡'],
+}
+
+export function getDefaultEmoji(category: string): string {
+  const emojis = CATEGORY_EMOJIS[category]
+  return emojis ? emojis[0] : '🏫'
+}
+
+export const WEEKDAYS = [
+  { key: 'Mon', label: 'Du' },
+  { key: 'Tue', label: 'Se' },
+  { key: 'Wed', label: 'Cho' },
+  { key: 'Thu', label: 'Pa' },
+  { key: 'Fri', label: 'Ju' },
+  { key: 'Sat', label: 'Sh' },
+]
+
+const DAY_NAMES: Record<string, string> = {
+  Mon: 'Dushanba', Tue: 'Seshanba', Wed: 'Chorshanba',
+  Thu: 'Payshanba', Fri: 'Juma', Sat: 'Shanba',
+}
+
+export function buildScheduleString(days: string[], time: string): string {
+  const dayNames = days.map(d => DAY_NAMES[d]).join(', ')
+  return `${dayNames} ${time}`
+}
+
+export function parseSchedule(schedule: string): { days: string[], time: string } {
+  const DAY_KEYS: Record<string, string> = {
+    'Dushanba': 'Mon', 'Seshanba': 'Tue', 'Chorshanba': 'Wed',
+    'Payshanba': 'Thu', 'Juma': 'Fri', 'Shanba': 'Sat',
+  }
+  const timeMatch = schedule.match(/\d{2}:\d{2}/)
+  const time = timeMatch ? timeMatch[0] : '14:00'
+  const days = Object.entries(DAY_KEYS)
+    .filter(([name]) => schedule.includes(name))
+    .map(([, key]) => key)
+  return { days, time }
+}
+
+export const GRADES = [
+  '1-A','1-B','2-A','2-B','3-A','3-B',
+  '4-A','4-B','5-A','5-B','6-A','6-B',
+  '7-A','7-B','8-A','8-B','9-A','9-B',
+  '10-A','10-B','11-A','11-B',
+]

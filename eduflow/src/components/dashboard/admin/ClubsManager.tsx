@@ -19,9 +19,10 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { buildScheduleString, CATEGORY_EMOJIS, parseSchedule, WEEKDAYS } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { Calendar, MapPin, Pencil, Plus, Trash2, User, Users } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const CATEGORIES = [
   { value: 'Texnologiya', label: 'Texnologiya', color: 'bg-blue-100 text-blue-700' },
@@ -45,6 +46,7 @@ interface Club {
   room?: string
   max_students: number
   description?: string
+  emoji?: string
   teacher: { id: string; full_name: string } | null
   enrollment_count?: number
 }
@@ -72,19 +74,28 @@ export default function ClubsManager({
   const [name, setName] = useState('')
   const [category, setCategory] = useState('')
   const [teacherId, setTeacherId] = useState('')
-  const [schedule, setSchedule] = useState('')
+  const [selectedDays, setSelectedDays] = useState<string[]>([])
+  const [classTime, setClassTime] = useState('14:00')
   const [room, setRoom] = useState('')
   const [maxStudents, setMaxStudents] = useState(30)
   const [description, setDescription] = useState('')
+  const [selectedEmoji, setSelectedEmoji] = useState('🏫')
+
+  useEffect(() => {
+    const emojis = CATEGORY_EMOJIS[category]
+    if (emojis && !editingClub) setSelectedEmoji(emojis[0])
+  }, [category, editingClub])
 
   function resetForm() {
     setName('')
     setCategory('')
     setTeacherId('')
-    setSchedule('')
+    setSelectedDays([])
+    setClassTime('14:00')
     setRoom('')
     setMaxStudents(30)
     setDescription('')
+    setSelectedEmoji('🏫')
     setEditingClub(null)
   }
 
@@ -93,29 +104,34 @@ export default function ClubsManager({
     setName(club.name)
     setCategory(club.category || '')
     setTeacherId(club.teacher?.id || '')
-    setSchedule(club.schedule || '')
+    const parsed = parseSchedule(club.schedule || '')
+    setSelectedDays(parsed.days)
+    setClassTime(parsed.time)
     setRoom(club.room || '')
     setMaxStudents(club.max_students || 30)
     setDescription(club.description || '')
+    setSelectedEmoji(club.emoji || '🏫')
     setOpen(true)
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!name || !category || !teacherId || !schedule) return
+    const schedule = buildScheduleString(selectedDays, classTime)
+    if (!name || !category || !teacherId || selectedDays.length === 0) return
     setLoading(true)
     try {
       if (editingClub) {
         await updateClub(editingClub.id, {
           name, category, teacher_id: teacherId, schedule,
           room: room || undefined, max_students: maxStudents,
-          description: description || undefined,
+          description: description || undefined, emoji: selectedEmoji,
         })
       } else {
         await createClub({
           name, category, teacher_id: teacherId, schedule,
           room: room || undefined, max_students: maxStudents,
           description: description || undefined, school_id: schoolId,
+          emoji: selectedEmoji,
         })
       }
       setOpen(false)
@@ -175,6 +191,28 @@ export default function ClubsManager({
                   </SelectContent>
                 </Select>
               </div>
+              {/* Emoji Picker */}
+              {category && (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Stiker tanlang</label>
+                  <div className="flex flex-wrap gap-2">
+                    {(CATEGORY_EMOJIS[category] || CATEGORY_EMOJIS['Boshqa']).map(emoji => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        onClick={() => setSelectedEmoji(emoji)}
+                        className={`w-10 h-10 text-xl rounded-xl border-2 hover:bg-gray-50 transition-all ${
+                          selectedEmoji === emoji
+                            ? 'border-indigo-500 bg-indigo-50'
+                            : 'border-gray-200'
+                        }`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div>
                 <Label>O&apos;qituvchi *</Label>
                 <Select value={teacherId} onValueChange={setTeacherId} required>
@@ -186,10 +224,40 @@ export default function ClubsManager({
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label>Dars jadvali *</Label>
-                <Input value={schedule} onChange={(e) => setSchedule(e.target.value)}
-                  placeholder="Dushanba, Chorshanba 14:00" required className="mt-1" />
+              {/* Schedule: Weekday + Time */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Dars kunlari *</label>
+                <div className="flex gap-2 flex-wrap">
+                  {WEEKDAYS.map(day => (
+                    <button
+                      key={day.key}
+                      type="button"
+                      onClick={() => {
+                        setSelectedDays(prev =>
+                          prev.includes(day.key)
+                            ? prev.filter(d => d !== day.key)
+                            : [...prev, day.key]
+                        )
+                      }}
+                      className={`w-12 h-12 rounded-xl font-semibold text-sm border-2 transition-all ${
+                        selectedDays.includes(day.key)
+                          ? 'bg-indigo-600 border-indigo-600 text-white'
+                          : 'border-gray-200 text-gray-600 hover:border-indigo-300'
+                      }`}
+                    >
+                      {day.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium">Dars vaqti *</label>
+                  <input
+                    type="time"
+                    value={classTime}
+                    onChange={e => setClassTime(e.target.value)}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400"
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createClient } from '@/lib/supabase/client'
+import { GRADES } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
     AlertCircle,
@@ -105,6 +106,7 @@ export default function LoginPage() {
   const [regEmail, setRegEmail] = useState('')
   const [regPassword, setRegPassword] = useState('')
   const [regConfirm, setRegConfirm] = useState('')
+  const [regGrade, setRegGrade] = useState('')
   const [regShowPw, setRegShowPw] = useState(false)
   const [regShowConfirm, setRegShowConfirm] = useState(false)
   const [regLoading, setRegLoading] = useState(false)
@@ -206,7 +208,7 @@ export default function LoginPage() {
         email: regEmail,
         password: regPassword,
         options: {
-          data: { full_name: regName, role: 'student' },
+          data: { full_name: regName, role: 'student', grade: regGrade || undefined },
         },
       })
 
@@ -231,6 +233,7 @@ export default function LoginPage() {
       setRegEmail('')
       setRegPassword('')
       setRegConfirm('')
+      setRegGrade('')
       setTimeout(() => setActiveTab('login'), 2000)
     },
     [regName, regEmail, regPassword, regConfirm, supabase]
@@ -577,6 +580,23 @@ export default function LoginPage() {
                         />
                       </div>
                       {regErrors.name && <p className="text-red-500 text-xs mt-1">{regErrors.name}</p>}
+                    </motion.div>
+
+                    {/* Grade Selector */}
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }}>
+                      <Label className="text-gray-700 font-medium text-sm mb-1.5 block">
+                        📚 Sinf
+                      </Label>
+                      <select
+                        value={regGrade}
+                        onChange={(e) => setRegGrade(e.target.value)}
+                        className="w-full h-12 rounded-lg border border-gray-200 bg-white px-3 text-sm outline-none focus:border-indigo-400"
+                      >
+                        <option value="">Sinfni tanlang</option>
+                        {GRADES.map(g => (
+                          <option key={g} value={g}>{g}-sinf</option>
+                        ))}
+                      </select>
                     </motion.div>
 
                     {/* Email */}
