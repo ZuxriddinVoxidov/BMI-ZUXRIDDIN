@@ -32,7 +32,10 @@ export async function approveApplication(
 
   revalidatePath('/dashboard/applications')
   revalidatePath('/dashboard')
+  revalidatePath('/student/clubs')
   revalidatePath('/student')
+  revalidatePath('/teacher')
+  revalidatePath('/director')
   return { success: true }
 }
 
@@ -58,5 +61,9 @@ export async function rejectApplication(
 
   revalidatePath('/dashboard/applications')
   revalidatePath('/dashboard')
+  revalidatePath('/student/clubs')
+  revalidatePath('/student')
+  revalidatePath('/teacher')
+  revalidatePath('/director')
   return { success: true }
 }

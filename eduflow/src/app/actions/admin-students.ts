@@ -23,5 +23,6 @@ export async function updateStudentInfo(data: {
 
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/students')
+  revalidatePath('/dashboard')
   return { success: true }
 }

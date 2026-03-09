@@ -39,5 +39,6 @@ export async function submitReview(data: {
 
   revalidatePath('/student/clubs')
   revalidatePath('/')
+  revalidatePath('/director')
   return { success: true }
 }

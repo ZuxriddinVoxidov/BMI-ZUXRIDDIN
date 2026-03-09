@@ -78,5 +78,7 @@ export async function giveReward(
 
   revalidatePath('/teacher/attendance')
   revalidatePath('/student')
+  revalidatePath('/student/profile')
+  revalidatePath('/director')
   return { success: true }
 }

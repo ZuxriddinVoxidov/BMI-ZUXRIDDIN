@@ -8,6 +8,8 @@ import StatsSection from '@/components/landing/StatsSection'
 import TestimonialsSection from '@/components/landing/TestimonialsSection'
 import { createClient } from '@/lib/supabase/server'
 
+export const revalidate = 60
+
 export default async function Home() {
   const supabase = createClient()
 

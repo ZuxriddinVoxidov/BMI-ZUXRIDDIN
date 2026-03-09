@@ -49,6 +49,10 @@ export async function applyToClub(clubId: string) {
   revalidatePath('/student/explore')
   revalidatePath('/student/clubs')
   revalidatePath('/student')
+  revalidatePath('/dashboard/applications')
+  revalidatePath('/dashboard')
+  revalidatePath('/teacher')
+  revalidatePath('/director')
   return { success: true }
 }
 
@@ -61,5 +65,9 @@ export async function cancelApplication(enrollmentId: string) {
   if (error) return { success: false, error: error.message }
   revalidatePath('/student/clubs')
   revalidatePath('/student/explore')
+  revalidatePath('/dashboard/applications')
+  revalidatePath('/dashboard')
+  revalidatePath('/teacher')
+  revalidatePath('/director')
   return { success: true }
 }

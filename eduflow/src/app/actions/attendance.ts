@@ -83,5 +83,9 @@ export async function saveAttendance(records: {
   }
 
   revalidatePath('/teacher/attendance')
+  revalidatePath('/teacher/reports')
+  revalidatePath('/student/attendance')
+  revalidatePath('/student')
+  revalidatePath('/director')
   return { success: true }
 }

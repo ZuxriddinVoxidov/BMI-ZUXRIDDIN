@@ -21,6 +21,7 @@ export async function createClub(formData: {
   const { error } = await supabase.from('clubs').insert(formData)
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/clubs')
+  revalidatePath('/dashboard')
   revalidatePath('/student/explore')
   revalidatePath('/')
   return { success: true }
@@ -46,6 +47,7 @@ export async function updateClub(
   const { error } = await supabase.from('clubs').update(formData).eq('id', id)
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/clubs')
+  revalidatePath('/dashboard')
   revalidatePath('/student/explore')
   revalidatePath('/')
   return { success: true }
@@ -56,6 +58,8 @@ export async function deleteClub(id: string) {
   const { error } = await supabase.from('clubs').delete().eq('id', id)
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/clubs')
+  revalidatePath('/dashboard')
   revalidatePath('/student/explore')
+  revalidatePath('/')
   return { success: true }
 }

@@ -46,5 +46,6 @@ export async function updateStudentGrade(grade: string) {
   if (error) return { success: false, error: error.message }
   revalidatePath('/student/profile')
   revalidatePath('/student/explore')
+  revalidatePath('/student')
   return { success: true }
 }
