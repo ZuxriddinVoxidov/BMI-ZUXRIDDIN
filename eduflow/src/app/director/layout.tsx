@@ -1,7 +1,6 @@
 import AIChatWidget from '@/components/ai/AIChatWidget'
 import LogoutButton from '@/components/LogoutButton'
 import NotificationBell from '@/components/shared/NotificationBell'
-import PageLoader from '@/components/ui/PageLoader'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -22,7 +21,6 @@ export default async function DirectorLayout({ children }: { children: React.Rea
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      <PageLoader />
       <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-40">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">

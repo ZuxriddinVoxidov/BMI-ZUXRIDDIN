@@ -1,11 +1,12 @@
 'use client'
 
 import { updateStudentInfo } from '@/app/actions/admin-students'
+import DataLoader from '@/components/ui/DataLoader'
 import { getStudentLevel } from '@/lib/levels'
 import { GRADES } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { Copy, Edit3, Eye, EyeOff, Search, ShieldCheck, ShieldX, Users, X } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 
 interface Student {
   id: string
@@ -32,6 +33,9 @@ export default function StudentsManager({ students }: { students: Student[] }) {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const [blockingId, setBlockingId] = useState<string | null>(null)
+  const [dataReady, setDataReady] = useState(false)
+
+  useEffect(() => { setDataReady(true) }, [])
 
   const filtered = students.filter((s) =>
     s.full_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -82,6 +86,7 @@ export default function StudentsManager({ students }: { students: Student[] }) {
   }
 
   return (
+    <DataLoader loading={!dataReady} minHeight="min-h-[400px]">
     <div className="space-y-6">
       {toast && (
         <div className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
@@ -239,5 +244,6 @@ export default function StudentsManager({ students }: { students: Student[] }) {
         </div>
       )}
     </div>
+    </DataLoader>
   )
 }

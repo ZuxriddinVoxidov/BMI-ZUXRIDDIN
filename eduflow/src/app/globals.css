@@ -107,7 +107,7 @@ body {
   font-weight: bold;
 }
 
-@keyframes eduflow-progress {
-  from { width: 0%; opacity: 1; }
-  to   { width: 100%; opacity: 1; }
+@keyframes dataloader-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-8px); opacity: 1; }
 }

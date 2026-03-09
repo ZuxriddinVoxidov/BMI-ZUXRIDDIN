@@ -1,7 +1,6 @@
 import AIChatWidget from '@/components/ai/AIChatWidget'
 import TeacherSidebar from '@/components/dashboard/teacher/TeacherSidebar'
 import NotificationBell from '@/components/shared/NotificationBell'
-import PageLoader from '@/components/ui/PageLoader'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -25,7 +24,6 @@ export default async function TeacherLayout({ children }: { children: React.Reac
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      <PageLoader />
       <TeacherSidebar
         fullName={profile.full_name || 'O\'qituvchi'}
         clubCount={myClubs?.length || 0}

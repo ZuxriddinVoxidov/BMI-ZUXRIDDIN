@@ -1,11 +1,10 @@
-import { StatCardSkeleton } from '@/components/ui/skeleton-cards'
+import SectionLoader from '@/components/ui/SectionLoader'
 
 export default function TeacherLoading() {
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
-      </div>
+      <SectionLoader type="cards" rows={4} />
+      <SectionLoader type="table" rows={5} cols={4} />
     </div>
   )
 }

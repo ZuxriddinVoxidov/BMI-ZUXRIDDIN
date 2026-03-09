@@ -1,9 +1,10 @@
 'use client'
 
 import { addTeacher, toggleBlockTeacher } from '@/app/actions/teachers'
+import DataLoader from '@/components/ui/DataLoader'
 import { motion } from 'framer-motion'
 import { Copy, Eye, EyeOff, Search, ShieldCheck, ShieldX, UserPlus, Users } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 
 interface Teacher {
   id: string
@@ -29,6 +30,9 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
   const [form, setForm] = useState({ full_name: '', email: '', password: '' })
   const [formError, setFormError] = useState('')
   const [formLoading, setFormLoading] = useState(false)
+  const [dataReady, setDataReady] = useState(false)
+
+  useEffect(() => { setDataReady(true) }, [])
 
   const filtered = teachers.filter(
     (t) =>
@@ -66,6 +70,7 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
   }
 
   return (
+    <DataLoader loading={!dataReady} minHeight="min-h-[400px]">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -216,5 +221,6 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
         </div>
       )}
     </div>
+    </DataLoader>
   )
 }
