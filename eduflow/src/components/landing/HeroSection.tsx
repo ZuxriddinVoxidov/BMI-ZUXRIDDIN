@@ -5,7 +5,13 @@ import { motion } from 'framer-motion'
 import { Play } from 'lucide-react'
 import Link from 'next/link'
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  studentsCount: number
+  clubsCount: number
+  avgRating: string
+}
+
+export default function HeroSection({ studentsCount, clubsCount, avgRating }: HeroSectionProps) {
   return (
     <section
       id="hero"
@@ -35,11 +41,9 @@ export default function HeroSection() {
         >
           <span className="text-yellow-300">✦</span>
           <span className="text-white text-sm font-medium">
-            Uzbekistonning #1 Klub Boshqaruv Platformasi
+            46-maktab uchun maxsus to&apos;garaklar platformasi
           </span>
         </motion.div>
-
-
 
         {/* Main Heading */}
         <motion.h1
@@ -90,7 +94,7 @@ export default function HeroSection() {
           </a>
         </motion.div>
 
-        {/* Stats Bar */}
+        {/* Stats Bar — Real Data */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -98,9 +102,9 @@ export default function HeroSection() {
           className="flex flex-wrap items-center justify-center gap-4 sm:gap-6"
         >
           {[
-            { icon: '👥', value: "15 000+", label: "O'quvchi" },
-            { icon: '🎯', value: "850+", label: "To'garak" },
-            { icon: '⭐', value: '4.9', label: 'Reyting' },
+            { icon: '👥', value: `${studentsCount}`, label: "O'quvchi" },
+            { icon: '🎯', value: `${clubsCount}`, label: "To'garak" },
+            { icon: '⭐', value: avgRating, label: 'Reyting' },
           ].map((stat) => (
             <div
               key={stat.label}

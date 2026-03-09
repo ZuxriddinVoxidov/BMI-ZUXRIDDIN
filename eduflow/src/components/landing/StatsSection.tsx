@@ -2,13 +2,19 @@
 
 import { motion } from 'framer-motion'
 
-const stats = [
-  { value: '15,000+', label: "O'quvchi" },
-  { value: '850+', label: "To'garak" },
-  { value: '4.9★', label: 'Reyting' },
-]
+interface StatsSectionProps {
+  studentsCount: number
+  clubsCount: number
+  avgRating: string
+}
 
-export default function StatsSection() {
+export default function StatsSection({ studentsCount, clubsCount, avgRating }: StatsSectionProps) {
+  const stats = [
+    { value: `${studentsCount}`, label: "O'quvchi" },
+    { value: `${clubsCount}`, label: "To'garak" },
+    { value: `${avgRating}★`, label: 'Reyting' },
+  ]
+
   return (
     <section className="py-16 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

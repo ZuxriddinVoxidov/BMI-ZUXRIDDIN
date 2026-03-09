@@ -1,6 +1,5 @@
 import AIChatWidget from '@/components/ai/AIChatWidget'
 import ClubsSection from '@/components/landing/ClubsSection'
-import CTASection from '@/components/landing/CTASection'
 import FeaturesSection from '@/components/landing/FeaturesSection'
 import Footer from '@/components/landing/Footer'
 import HeroSection from '@/components/landing/HeroSection'
@@ -12,6 +11,22 @@ import { createClient } from '@/lib/supabase/server'
 export default async function Home() {
   const supabase = createClient()
 
+  // Fetch real stats
+  const [
+    { count: studentsCount },
+    { count: clubsCount },
+    { data: ratingsData },
+  ] = await Promise.all([
+    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
+    supabase.from('clubs').select('*', { count: 'exact', head: true }),
+    supabase.from('reviews').select('rating'),
+  ])
+
+  const avgRating = ratingsData && ratingsData.length > 0
+    ? (ratingsData.reduce((sum, r) => sum + r.rating, 0) / ratingsData.length).toFixed(1)
+    : '—'
+
+  // Fetch clubs
   const { data: clubs } = await supabase
     .from('clubs')
     .select(`
@@ -21,26 +36,38 @@ export default async function Home() {
     `)
     .order('created_at', { ascending: false })
 
+  // Fetch reviews
   const { data: reviews } = await supabase
     .from('reviews')
     .select(`
-      *,
-      student:profiles!student_id(full_name),
+      id,
+      rating,
+      comment,
+      created_at,
+      student:profiles!student_id(full_name, grade),
       club:clubs(name, category)
     `)
-    .order('created_at', { ascending: false })
-    .limit(6)
+    .order('rating', { ascending: false })
+    .limit(10)
 
   return (
     <main className="min-h-screen">
       <Navbar />
-      <HeroSection />
+      <HeroSection
+        studentsCount={studentsCount || 0}
+        clubsCount={clubsCount || 0}
+        avgRating={avgRating}
+      />
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <ClubsSection clubs={(clubs || []) as any[]} />
       <FeaturesSection />
-      <StatsSection />
-      <TestimonialsSection reviews={(reviews || []) as Record<string, unknown>[]} />
-      <CTASection />
+      <StatsSection
+        studentsCount={studentsCount || 0}
+        clubsCount={clubsCount || 0}
+        avgRating={avgRating}
+      />
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <TestimonialsSection reviews={(reviews || []) as any[]} />
       <Footer />
       <AIChatWidget
         apiRoute="/api/ai/chat"
