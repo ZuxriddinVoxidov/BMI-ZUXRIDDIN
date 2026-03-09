@@ -27,3 +27,24 @@ export async function updateParentTelegram(data: {
   revalidatePath('/student/profile')
   return { success: true }
 }
+
+export async function updateStudentGrade(grade: string) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('user_id', user!.id)
+    .single()
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ grade })
+    .eq('id', profile!.id)
+
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/student/profile')
+  revalidatePath('/student/explore')
+  return { success: true }
+}

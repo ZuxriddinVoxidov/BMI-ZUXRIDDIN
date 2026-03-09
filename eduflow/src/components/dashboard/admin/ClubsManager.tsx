@@ -24,6 +24,8 @@ import { motion } from 'framer-motion'
 import { Calendar, MapPin, Pencil, Plus, Trash2, User, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+const ALL_GRADES = ['1','2','3','4','5','6','7','8','9','10','11']
+
 const CATEGORIES = [
   { value: 'Texnologiya', label: 'Texnologiya', color: 'bg-blue-100 text-blue-700' },
   { value: 'Sport', label: 'Sport', color: 'bg-green-100 text-green-700' },
@@ -47,6 +49,9 @@ interface Club {
   max_students: number
   description?: string
   emoji?: string
+  target_grades?: string[] | null
+  is_paid?: boolean
+  price?: number
   teacher: { id: string; full_name: string } | null
   enrollment_count?: number
 }
@@ -80,6 +85,10 @@ export default function ClubsManager({
   const [maxStudents, setMaxStudents] = useState(30)
   const [description, setDescription] = useState('')
   const [selectedEmoji, setSelectedEmoji] = useState('🏫')
+  const [targetGrades, setTargetGrades] = useState<string[]>([])
+  const [forAllGrades, setForAllGrades] = useState(true)
+  const [isPaid, setIsPaid] = useState(false)
+  const [price, setPrice] = useState(0)
 
   useEffect(() => {
     const emojis = CATEGORY_EMOJIS[category]
@@ -96,6 +105,10 @@ export default function ClubsManager({
     setMaxStudents(30)
     setDescription('')
     setSelectedEmoji('🏫')
+    setTargetGrades([])
+    setForAllGrades(true)
+    setIsPaid(false)
+    setPrice(0)
     setEditingClub(null)
   }
 
@@ -111,6 +124,10 @@ export default function ClubsManager({
     setMaxStudents(club.max_students || 30)
     setDescription(club.description || '')
     setSelectedEmoji(club.emoji || '🏫')
+    setForAllGrades(!club.target_grades || club.target_grades.length === 0)
+    setTargetGrades(club.target_grades || [])
+    setIsPaid(club.is_paid || false)
+    setPrice(club.price || 0)
     setOpen(true)
   }
 
@@ -125,6 +142,8 @@ export default function ClubsManager({
           name, category, teacher_id: teacherId, schedule,
           room: room || undefined, max_students: maxStudents,
           description: description || undefined, emoji: selectedEmoji,
+          target_grades: forAllGrades ? null : targetGrades,
+          is_paid: isPaid, price: isPaid ? price : 0,
         })
       } else {
         await createClub({
@@ -132,6 +151,8 @@ export default function ClubsManager({
           room: room || undefined, max_students: maxStudents,
           description: description || undefined, school_id: schoolId,
           emoji: selectedEmoji,
+          target_grades: forAllGrades ? null : targetGrades,
+          is_paid: isPaid, price: isPaid ? price : 0,
         })
       }
       setOpen(false)
@@ -272,6 +293,59 @@ export default function ClubsManager({
                     min={1} max={100} required className="mt-1" />
                 </div>
               </div>
+
+              {/* Grade Targeting */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium">Qaysi sinflar uchun?</label>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => { setForAllGrades(true); setTargetGrades([]) }}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${forAllGrades ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-200 text-gray-600'}`}>
+                    Barcha sinflar
+                  </button>
+                  <button type="button" onClick={() => setForAllGrades(false)}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all ${!forAllGrades ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-200 text-gray-600'}`}>
+                    Sinflarni tanlash
+                  </button>
+                </div>
+                {!forAllGrades && (
+                  <div className="flex flex-wrap gap-2">
+                    {ALL_GRADES.map(grade => (
+                      <button key={grade} type="button"
+                        onClick={() => setTargetGrades(prev => prev.includes(grade) ? prev.filter(g => g !== grade) : [...prev, grade])}
+                        className={`w-12 h-12 rounded-xl font-bold text-sm border-2 transition-all ${targetGrades.includes(grade) ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-gray-200 text-gray-600 hover:border-indigo-300'}`}>
+                        {grade}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {!forAllGrades && targetGrades.length > 0 && (
+                  <p className="text-xs text-indigo-600">Tanlangan: {targetGrades.sort((a,b) => Number(a) - Number(b)).join(', ')}-sinf</p>
+                )}
+              </div>
+
+              {/* Pricing */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium">To&apos;lov</label>
+                <div className="flex gap-2">
+                  <button type="button" onClick={() => { setIsPaid(false); setPrice(0) }}
+                    className={`flex-1 py-2 rounded-xl text-sm font-medium border-2 transition-all ${!isPaid ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-200 text-gray-600'}`}>
+                    🆓 Bepul
+                  </button>
+                  <button type="button" onClick={() => setIsPaid(true)}
+                    className={`flex-1 py-2 rounded-xl text-sm font-medium border-2 transition-all ${isPaid ? 'bg-amber-500 border-amber-500 text-white' : 'border-gray-200 text-gray-600'}`}>
+                    💳 Pulli
+                  </button>
+                </div>
+                {isPaid && (
+                  <div className="relative">
+                    <input type="number" value={price} onChange={e => setPrice(Number(e.target.value))}
+                      placeholder="50000" min={0}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2 pr-16 text-sm outline-none focus:border-indigo-400" />
+                    <span className="absolute right-3 top-2 text-sm text-gray-400">so&apos;m</span>
+                  </div>
+                )}
+              </div>
+
               <div>
                 <Label>Tavsif</Label>
                 <Textarea value={description} onChange={(e) => setDescription(e.target.value)}
@@ -322,6 +396,28 @@ export default function ClubsManager({
                       </span>
                       <h3 className="font-bold text-gray-900 text-lg">{club.name}</h3>
                     </div>
+                  </div>
+
+                  {/* Price & Grade badges */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {club.is_paid ? (
+                      <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-1 rounded-full">
+                        💳 {club.price?.toLocaleString('uz-UZ')} so&apos;m/oy
+                      </span>
+                    ) : (
+                      <span className="bg-emerald-100 text-emerald-700 text-xs font-semibold px-2 py-1 rounded-full">
+                        🆓 Bepul
+                      </span>
+                    )}
+                    {club.target_grades && club.target_grades.length > 0 ? (
+                      <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
+                        📚 {club.target_grades.sort((a, b) => Number(a) - Number(b)).join(', ')}-sinf
+                      </span>
+                    ) : (
+                      <span className="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded-full">
+                        📚 Barcha sinflar
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-2 text-sm">

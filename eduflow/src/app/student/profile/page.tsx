@@ -1,3 +1,4 @@
+import GradeSelector from '@/components/dashboard/student/GradeSelector'
 import GrowingTree from '@/components/dashboard/student/GrowingTree'
 import PasswordChangeForm from '@/components/dashboard/student/PasswordChangeForm'
 import { getPointsToNextLevel, getProgressToNextLevel, getStudentLevel, LEVELS } from '@/lib/levels'
@@ -73,6 +74,9 @@ export default async function StudentProfilePage() {
             <div>
               <h1 className="text-2xl font-extrabold text-gray-900">{profile.full_name}</h1>
               <p className="text-gray-500 text-sm">🏫 {(school?.name as string) || "Maktab ko'rsatilmagan"}</p>
+              <div className="mt-2">
+                <GradeSelector currentGrade={profile.grade} />
+              </div>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ backgroundColor: level.bgColor, color: level.textColor }}>
                   {level.emoji} {level.name}

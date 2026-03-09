@@ -12,6 +12,9 @@ interface ClubData {
   schedule: string
   emoji?: string
   max_students: number
+  target_grades?: string[] | null
+  is_paid?: boolean
+  price?: number
   teacher?: { full_name: string } | null
   enrollments?: { count: number }[] | null
 }
@@ -91,9 +94,30 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
 
                   {/* Card Body */}
                   <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 mb-3">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">
                       {club.name}
                     </h3>
+                    {/* Price & Grade badges */}
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {club.is_paid ? (
+                        <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-1 rounded-full">
+                          💳 {club.price?.toLocaleString('uz-UZ')} so&apos;m
+                        </span>
+                      ) : (
+                        <span className="bg-emerald-100 text-emerald-700 text-xs font-semibold px-2 py-1 rounded-full">
+                          🆓 Bepul
+                        </span>
+                      )}
+                      {club.target_grades && club.target_grades.length > 0 ? (
+                        <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
+                          📚 {club.target_grades.sort((a, b) => Number(a) - Number(b)).join(', ')}-sinf
+                        </span>
+                      ) : (
+                        <span className="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded-full">
+                          📚 Barcha sinflar
+                        </span>
+                      )}
+                    </div>
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-sm text-gray-500">
                         <User size={14} className="text-gray-400" />

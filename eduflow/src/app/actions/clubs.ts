@@ -13,6 +13,9 @@ export async function createClub(formData: {
   description?: string
   school_id: string
   emoji?: string
+  target_grades?: string[] | null
+  is_paid?: boolean
+  price?: number
 }) {
   const supabase = createClient()
   const { error } = await supabase.from('clubs').insert(formData)
@@ -34,6 +37,9 @@ export async function updateClub(
     max_students: number
     description?: string
     emoji?: string
+    target_grades?: string[] | null
+    is_paid?: boolean
+    price?: number
   }
 ) {
   const supabase = createClient()

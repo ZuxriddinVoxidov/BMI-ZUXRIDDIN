@@ -6,19 +6,23 @@ import { useState, useTransition } from 'react'
 
 const categories = [
   { key: 'all', label: 'Barchasi' },
-  { key: 'texnologiya', label: 'Texnologiya' },
-  { key: 'sport', label: 'Sport' },
-  { key: "san'at", label: "San'at" },
-  { key: 'fan', label: 'Fan' },
-  { key: 'til', label: 'Til' },
+  { key: 'Texnologiya', label: '💻 Texnologiya' },
+  { key: 'Sport', label: '⚽ Sport' },
+  { key: "San'at", label: "🎨 San'at" },
+  { key: 'Fan', label: '🔬 Fan' },
+  { key: 'Til', label: '📚 Til' },
+  { key: 'Musiqa', label: '🎵 Musiqa' },
+  { key: 'Boshqa', label: '⭐ Boshqa' },
 ]
 
 const categoryColors: Record<string, string> = {
-  texnologiya: 'bg-blue-100 text-blue-700',
-  sport: 'bg-rose-100 text-rose-700',
-  "san'at": 'bg-purple-100 text-purple-700',
-  fan: 'bg-emerald-100 text-emerald-700',
-  til: 'bg-amber-100 text-amber-700',
+  Texnologiya: 'bg-blue-100 text-blue-700',
+  Sport: 'bg-rose-100 text-rose-700',
+  "San'at": 'bg-purple-100 text-purple-700',
+  Fan: 'bg-emerald-100 text-emerald-700',
+  Til: 'bg-amber-100 text-amber-700',
+  Musiqa: 'bg-pink-100 text-pink-700',
+  Boshqa: 'bg-gray-100 text-gray-700',
 }
 
 interface ClubCatalogProps {
@@ -29,6 +33,7 @@ interface ClubCatalogProps {
 export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) {
   const [activeCategory, setActiveCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
+  const [priceFilter, setPriceFilter] = useState<'all' | 'free' | 'paid'>('all')
   const [isPending, startTransition] = useTransition()
   const [applyingId, setApplyingId] = useState<string | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
@@ -41,9 +46,15 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
 
   const filteredClubs = clubs.filter((club) => {
     const matchesCategory =
-      activeCategory === 'all' || (club.category as string)?.toLowerCase() === activeCategory
-    const matchesSearch = (club.name as string)?.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
+      activeCategory === 'all' || (club.category as string) === activeCategory
+    const matchesSearch =
+      (club.name as string)?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ((club.teacher as Record<string, unknown>)?.full_name as string)?.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesPrice =
+      priceFilter === 'all' ? true :
+      priceFilter === 'free' ? !club.is_paid :
+      Boolean(club.is_paid)
+    return matchesCategory && matchesSearch && matchesPrice
   })
 
   const handleApply = async (clubId: string) => {
@@ -76,22 +87,41 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
         </div>
       )}
 
-      {/* Search and Category Filter */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      {/* Search + Price Filter */}
+      <div className="flex flex-wrap gap-3 mb-2">
+        <div className="relative flex-1 min-w-48">
+          <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
           <input
             type="text"
+            placeholder="To'garak qidiring..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="To'garak nomini qidiring..."
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            onChange={e => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-400"
           />
+        </div>
+        <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+          {([
+            { key: 'all', label: 'Hammasi' },
+            { key: 'free', label: '🆓 Bepul' },
+            { key: 'paid', label: '💳 Pulli' },
+          ] as const).map(f => (
+            <button
+              key={f.key}
+              onClick={() => setPriceFilter(f.key)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                priceFilter === f.key
+                  ? 'bg-white shadow text-indigo-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 mb-2">
         {categories.map((cat) => (
           <button
             key={cat.key}
@@ -107,16 +137,18 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
         ))}
       </div>
 
+      <p className="text-sm text-gray-500 mb-4">{filteredClubs.length} ta to&apos;garak topildi</p>
+
       {/* Club Cards Grid */}
       {filteredClubs.length > 0 ? (
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
           {filteredClubs.map((club) => {
             const teacher = club.teacher as Record<string, unknown> | null
             const status = getEnrollmentStatus(club.id as string)
-            const category = (club.category as string)?.toLowerCase() || ''
             const maxStudents = (club.max_students as number) || 30
             const enrolledCount = (club.enrolled_count as number) || 0
             const progressPct = Math.min(Math.round((enrolledCount / maxStudents) * 100), 100)
+            const targetGrades = club.target_grades as string[] | null
 
             return (
               <div
@@ -128,7 +160,7 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
                   {Boolean(club.category) && (
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
-                        categoryColors[category] || 'bg-gray-100 text-gray-700'
+                        categoryColors[club.category as string] || 'bg-gray-100 text-gray-700'
                       }`}
                     >
                       {String(club.category)}
@@ -138,8 +170,30 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
                   {/* Club Name */}
                   <h3 className="font-bold text-lg text-gray-900 mb-2">{club.name as string}</h3>
 
+                  {/* Price & Grade badges */}
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {club.is_paid ? (
+                      <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-1 rounded-full">
+                        💳 {(club.price as number)?.toLocaleString('uz-UZ')} so&apos;m/oy
+                      </span>
+                    ) : (
+                      <span className="bg-emerald-100 text-emerald-700 text-xs font-semibold px-2 py-1 rounded-full">
+                        🆓 Bepul
+                      </span>
+                    )}
+                    {targetGrades && targetGrades.length > 0 ? (
+                      <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded-full">
+                        📚 {targetGrades.sort((a, b) => Number(a) - Number(b)).join(', ')}-sinf
+                      </span>
+                    ) : (
+                      <span className="bg-gray-100 text-gray-600 text-xs font-semibold px-2 py-1 rounded-full">
+                        📚 Barcha sinflar
+                      </span>
+                    )}
+                  </div>
+
                   {/* Description */}
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-4">
+                  <p className="text-sm text-gray-600 line-clamp-2 mb-3">
                     {(club.description as string) || "Ta'rif mavjud emas"}
                   </p>
 

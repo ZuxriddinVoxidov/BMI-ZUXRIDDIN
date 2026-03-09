@@ -2,6 +2,7 @@
 
 import { updateStudentInfo } from '@/app/actions/admin-students'
 import { getStudentLevel } from '@/lib/levels'
+import { GRADES } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { Edit3, Search, Users, X } from 'lucide-react'
 import { useState } from 'react'
@@ -10,6 +11,7 @@ interface Student {
   id: string
   full_name: string
   email?: string
+  grade?: string | null
   is_blocked?: boolean
   created_at: string
   student_points: { total_points: number }[] | null
@@ -21,7 +23,7 @@ interface Student {
 export default function StudentsManager({ students }: { students: Student[] }) {
   const [search, setSearch] = useState('')
   const [editStudent, setEditStudent] = useState<Student | null>(null)
-  const [formData, setFormData] = useState({ full_name: '', parent_name: '', parent_telegram_id: '' })
+  const [formData, setFormData] = useState({ full_name: '', parent_name: '', parent_telegram_id: '', grade: '' })
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
@@ -36,6 +38,7 @@ export default function StudentsManager({ students }: { students: Student[] }) {
       full_name: student.full_name || '',
       parent_name: student.parent_name || '',
       parent_telegram_id: student.parent_telegram_id || '',
+      grade: student.grade || '',
     })
   }
 
@@ -106,6 +109,7 @@ export default function StudentsManager({ students }: { students: Student[] }) {
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">O&apos;quvchi</th>
+                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">Sinf</th>
                 <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">Daraja</th>
                 <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">Ball</th>
                 <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">To&apos;garaklar</th>
@@ -139,6 +143,15 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                           <p className="text-xs text-gray-400">{student.email || '-'}</p>
                         </div>
                       </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      {student.grade ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
+                          📚 {student.grade}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
                     </td>
                     <td className="py-4 px-6">
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
@@ -235,6 +248,20 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                 <p className="text-[11px] text-gray-400 mt-1.5">
                   Telegram ID olish uchun: <span className="font-semibold text-indigo-500">@EduFlow_notify_bot</span> ga <code className="bg-gray-100 px-1 rounded">/start</code> yuboring
                 </p>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600 mb-1 block">📚 Sinf</label>
+                <select
+                  value={formData.grade}
+                  onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300"
+                >
+                  <option value="">Sinfni tanlang</option>
+                  {GRADES.map(g => (
+                    <option key={g} value={g}>{g}-sinf</option>
+                  ))}
+                </select>
               </div>
 
               <button

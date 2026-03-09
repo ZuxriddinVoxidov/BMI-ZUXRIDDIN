@@ -11,19 +11,32 @@ export default async function StudentExplorePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, school_id')
+    .select('id, school_id, grade')
     .eq('user_id', user.id)
     .single()
 
   if (!profile) redirect('/login')
 
-  // Fetch all clubs with enrollment count
-  const { data: rawClubs } = await supabase
+  const studentGrade = profile?.grade
+    ? profile.grade.replace(/[^0-9]/g, '')
+    : null
+
+  // Fetch clubs filtered by grade
+  let clubsQuery = supabase
     .from('clubs')
     .select(`
       *,
       teacher:profiles!teacher_id(full_name)
     `)
+    .order('created_at', { ascending: false })
+
+  if (studentGrade) {
+    clubsQuery = clubsQuery.or(`target_grades.is.null,target_grades.cs.{${studentGrade}}`)
+  } else {
+    clubsQuery = clubsQuery.is('target_grades', null)
+  }
+
+  const { data: rawClubs } = await clubsQuery
 
   // Count approved enrollments per club
   const clubIds = rawClubs?.map(c => c.id) || []
@@ -58,6 +71,16 @@ export default async function StudentExplorePage() {
         <h1 className="text-2xl font-extrabold text-gray-900">To&apos;garaklar Katalogi</h1>
         <p className="text-gray-500 mt-1">O&apos;zingizga mos to&apos;garakni toping va a&apos;zo bo&apos;ling</p>
       </div>
+
+      {/* No grade warning */}
+      {!studentGrade && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <span className="text-xl">⚠️</span>
+          <p className="text-sm text-amber-800">
+            Sinfingiz belgilanmagan. Profil sahifasida sinfingizni belgilang — shunda sinfingizga mos to&apos;garaklar ko&apos;rinadi.
+          </p>
+        </div>
+      )}
 
       <ClubCatalog
         clubs={(clubs as Record<string, unknown>[]) || []}
