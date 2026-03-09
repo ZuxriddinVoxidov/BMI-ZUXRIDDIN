@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { buildScheduleString, CATEGORY_EMOJIS, parseSchedule, WEEKDAYS } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { Calendar, MapPin, Pencil, Plus, Trash2, User, Users } from 'lucide-react'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 const ALL_GRADES = ['1','2','3','4','5','6','7','8','9','10','11']
@@ -52,6 +53,7 @@ interface Club {
   target_grades?: string[] | null
   is_paid?: boolean
   price?: number
+  is_published?: boolean
   teacher: { id: string; full_name: string } | null
   enrollment_count?: number
 }
@@ -391,9 +393,16 @@ export default function ClubsManager({
                 <div className="px-6 py-5 space-y-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold mb-2 ${catStyle.color}`}>
-                        {club.category}
-                      </span>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${catStyle.color}`}>
+                          {club.category}
+                        </span>
+                        {club.is_published ? (
+                          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">✅ Nashr</span>
+                        ) : (
+                          <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">📝 Qoralama</span>
+                        )}
+                      </div>
                       <h3 className="font-bold text-gray-900 text-lg">{club.name}</h3>
                     </div>
                   </div>
@@ -446,6 +455,14 @@ export default function ClubsManager({
                       className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition-colors">
                       <Pencil size={14} /> Tahrir
                     </button>
+                    <Link
+                      href={`/dashboard/clubs/${club.id}/builder`}
+                      className="flex-1 flex items-center justify-center gap-1 py-2.5 bg-indigo-50 text-indigo-600 rounded-xl text-sm font-medium hover:bg-indigo-100 transition-colors"
+                    >
+                      🎨 Sahifani sozlash
+                    </Link>
+                  </div>
+                  <div className="flex gap-2">
                     {deleteConfirm === club.id ? (
                       <div className="flex-1 flex gap-1">
                         <button onClick={() => handleDelete(club.id)} disabled={loading}

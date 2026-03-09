@@ -34,8 +34,10 @@ export default async function Home() {
     .select(`
       *,
       teacher:profiles!teacher_id(full_name),
-      enrollments:enrollments(count)
+      enrollments:enrollments(count),
+      reviews:reviews(rating)
     `)
+    .eq('is_published', true)
     .order('created_at', { ascending: false })
 
   // Fetch reviews

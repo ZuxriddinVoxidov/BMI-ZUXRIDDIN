@@ -30,6 +30,7 @@ export default async function StudentExplorePage() {
       *,
       teacher:profiles!teacher_id(full_name)
     `)
+    .eq('is_published', true)
     .order('created_at', { ascending: false })
 
   if (studentGrade) {

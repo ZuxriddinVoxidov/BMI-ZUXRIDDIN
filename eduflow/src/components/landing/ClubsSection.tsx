@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { getCategoryColor, getDefaultEmoji } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { Calendar, Star, User, Users } from 'lucide-react'
+import Link from 'next/link'
 
 interface ClubData {
   id: string
@@ -15,8 +16,10 @@ interface ClubData {
   target_grades?: string[] | null
   is_paid?: boolean
   price?: number
+  cover_image_url?: string
   teacher?: { full_name: string } | null
   enrollments?: { count: number }[] | null
+  reviews?: { rating: number }[] | null
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -80,15 +83,25 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
                 >
                   {/* Card Header */}
                   <div className="relative h-36 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                    <span className="text-5xl">{emoji}</span>
+                    {club.cover_image_url && (
+                      <>
+                        <img src={club.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/30" />
+                      </>
+                    )}
+                    <span className="text-5xl relative z-10">{emoji}</span>
                     {/* Category Badge */}
-                    <div className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-xs font-semibold ${catColor}`}>
+                    <div className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-xs font-semibold z-10 ${catColor}`}>
                       {club.category}
                     </div>
-                    {/* Rating Placeholder */}
-                    <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2.5 py-1">
+                    {/* Rating */}
+                    <div className="absolute top-3 right-3 flex items-center gap-1 bg-white/20 backdrop-blur-sm rounded-full px-2.5 py-1 z-10">
                       <Star size={14} className="text-yellow-300 fill-yellow-300" />
-                      <span className="text-white text-sm font-semibold">—</span>
+                      <span className="text-white text-sm font-semibold">
+                        {club.reviews && club.reviews.length > 0
+                          ? (club.reviews.reduce((s, r) => s + r.rating, 0) / club.reviews.length).toFixed(1)
+                          : '—'}
+                      </span>
                     </div>
                   </div>
 
@@ -142,9 +155,9 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
                       >
                         {available ? "Bo'sh joy bor" : "To'lgan"}
                       </Badge>
-                      <button className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
+                      <Link href={`/clubs/${club.id}`} className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
                         Batafsil →
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </motion.div>
