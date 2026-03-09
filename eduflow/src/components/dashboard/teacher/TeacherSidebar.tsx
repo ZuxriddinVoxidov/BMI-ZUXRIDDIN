@@ -7,9 +7,11 @@ import {
     ClipboardCheck,
     Home,
     LogOut,
+    Menu,
     Monitor,
     User,
     Users,
+    X,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -34,6 +36,7 @@ export default function TeacherSidebar({
   const pathname = usePathname()
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const initials = fullName
     .split(' ')
@@ -52,10 +55,28 @@ export default function TeacherSidebar({
   }
 
   return (
+    <>
+      {/* Mobile hamburger */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-xl bg-white shadow-md border border-gray-100"
+      >
+        <Menu size={20} />
+      </button>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
     <aside
       className={cn(
-        'fixed left-0 top-0 h-full bg-white border-r border-gray-100 flex flex-col z-40 transition-all duration-300',
-        collapsed ? 'w-[70px]' : 'w-[250px]'
+        'fixed left-0 top-0 h-full bg-white border-r border-gray-100 flex flex-col z-50 transition-all duration-300',
+        collapsed ? 'w-[70px]' : 'w-[250px]',
+        mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       )}
     >
       <div className="flex items-center justify-between px-4 h-16 border-b border-gray-100">
@@ -69,6 +90,12 @@ export default function TeacherSidebar({
             </span>
           )}
         </Link>
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden p-1 rounded-lg hover:bg-gray-100 text-gray-400"
+        >
+          <X size={18} />
+        </button>
       </div>
 
       <div className={cn('px-4 py-4 border-b border-gray-100', collapsed && 'px-2')}>
@@ -134,5 +161,6 @@ export default function TeacherSidebar({
         </button>
       </div>
     </aside>
+    </>
   )
 }

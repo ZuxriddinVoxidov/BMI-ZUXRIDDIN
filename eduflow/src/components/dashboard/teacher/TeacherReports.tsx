@@ -1,8 +1,9 @@
 'use client'
 
-import { motion } from 'framer-motion';
-import { FileText, TrendingUp, Users } from 'lucide-react';
-import { useMemo } from 'react';
+import { exportAttendanceExcel, exportAttendancePDF } from '@/lib/export'
+import { motion } from 'framer-motion'
+import { FileText, TrendingUp, Users } from 'lucide-react'
+import { useMemo } from 'react'
 
 interface AttendanceItem { date: string; status: string; student_id: string; club_id: string }
 interface EnrollmentItem { student: Record<string, unknown>; club: Record<string, unknown> }
@@ -59,8 +60,36 @@ export default function TeacherReports({
 
   const topStudent = studentStats.sort((a, b) => b.present - a.present)[0]
 
-  function exportToast() {
-    alert('Tez kunda... 📄')
+  function handleExportPDF() {
+    exportAttendancePDF({
+      title: 'Davomat Hisoboti',
+      teacherName: '',
+      clubName: 'Barcha to\'garaklar',
+      period: new Date().toLocaleDateString('uz-UZ'),
+      rows: studentStats.map(s => ({
+        name: s.name,
+        present: s.present,
+        absent: s.absent,
+        excused: s.excused,
+        total: s.total,
+        rate: (s.total > 0 ? Math.round((s.present / s.total) * 100) : 0).toString(),
+      })),
+    })
+  }
+
+  function handleExportExcel() {
+    exportAttendanceExcel({
+      clubName: 'Barcha to\'garaklar',
+      period: new Date().toLocaleDateString('uz-UZ'),
+      rows: studentStats.map(s => ({
+        name: s.name,
+        present: s.present,
+        absent: s.absent,
+        excused: s.excused,
+        total: s.total,
+        rate: (s.total > 0 ? Math.round((s.present / s.total) * 100) : 0).toString(),
+      })),
+    })
   }
 
   return (
@@ -125,8 +154,8 @@ export default function TeacherReports({
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-gray-900">O&apos;quvchilar statistikasi</h3>
             <div className="flex gap-2">
-              <button onClick={exportToast} className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium">📄 PDF</button>
-              <button onClick={exportToast} className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium">📊 Excel</button>
+              <button onClick={handleExportPDF} className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition-colors">📄 PDF</button>
+              <button onClick={handleExportExcel} className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium transition-colors">📊 Excel</button>
             </div>
           </div>
           <div className="overflow-x-auto">

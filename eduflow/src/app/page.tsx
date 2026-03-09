@@ -1,3 +1,4 @@
+import AIChatWidget from '@/components/ai/AIChatWidget'
 import ClubsSection from '@/components/landing/ClubsSection'
 import CTASection from '@/components/landing/CTASection'
 import FeaturesSection from '@/components/landing/FeaturesSection'
@@ -31,6 +32,13 @@ export default async function Home() {
       <TestimonialsSection reviews={(reviews || []) as Record<string, unknown>[]} />
       <CTASection />
       <Footer />
+      <AIChatWidget
+        apiRoute="/api/ai/chat"
+        title="EduFlow Yordamchi"
+        subtitle="Savollaringizga javob beraman"
+        placeholder="EduFlow haqida so'rang..."
+        color="from-indigo-500 to-cyan-500"
+      />
     </main>
   )
 }

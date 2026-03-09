@@ -1,3 +1,4 @@
+import AIChatWidget from '@/components/ai/AIChatWidget'
 import { createClient } from '@/lib/supabase/server'
 import { Bell } from 'lucide-react'
 import { redirect } from 'next/navigation'
@@ -51,6 +52,13 @@ export default async function DirectorLayout({ children }: { children: React.Rea
       </header>
 
       <main className="p-6 max-w-[1200px] mx-auto">{children}</main>
+      <AIChatWidget
+        apiRoute="/api/ai/director"
+        title="EduFlow AI"
+        subtitle="Maktab tahlili"
+        placeholder="Statistika haqida so'rang..."
+        color="from-purple-500 to-indigo-600"
+      />
     </div>
   )
 }

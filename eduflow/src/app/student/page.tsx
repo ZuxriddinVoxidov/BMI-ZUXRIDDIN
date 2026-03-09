@@ -24,9 +24,16 @@ export default async function StudentHomePage() {
     .from('student_points')
     .select('total_points')
     .eq('student_id', profile.id)
-    .single()
+    .maybeSingle()
 
-  const points = pointsData?.total_points || 0
+  const points = pointsData?.total_points ?? 0
+
+  // If no points row exists, create one
+  if (!pointsData) {
+    await supabase
+      .from('student_points')
+      .upsert({ student_id: profile.id, total_points: 0 }, { onConflict: 'student_id' })
+  }
   const level = getStudentLevel(points)
 
   // Fetch enrollments

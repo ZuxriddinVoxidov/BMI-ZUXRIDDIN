@@ -1,5 +1,6 @@
 'use client'
 
+import { exportDirectorExcel, exportDirectorPDF } from '@/lib/export'
 import { getStudentLevel } from '@/lib/levels'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
@@ -42,8 +43,41 @@ export default function DirectorDashboard({
   const medals = ['🥇', '🥈', '🥉']
   const totalCats = categoryData.reduce((s, c) => s + c.count, 0)
 
-  const handleExport = () => {
-    alert("Tez kunda qo'shiladi...")
+  function handleExportPDF() {
+    exportDirectorPDF({
+      schoolName: '',
+      period: new Date().toLocaleDateString('uz-UZ'),
+      stats: { students: studentsCount, teachers: teachersCount, clubs: clubsCount, attendanceRate },
+      teacherRows: teacherData.map(t => ({
+        name: t.name,
+        clubs: t.clubs,
+        rewards: t.rewards,
+        efficiency: t.rewards >= 5 ? "A'lo" : t.rewards >= 2 ? 'Yaxshi' : 'Past',
+      })),
+      topStudents: topStudents.map(s => ({
+        name: s.name,
+        points: s.points,
+        level: getStudentLevel(s.points).name,
+      })),
+    })
+  }
+
+  function handleExportExcel() {
+    exportDirectorExcel({
+      schoolName: '',
+      stats: { students: studentsCount, teachers: teachersCount, clubs: clubsCount, attendanceRate },
+      teacherRows: teacherData.map(t => ({
+        name: t.name,
+        clubs: t.clubs,
+        rewards: t.rewards,
+        efficiency: t.rewards >= 5 ? "A'lo" : t.rewards >= 2 ? 'Yaxshi' : 'Past',
+      })),
+      topStudents: topStudents.map(s => ({
+        name: s.name,
+        points: s.points,
+        level: getStudentLevel(s.points).name,
+      })),
+    })
   }
 
   return (
@@ -52,13 +86,13 @@ export default function DirectorDashboard({
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-extrabold text-gray-900">Direktor Paneli</h1>
         <div className="flex gap-2">
-          <button onClick={handleExport} className="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-100 transition">📊 Excel</button>
-          <button onClick={handleExport} className="px-4 py-2 bg-red-50 text-red-700 rounded-xl text-sm font-medium hover:bg-red-100 transition">📄 PDF</button>
+          <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors">📄 PDF</button>
+          <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors">📊 Excel</button>
         </div>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { icon: '🎓', label: 'Jami o\'quvchilar', value: studentsCount, color: 'bg-blue-50 text-blue-700' },
           { icon: '👨‍🏫', label: 'O\'qituvchilar', value: teachersCount, color: 'bg-emerald-50 text-emerald-700' },

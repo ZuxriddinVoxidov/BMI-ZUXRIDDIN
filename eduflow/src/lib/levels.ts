@@ -67,23 +67,26 @@ export const LEVELS: StudentLevel[] = [
   },
 ]
 
-export function getStudentLevel(points: number): StudentLevel {
+export function getStudentLevel(points: number | null | undefined): StudentLevel {
+  const safePoints = points ?? 0
   return (
-    LEVELS.find((l) => points >= l.minPoints && points <= l.maxPoints) ||
+    LEVELS.find((l) => safePoints >= l.minPoints && safePoints <= l.maxPoints) ||
     LEVELS[0]
   )
 }
 
-export function getProgressToNextLevel(points: number): number {
-  const level = getStudentLevel(points)
+export function getProgressToNextLevel(points: number | null | undefined): number {
+  const safePoints = points ?? 0
+  const level = getStudentLevel(safePoints)
   if (level.level === 4) return 100
   const range = level.maxPoints - level.minPoints + 1
-  const progress = points - level.minPoints
+  const progress = safePoints - level.minPoints
   return Math.round((progress / range) * 100)
 }
 
-export function getPointsToNextLevel(points: number): number {
-  const level = getStudentLevel(points)
+export function getPointsToNextLevel(points: number | null | undefined): number {
+  const safePoints = points ?? 0
+  const level = getStudentLevel(safePoints)
   if (level.level === 4) return 0
-  return level.maxPoints + 1 - points
+  return level.maxPoints + 1 - safePoints
 }

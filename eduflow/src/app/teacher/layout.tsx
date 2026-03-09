@@ -1,3 +1,4 @@
+import AIChatWidget from '@/components/ai/AIChatWidget'
 import TeacherSidebar from '@/components/dashboard/teacher/TeacherSidebar'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -42,6 +43,13 @@ export default async function TeacherLayout({ children }: { children: React.Reac
         </div>
         <main className="p-6">{children}</main>
       </div>
+      <AIChatWidget
+        apiRoute="/api/ai/teacher"
+        title="EduFlow AI"
+        subtitle="Davomat tahlili"
+        placeholder="Davomat haqida so'rang..."
+        color="from-emerald-500 to-teal-600"
+      />
     </div>
   )
 }

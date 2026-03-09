@@ -1,5 +1,8 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
+import { useState } from 'react'
+
 import { cn } from '@/lib/utils'
 import {
     BarChart3,
@@ -9,12 +12,12 @@ import {
     GraduationCap,
     Home,
     LogOut,
+    Menu,
     Settings,
     Users,
+    X,
 } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState } from 'react'
 
 const navItems = [
   { label: 'Bosh sahifa', href: '/dashboard', icon: Home },
@@ -29,15 +32,33 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
+    <>
+      {/* Mobile hamburger */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-xl bg-white shadow-md border border-gray-100"
+      >
+        <Menu size={20} />
+      </button>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
     <aside
       className={cn(
-        'fixed left-0 top-0 h-full bg-white border-r border-gray-100 flex flex-col z-40 transition-all duration-300',
-        collapsed ? 'w-[70px]' : 'w-[250px]'
+        'fixed left-0 top-0 h-full bg-white border-r border-gray-100 flex flex-col z-50 transition-all duration-300',
+        collapsed ? 'w-[70px]' : 'w-[250px]',
+        mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
       )}
     >
-      {/* Logo */}
       <div className="flex items-center justify-between px-4 h-16 border-b border-gray-100">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -49,6 +70,12 @@ export default function Sidebar() {
             </span>
           )}
         </Link>
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="md:hidden p-1 rounded-lg hover:bg-gray-100 text-gray-400"
+        >
+          <X size={18} />
+        </button>
       </div>
 
       {/* User Profile */}
@@ -113,5 +140,6 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   )
 }

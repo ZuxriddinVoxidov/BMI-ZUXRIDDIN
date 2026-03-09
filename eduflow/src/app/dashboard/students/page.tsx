@@ -19,7 +19,7 @@ export default async function StudentsPage() {
 
   const { data: students } = await supabase
     .from('profiles')
-    .select('*, student_points(total_points), enrollments(count)')
+    .select('*, student_points(total_points), enrollments(count), parent_telegram_id, parent_name')
     .eq('school_id', adminProfile.school_id)
     .eq('role', 'student')
     .order('created_at', { ascending: false })
