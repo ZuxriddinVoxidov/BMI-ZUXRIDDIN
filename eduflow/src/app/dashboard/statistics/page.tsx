@@ -1,89 +1,89 @@
-'use client'
+import StatisticsClient from '@/components/dashboard/admin/StatisticsClient'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
-import { motion } from 'framer-motion'
-import {
-    CartesianGrid,
-    Cell, Legend,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis, YAxis,
-} from 'recharts'
+export default async function StatisticsPage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-const monthlyData = [
-  { name: 'Okt', users: 280 },
-  { name: 'Noy', users: 295 },
-  { name: 'Dek', users: 290 },
-  { name: 'Yan', users: 310 },
-  { name: 'Fev', users: 325 },
-  { name: 'Mar', users: 340 },
-]
+  const { data: adminProfile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('user_id', user.id)
+    .single()
 
-const clubDistribution = [
-  { name: 'Robototexnika', value: 24, color: '#6366f1' },
-  { name: 'Rasm va Chizmachilik', value: 18, color: '#06b6d4' },
-  { name: 'Ingliz tili', value: 28, color: '#10b981' },
-  { name: 'Matematika Olimpiad...', value: 15, color: '#f59e0b' },
-  { name: 'Musiqa', value: 22, color: '#ef4444' },
-  { name: 'Sport va Fitnes', value: 35, color: '#8b5cf6' },
-]
+  if (!adminProfile) redirect('/login')
 
-export default function StatisticsPage() {
+  const sixMonthsAgo = new Date()
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
+  const sixMonthsStr = sixMonthsAgo.toISOString().split('T')[0]
+
+  const [
+    { data: monthlyUsers },
+    { data: clubsByCategory },
+    { data: attendanceData },
+    { count: totalStudents },
+    { count: totalTeachers },
+    { count: totalClubs },
+  ] = await Promise.all([
+    supabase.from('profiles').select('created_at, role')
+      .eq('school_id', adminProfile.school_id)
+      .gte('created_at', sixMonthsStr)
+      .order('created_at', { ascending: true }),
+    supabase.from('clubs').select('category')
+      .eq('school_id', adminProfile.school_id),
+    supabase.from('attendance').select('date, status')
+      .gte('date', sixMonthsStr)
+      .order('date', { ascending: true }),
+    supabase.from('profiles').select('*', { count: 'exact', head: true })
+      .eq('school_id', adminProfile.school_id).eq('role', 'student'),
+    supabase.from('profiles').select('*', { count: 'exact', head: true })
+      .eq('school_id', adminProfile.school_id).eq('role', 'teacher'),
+    supabase.from('clubs').select('*', { count: 'exact', head: true })
+      .eq('school_id', adminProfile.school_id),
+  ])
+
+  const MONTH_NAMES = ['Yan', 'Feb', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek']
+
+  const userGrowthData = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date()
+    d.setMonth(d.getMonth() - (5 - i))
+    const monthStr = d.toISOString().slice(0, 7)
+    const count = monthlyUsers?.filter(u => u.created_at.startsWith(monthStr)).length || 0
+    return { month: MONTH_NAMES[d.getMonth()], count }
+  })
+
+  const COLORS = ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+  const categoryMap: Record<string, number> = {}
+  clubsByCategory?.forEach(c => { categoryMap[c.category] = (categoryMap[c.category] || 0) + 1 })
+  const categoryData = Object.entries(categoryMap).map(([name, value], i) => ({
+    name, value, color: COLORS[i % COLORS.length]
+  }))
+
+  const attendanceChartData = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date()
+    d.setMonth(d.getMonth() - (5 - i))
+    const monthStr = d.toISOString().slice(0, 7)
+    const records = attendanceData?.filter(a => a.date.startsWith(monthStr)) || []
+    const total = records.length
+    const present = records.filter(a => a.status === 'present').length
+    return {
+      month: MONTH_NAMES[d.getMonth()],
+      keldi: present,
+      kelmadi: total - present,
+      rate: total > 0 ? Math.round((present / total) * 100) : 0,
+    }
+  })
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Tizim Statistikasi</h1>
-
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Line Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100"
-        >
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
-            Oylik foydalanuvchilar o&apos;sishi
-          </h3>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
-                <Line type="monotone" dataKey="users" stroke="#6366f1" strokeWidth={2.5} dot={{ fill: '#6366f1', r: 4 }} activeDot={{ r: 6 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
-
-        {/* Donut Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100"
-        >
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
-            To&apos;garaklar taqsimoti
-          </h3>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={clubDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={3} dataKey="value">
-                  {clubDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
-      </div>
-    </div>
+    <StatisticsClient
+      userGrowthData={userGrowthData}
+      categoryData={categoryData}
+      attendanceChartData={attendanceChartData}
+      totalStudents={totalStudents || 0}
+      totalTeachers={totalTeachers || 0}
+      totalClubs={totalClubs || 0}
+    />
   )
 }

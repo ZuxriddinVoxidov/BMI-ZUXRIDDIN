@@ -24,5 +24,16 @@ export default async function StudentsPage() {
     .eq('role', 'student')
     .order('created_at', { ascending: false })
 
-  return <StudentsManager students={students || []} />
+  // Fetch emails from auth.users via DB function
+  const userIds = students?.map(s => s.user_id).filter(Boolean) || []
+  const { data: emailData } = userIds.length > 0
+    ? await supabase.rpc('get_user_emails', { user_ids: userIds })
+    : { data: [] }
+
+  const studentsWithEmail = students?.map(s => ({
+    ...s,
+    email: emailData?.find((e: { user_id: string; email: string }) => e.user_id === s.user_id)?.email || '—'
+  })) || []
+
+  return <StudentsManager students={studentsWithEmail} />
 }

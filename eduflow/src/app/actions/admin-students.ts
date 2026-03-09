@@ -26,3 +26,16 @@ export async function updateStudentInfo(data: {
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function toggleBlockStudent(profileId: string, block: boolean) {
+  const supabase = createClient()
+  const { error } = await supabase
+    .from('profiles')
+    .update({ is_blocked: block })
+    .eq('id', profileId)
+
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/dashboard/students')
+  revalidatePath('/dashboard')
+  return { success: true }
+}

@@ -24,14 +24,20 @@ export default async function TeachersPage() {
     .eq('role', 'teacher')
     .order('created_at', { ascending: false })
 
-  // Get emails from auth — we'll match by user_id
-  // Since we can't access auth.users from client, 
-  // we fetch email from the auth session or store it
-  // For now teachers already have email in profile if set
+  // Fetch emails from auth.users via DB function
+  const userIds = teachers?.map(t => t.user_id).filter(Boolean) || []
+  const { data: emailData } = userIds.length > 0
+    ? await supabase.rpc('get_user_emails', { user_ids: userIds })
+    : { data: [] }
+
+  const teachersWithEmail = teachers?.map(t => ({
+    ...t,
+    email: emailData?.find((e: { user_id: string; email: string }) => e.user_id === t.user_id)?.email || '—'
+  })) || []
 
   return (
     <TeachersManager
-      teachers={teachers || []}
+      teachers={teachersWithEmail}
       schoolId={adminProfile.school_id}
     />
   )
