@@ -191,7 +191,7 @@ export default function ClubsManager({
               <Plus size={18} /> Yangi to&apos;garak
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingClub ? "To'garakni tahrirlash" : "Yangi to'garak qo'shish"}
@@ -203,16 +203,29 @@ export default function ClubsManager({
                 <Input value={name} onChange={(e) => setName(e.target.value)}
                   placeholder="Robototexnika" required className="mt-1" />
               </div>
-              <div>
-                <Label>Kategoriya *</Label>
-                <Select value={category} onValueChange={setCategory} required>
-                  <SelectTrigger className="mt-1"><SelectValue placeholder="Tanlang" /></SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map((c) => (
-                      <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Kategoriya *</Label>
+                  <Select value={category} onValueChange={setCategory} required>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder="Tanlang" /></SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((c) => (
+                        <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>O&apos;qituvchi *</Label>
+                  <Select value={teacherId} onValueChange={setTeacherId} required>
+                    <SelectTrigger className="mt-1"><SelectValue placeholder="Tanlang" /></SelectTrigger>
+                    <SelectContent>
+                      {teachers.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>{t.full_name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               {/* Emoji Picker */}
               {category && (
@@ -236,17 +249,6 @@ export default function ClubsManager({
                   </div>
                 </div>
               )}
-              <div>
-                <Label>O&apos;qituvchi *</Label>
-                <Select value={teacherId} onValueChange={setTeacherId} required>
-                  <SelectTrigger className="mt-1"><SelectValue placeholder="Tanlang" /></SelectTrigger>
-                  <SelectContent>
-                    {teachers.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>{t.full_name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
               {/* Schedule: Weekday + Time */}
               <div className="space-y-3">
                 <label className="text-sm font-medium">Dars kunlari *</label>

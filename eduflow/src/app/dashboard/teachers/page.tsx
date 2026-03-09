@@ -24,5 +24,15 @@ export default async function TeachersPage() {
     .eq('role', 'teacher')
     .order('created_at', { ascending: false })
 
-  return <TeachersManager teachers={teachers || []} />
+  // Get emails from auth — we'll match by user_id
+  // Since we can't access auth.users from client, 
+  // we fetch email from the auth session or store it
+  // For now teachers already have email in profile if set
+
+  return (
+    <TeachersManager
+      teachers={teachers || []}
+      schoolId={adminProfile.school_id}
+    />
+  )
 }
