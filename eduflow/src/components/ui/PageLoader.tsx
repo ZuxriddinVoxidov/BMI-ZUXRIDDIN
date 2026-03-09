@@ -4,26 +4,34 @@ import { useEffect, useState } from 'react'
 
 export default function PageLoader() {
   const pathname = usePathname()
-  const [loading, setLoading] = useState(false)
+  const [active, setActive] = useState(false)
+  const [fading, setFading] = useState(false)
 
   useEffect(() => {
-    setLoading(true)
-    const timer = setTimeout(() => setLoading(false), 500)
-    return () => clearTimeout(timer)
+    setActive(true)
+    setFading(false)
+    const t1 = setTimeout(() => setFading(true), 350)
+    const t2 = setTimeout(() => setActive(false), 750)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [pathname])
 
-  if (!loading) return null
+  if (!active) return null
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-white/80 backdrop-blur-sm flex items-center justify-center pointer-events-none">
-      <div className="flex flex-col items-center gap-3">
-        <div className="relative w-14 h-14">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-500 animate-pulse" />
-          <div className="absolute inset-0 flex items-center justify-center text-white font-black text-xl">E</div>
-          <div className="absolute -inset-2 rounded-full border-[3px] border-indigo-200 border-t-indigo-500 animate-spin" />
-        </div>
-        <p className="text-xs text-gray-400 font-medium animate-pulse">Yuklanmoqda...</p>
-      </div>
+    <div
+      className="fixed inset-0 z-[9999] pointer-events-none"
+      style={{
+        backdropFilter: fading ? 'blur(0px)' : 'blur(8px)',
+        backgroundColor: fading ? 'rgba(255,255,255,0)' : 'rgba(248,250,252,0.7)',
+        transition: fading ? 'backdrop-filter 0.4s ease-out, background-color 0.4s ease-out' : 'none',
+      }}
+    >
+      {!fading && (
+        <div
+          className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-indigo-500 via-blue-400 to-cyan-400 rounded-full"
+          style={{ animation: 'eduflow-progress 0.5s ease-out forwards' }}
+        />
+      )}
     </div>
   )
 }

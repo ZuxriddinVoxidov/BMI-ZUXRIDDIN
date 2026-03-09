@@ -106,3 +106,8 @@ body {
   font-size: 16px;
   font-weight: bold;
 }
+
+@keyframes eduflow-progress {
+  from { width: 0%; opacity: 1; }
+  to   { width: 100%; opacity: 1; }
+}

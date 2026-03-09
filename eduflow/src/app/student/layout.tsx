@@ -1,6 +1,7 @@
 import AIChatWidget from '@/components/ai/AIChatWidget'
 import StudentHeader from '@/components/dashboard/student/StudentHeader'
 import StudentSidebar from '@/components/dashboard/student/StudentSidebar'
+import PageLoader from '@/components/ui/PageLoader'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -46,6 +47,7 @@ export default async function StudentLayout({
 
   return (
     <div className="min-h-screen bg-gray-50/50">
+      <PageLoader />
       <StudentSidebar fullName={fullName} points={points} />
       <div className="ml-[250px] transition-all duration-300">
         <StudentHeader
