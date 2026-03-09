@@ -1,5 +1,6 @@
 import AIChatWidget from '@/components/ai/AIChatWidget'
 import TeacherSidebar from '@/components/dashboard/teacher/TeacherSidebar'
+import NotificationBell from '@/components/shared/NotificationBell'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -33,6 +34,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
             Salom, {profile.full_name?.split(' ')[0] || 'O\'qituvchi'}! 👋
           </p>
           <div className="flex items-center gap-3">
+            <NotificationBell userId={profile.id} />
             <div className="w-9 h-9 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-xs">
               {(profile.full_name || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)}
             </div>

@@ -14,6 +14,7 @@ import {
     Home,
     LogOut,
     Menu,
+    MessageSquare,
     Settings,
     Users,
     X,
@@ -26,6 +27,7 @@ const navItems = [
   { label: "O'quvchilar", href: '/dashboard/students', icon: Users },
   { label: "O'qituvchilar", href: '/dashboard/teachers', icon: GraduationCap },
   { label: "To'garaklar", href: '/dashboard/clubs', icon: CircleDot },
+  { label: 'Xabarlar', href: '/dashboard/messages', icon: MessageSquare },
   { label: 'Tizim Statistikasi', href: '/dashboard/statistics', icon: BarChart3 },
   { label: 'Sozlamalar', href: '/dashboard/settings', icon: Settings },
 ]

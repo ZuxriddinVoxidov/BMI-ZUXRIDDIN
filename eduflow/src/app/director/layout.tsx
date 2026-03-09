@@ -1,7 +1,7 @@
 import AIChatWidget from '@/components/ai/AIChatWidget'
 import LogoutButton from '@/components/LogoutButton'
+import NotificationBell from '@/components/shared/NotificationBell'
 import { createClient } from '@/lib/supabase/server'
-import { Bell } from 'lucide-react'
 import { redirect } from 'next/navigation'
 
 export default async function DirectorLayout({ children }: { children: React.ReactNode }) {
@@ -11,7 +11,7 @@ export default async function DirectorLayout({ children }: { children: React.Rea
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name')
+    .select('id, full_name')
     .eq('user_id', user.id)
     .single()
 
@@ -40,9 +40,7 @@ export default async function DirectorLayout({ children }: { children: React.Rea
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="relative p-2 rounded-xl hover:bg-gray-100 transition-colors">
-            <Bell size={20} className="text-gray-500" />
-          </button>
+          <NotificationBell userId={profile?.id} />
           <LogoutButton />
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm">

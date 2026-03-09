@@ -12,7 +12,7 @@ export default function Navbar() {
     { label: 'Bosh sahifa', href: '#hero' },
     { label: "To'garaklar", href: '#clubs' },
     { label: 'Haqida', href: '#features' },
-    { label: "Bog'lanish", href: '#footer' },
+    { label: "Bog'lanish", href: '/contact' },
   ]
 
   return (
