@@ -15,6 +15,7 @@ interface Student {
   user_id?: string
   plain_password?: string
   grade?: string | null
+  phone?: string | null
   is_blocked?: boolean
   created_at: string
   student_points: { total_points: number }[] | null
@@ -26,7 +27,7 @@ interface Student {
 export default function StudentsManager({ students }: { students: Student[] }) {
   const [search, setSearch] = useState('')
   const [editStudent, setEditStudent] = useState<Student | null>(null)
-  const [formData, setFormData] = useState({ full_name: '', parent_name: '', parent_telegram_id: '', grade: '' })
+  const [formData, setFormData] = useState({ full_name: '', parent_name: '', parent_telegram_id: '', grade: '', phone: '', new_password: '' })
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
@@ -34,6 +35,8 @@ export default function StudentsManager({ students }: { students: Student[] }) {
   const [isPending, startTransition] = useTransition()
   const [blockingId, setBlockingId] = useState<string | null>(null)
   const [dataReady, setDataReady] = useState(false)
+  const [showModalPwd, setShowModalPwd] = useState(false)
+  const [modalBlocking, setModalBlocking] = useState(false)
 
   useEffect(() => { setDataReady(true) }, [])
 
@@ -49,15 +52,33 @@ export default function StudentsManager({ students }: { students: Student[] }) {
       parent_name: student.parent_name || '',
       parent_telegram_id: student.parent_telegram_id || '',
       grade: student.grade || '',
+      phone: student.phone || '',
+      new_password: '',
     })
+    setShowModalPwd(false)
+    setModalBlocking(false)
   }
 
   const handleSave = async () => {
     if (!editStudent) return
+    if (!formData.full_name.trim()) {
+      setToast({ message: "Ism bo'sh bo'lishi mumkin emas", type: 'error' })
+      setTimeout(() => setToast(null), 3000)
+      return
+    }
+    if (formData.new_password && formData.new_password.length < 8) {
+      setToast({ message: "Parol kamida 8 ta belgi bo'lishi kerak", type: 'error' })
+      setTimeout(() => setToast(null), 3000)
+      return
+    }
     setSaving(true)
     const result = await updateStudentInfo({
       profile_id: editStudent.id,
-      ...formData,
+      full_name: formData.full_name,
+      parent_name: formData.parent_name,
+      parent_telegram_id: formData.parent_telegram_id,
+      grade: formData.grade,
+      new_password: formData.new_password || undefined,
     })
     setSaving(false)
     if (result.success) {
@@ -68,6 +89,19 @@ export default function StudentsManager({ students }: { students: Student[] }) {
       setToast({ message: result.error || 'Xatolik', type: 'error' })
       setTimeout(() => setToast(null), 3000)
     }
+  }
+
+  async function handleModalBlock() {
+    if (!editStudent) return
+    setModalBlocking(true)
+    const { toggleBlockStudent } = await import('@/app/actions/admin-students')
+    const res = await toggleBlockStudent(editStudent.id, !editStudent.is_blocked)
+    if (res.success) {
+      setEditStudent(prev => prev ? { ...prev, is_blocked: !prev.is_blocked } : null)
+      setToast({ message: editStudent.is_blocked ? "O'quvchi faollashtirildi ✅" : "O'quvchi bloklandi 🚫", type: 'success' })
+      setTimeout(() => setToast(null), 3000)
+    }
+    setModalBlocking(false)
   }
 
   function handleCopy(text: string, id: string) {
@@ -207,38 +241,139 @@ export default function StudentsManager({ students }: { students: Student[] }) {
 
       {/* Edit Dialog */}
       {editStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setEditStudent(null)}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-gray-900">✏️ {editStudent.full_name}</h2>
-              <button onClick={() => setEditStudent(null)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400"><X size={18} /></button>
-            </div>
-            <div className="space-y-4">
-              <div><label className="text-sm text-gray-600 mb-1 block">To&apos;liq ism</label>
-                <input type="text" value={formData.full_name} onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="p-6 space-y-5">
+
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">
+                    {(editStudent.full_name || '?')[0].toUpperCase()}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900">✏️ {editStudent.full_name}</h2>
+                    <p className="text-xs text-gray-500">O&apos;quvchi ma&apos;lumotlarini tahrirlash</p>
+                  </div>
+                </div>
+                <button onClick={() => setEditStudent(null)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400"><X size={18} /></button>
               </div>
-              <div><label className="text-sm text-gray-600 mb-1 block">Ota-ona ismi</label>
-                <input type="text" value={formData.parent_name} onChange={(e) => setFormData({ ...formData, parent_name: e.target.value })}
-                  placeholder="Masalan: Karimov Sardor" className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
+
+              {/* Section 1: Personal */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">👤 Shaxsiy ma&apos;lumotlar</h3>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">To&apos;liq ism *</label>
+                  <input value={formData.full_name} onChange={e => setFormData(p => ({ ...p, full_name: e.target.value }))}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">🎓 Sinf</label>
+                    <select value={formData.grade} onChange={e => setFormData(p => ({ ...p, grade: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400">
+                      <option value="">Tanlang</option>
+                      {GRADES.map(g => <option key={g} value={g}>{g}-sinf</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">📞 Telefon</label>
+                    <input value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
+                      placeholder="+998 90 123 45 67"
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">👨‍👩‍👦 Ota-ona ismi</label>
+                  <input value={formData.parent_name} onChange={e => setFormData(p => ({ ...p, parent_name: e.target.value }))}
+                    placeholder="Masalan: Karimov Sardor"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">📱 Ota-ona Telegram Chat ID</label>
+                  <input value={formData.parent_telegram_id} onChange={e => setFormData(p => ({ ...p, parent_telegram_id: e.target.value }))}
+                    placeholder="Masalan: 123456789"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                  <p className="text-[11px] text-gray-400 mt-1">ID olish: <span className="text-indigo-500 font-medium">@EduFlow_notify_bot</span> ga <code className="bg-gray-100 px-1 rounded">/start</code> yuboring</p>
+                </div>
               </div>
-              <div><label className="text-sm text-gray-600 mb-1 block">Ota-ona Telegram Chat ID</label>
-                <input type="text" value={formData.parent_telegram_id} onChange={(e) => setFormData({ ...formData, parent_telegram_id: e.target.value })}
-                  placeholder="Masalan: 123456789" className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
-                <p className="text-[11px] text-gray-400 mt-1.5">Telegram ID olish uchun: <span className="font-semibold text-indigo-500">@EduFlow_notify_bot</span> ga <code className="bg-gray-100 px-1 rounded">/start</code> yuboring</p>
+
+              <div className="border-t" />
+
+              {/* Section 2: Login */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">🔐 Login ma&apos;lumotlari</h3>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">📧 Email (Login)</label>
+                  <div className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-gray-600">
+                    {editStudent.email || '—'}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">🔑 Joriy parol</label>
+                  <div className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl">
+                    <span className="flex-1 font-mono text-sm text-gray-700">
+                      {showModalPwd ? (editStudent.plain_password || '—') : '••••••••'}
+                    </span>
+                    <button type="button" onClick={() => setShowModalPwd(!showModalPwd)} className="text-gray-400 hover:text-gray-600">
+                      {showModalPwd ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                    {editStudent.plain_password && (
+                      <button type="button" onClick={() => { navigator.clipboard.writeText(editStudent.plain_password!); setToast({ message: 'Nusxalandi! 📋', type: 'success' }); setTimeout(() => setToast(null), 2000) }}
+                        className="text-gray-400 hover:text-indigo-600"><Copy size={14} /></button>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-400 mt-1">{editStudent.plain_password ? "Admin tomonidan o'rnatilgan parol" : "O'quvchi o'zi ro'yxatdan o'tgan"}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">🔒 Yangi parol (ixtiyoriy)</label>
+                  <input value={formData.new_password} onChange={e => setFormData(p => ({ ...p, new_password: e.target.value }))}
+                    type="password" placeholder="O'zgartirish uchun kiriting..." minLength={8}
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                  <p className="text-[11px] text-gray-400 mt-1">Kamida 8 belgi. Bo&apos;sh qolsa o&apos;zgarmaydi.</p>
+                </div>
               </div>
-              <div><label className="text-sm text-gray-600 mb-1 block">📚 Sinf</label>
-                <select value={formData.grade} onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300">
-                  <option value="">Sinfni tanlang</option>
-                  {GRADES.map(g => <option key={g} value={g}>{g}-sinf</option>)}
-                </select>
+
+              <div className="border-t" />
+
+              {/* Section 3: Block */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">🚫 Kirish huquqi</h3>
+                {editStudent.is_blocked ? (
+                  <div className="flex items-center justify-between p-4 bg-red-50 rounded-xl border border-red-200">
+                    <div>
+                      <p className="font-medium text-red-700">● Bloklangan</p>
+                      <p className="text-sm text-red-400">Tizimga kira olmaydi</p>
+                    </div>
+                    <button type="button" onClick={handleModalBlock} disabled={modalBlocking}
+                      className="px-4 py-2 bg-green-500 text-white rounded-xl text-sm font-medium hover:bg-green-600 disabled:opacity-50">
+                      {modalBlocking ? '⏳...' : '✅ Faollashtirish'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-4 bg-green-50 rounded-xl border border-green-200">
+                    <div>
+                      <p className="font-medium text-green-700">● Faol</p>
+                      <p className="text-sm text-green-500">Tizimga kirish mumkin</p>
+                    </div>
+                    <button type="button" onClick={handleModalBlock} disabled={modalBlocking}
+                      className="px-4 py-2 bg-red-500 text-white rounded-xl text-sm font-medium hover:bg-red-600 disabled:opacity-50">
+                      {modalBlocking ? '⏳...' : '🚫 Bloklash'}
+                    </button>
+                  </div>
+                )}
               </div>
-              <button onClick={handleSave} disabled={saving}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold text-sm transition-colors disabled:opacity-50">
-                {saving ? '⏳ Saqlanmoqda...' : '💾 Saqlash'}
-              </button>
+
+              {/* Save */}
+              <div className="flex gap-3 pt-2 border-t">
+                <button onClick={() => setEditStudent(null)} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Bekor qilish</button>
+                <button onClick={handleSave} disabled={saving}
+                  className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition disabled:opacity-50">
+                  {saving ? '⏳ Saqlanmoqda...' : '💾 Saqlash'}
+                </button>
+              </div>
+
             </div>
           </motion.div>
         </div>

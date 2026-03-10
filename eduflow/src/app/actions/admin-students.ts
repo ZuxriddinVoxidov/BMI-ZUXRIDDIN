@@ -8,6 +8,7 @@ export async function updateStudentInfo(data: {
   parent_name: string
   parent_telegram_id: string
   grade?: string
+  new_password?: string
 }) {
   const supabase = createClient()
 
@@ -18,6 +19,7 @@ export async function updateStudentInfo(data: {
       parent_name: data.parent_name,
       parent_telegram_id: data.parent_telegram_id || null,
       grade: data.grade || null,
+      ...(data.new_password && { plain_password: data.new_password }),
     })
     .eq('id', data.profile_id)
 
