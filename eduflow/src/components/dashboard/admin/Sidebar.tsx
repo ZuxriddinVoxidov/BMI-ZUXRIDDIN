@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
     BarChart3,
+    Building2,
     ChevronLeft,
     CircleDot,
     FileText,
@@ -26,6 +27,7 @@ const navItems = [
   { label: 'Arizalar', href: '/dashboard/applications', icon: FileText },
   { label: "O'quvchilar", href: '/dashboard/students', icon: Users },
   { label: "O'qituvchilar", href: '/dashboard/teachers', icon: GraduationCap },
+  { label: 'Direktor', href: '/dashboard/directors', icon: Building2 },
   { label: "To'garaklar", href: '/dashboard/clubs', icon: CircleDot },
   { label: 'Xabarlar', href: '/dashboard/messages', icon: MessageSquare },
   { label: 'Tizim Statistikasi', href: '/dashboard/statistics', icon: BarChart3 },

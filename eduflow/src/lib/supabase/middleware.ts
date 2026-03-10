@@ -29,21 +29,32 @@ export async function updateSession(request: NextRequest) {
   // and refreshes cookies. getSession() alone breaks login/register.
   const { data: { user } } = await supabase.auth.getUser()
 
-  const isAuthPage =
-    request.nextUrl.pathname === '/login' ||
-    request.nextUrl.pathname === '/register'
+  const pathname = request.nextUrl.pathname
 
+  // Public routes — never redirect these
+  const isPublicRoute =
+    pathname === '/' ||
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/contact' ||
+    pathname.startsWith('/clubs') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/auth')
+
+  if (isPublicRoute) {
+    return supabaseResponse
+  }
+
+  // Only redirect if trying to access protected routes without auth
   const protectedRoutes = ['/dashboard', '/student', '/teacher', '/director']
   const isProtected = protectedRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
+    pathname.startsWith(route)
   )
 
   if (isProtected && !user) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  if (user && isAuthPage) {
-    return NextResponse.redirect(new URL('/', request.url))
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
   }
 
   return supabaseResponse
