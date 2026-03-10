@@ -82,14 +82,15 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
                   className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300"
                 >
                   {/* Card Header */}
-                  <div className="relative h-36 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                    {club.cover_image_url && (
+                  <div className="relative h-36 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                    {club.cover_image_url ? (
                       <>
                         <img src={club.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
-                        <div className="absolute inset-0 bg-black/30" />
+                        <div className="absolute inset-0 bg-black/20" />
                       </>
+                    ) : (
+                      <span className="text-5xl relative z-10">{emoji}</span>
                     )}
-                    <span className="text-5xl relative z-10">{emoji}</span>
                     {/* Category Badge */}
                     <div className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-xs font-semibold z-10 ${catColor}`}>
                       {club.category}

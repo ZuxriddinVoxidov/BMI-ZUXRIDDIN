@@ -44,19 +44,16 @@ export default function Navbar() {
 
           {/* Desktop Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/login">
-              <Button
-                variant="outline"
-                className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 rounded-full px-6"
-              >
-                Kirish
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6">
-                Ro&apos;yxatdan o&apos;tish
-              </Button>
-            </Link>
+            <Button
+              variant="outline"
+              className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 rounded-full px-6"
+              asChild
+            >
+              <Link href="/login">Kirish</Link>
+            </Button>
+            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6" asChild>
+              <Link href="/login">Ro&apos;yxatdan o&apos;tish</Link>
+            </Button>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -83,19 +80,16 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="flex flex-col gap-2 mt-2">
-                <Link href="/login">
-                  <Button
-                    variant="outline"
-                    className="w-full border-indigo-500 text-indigo-600 rounded-full"
-                  >
-                    Kirish
-                  </Button>
-                </Link>
-                <Link href="/login">
-                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full">
-                    Ro&apos;yxatdan o&apos;tish
-                  </Button>
-                </Link>
+                <Button
+                  variant="outline"
+                  className="w-full border-indigo-500 text-indigo-600 rounded-full"
+                  asChild
+                >
+                  <Link href="/login">Kirish</Link>
+                </Button>
+                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full" asChild>
+                  <Link href="/login">Ro&apos;yxatdan o&apos;tish</Link>
+                </Button>
               </div>
             </nav>
           </div>

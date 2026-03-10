@@ -171,14 +171,17 @@ export default function ClubDetailClient({
             </div>
 
             {/* Gallery */}
-            {(club.cover_image_url || club.room_image_url) && (
-              <div className="grid grid-cols-2 gap-4">
+            {(club.cover_image_url || (club.room_image_url && club.room_image_url !== club.cover_image_url)) && (
+              <div className={`grid gap-4 ${
+                club.cover_image_url && club.room_image_url && club.room_image_url !== club.cover_image_url
+                  ? 'grid-cols-2' : 'grid-cols-1'
+              }`}>
                 {club.cover_image_url && (
-                  <div className="h-48 rounded-xl bg-cover bg-center shadow-lg hover:scale-[1.02] transition-transform"
+                  <div className="h-48 rounded-xl bg-cover bg-center shadow-md hover:scale-[1.02] transition-transform"
                     style={{ backgroundImage: `url(${club.cover_image_url})` }} />
                 )}
-                {club.room_image_url && (
-                  <div className="h-48 rounded-xl bg-cover bg-center shadow-lg hover:scale-[1.02] transition-transform"
+                {club.room_image_url && club.room_image_url !== club.cover_image_url && (
+                  <div className="h-48 rounded-xl bg-cover bg-center shadow-md hover:scale-[1.02] transition-transform"
                     style={{ backgroundImage: `url(${club.room_image_url})` }} />
                 )}
               </div>
