@@ -31,6 +31,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
   const [error, setError] = useState('')
 
   const initials = (profile.full_name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+  const roleLabel = profile.role === 'director' ? 'Direktor' : profile.role === 'teacher' ? "O'qituvchi" : 'Administrator'
 
   function handleCopy(text: string) {
     navigator.clipboard.writeText(text)
@@ -97,7 +98,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
             <h2 className="text-xl font-bold text-gray-900">{profile.full_name}</h2>
             <div className="flex items-center gap-2 mt-1">
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">
-                <Shield size={10} /> Administrator
+                <Shield size={10} /> {roleLabel}
               </span>
               {profile.school?.name && (
                 <span className="text-xs text-gray-500">📍 {profile.school.name}</span>
@@ -118,7 +119,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
             {infoRow('Maktab', profile.school?.name || '—')}
             {infoRow('Rol', (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">
-                Administrator
+                {roleLabel}
               </span>
             ))}
           </div>

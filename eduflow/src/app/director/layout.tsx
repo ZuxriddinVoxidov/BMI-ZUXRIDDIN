@@ -1,5 +1,5 @@
 import AIChatWidget from '@/components/ai/AIChatWidget'
-import LogoutButton from '@/components/LogoutButton'
+import DirectorSidebar from '@/components/dashboard/director/DirectorSidebar'
 import NotificationBell from '@/components/shared/NotificationBell'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -11,54 +11,30 @@ export default async function DirectorLayout({ children }: { children: React.Rea
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, full_name')
+    .select('*, school:schools(*)')
     .eq('user_id', user.id)
     .single()
 
-  const fullName = profile?.full_name || 'Direktor'
+  if (!profile || profile.role !== 'director') redirect('/login')
+
+  const fullName = profile.full_name || 'Direktor'
   const initials = fullName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
-  const today = new Date().toLocaleDateString('uz-UZ', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' })
 
   return (
     <div className="min-h-screen bg-gray-50/50">
-      <header className="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-6 sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-sm">E</span>
-          </div>
-          <span className="text-xl font-bold text-gray-900">
-            Edu<span className="text-indigo-600">Flow</span>
-          </span>
-          <span className="text-sm text-gray-400 ml-2">| Direktor Paneli</span>
-        </div>
-
-        <div className="flex-1 text-center">
-          <p className="text-sm font-semibold text-gray-900">
-            Assalomu alaykum, {fullName}! 👋
-          </p>
-          <p className="text-xs text-gray-400">Bugun, {today}</p>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <NotificationBell userId={profile?.id} />
-          <LogoutButton />
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm">
-              {initials}
-            </div>
-            <span className="text-sm font-medium text-gray-700">Direktor</span>
+      <DirectorSidebar profile={profile} />
+      <div className="ml-[250px] transition-all duration-300">
+        <div className="h-16 border-b border-gray-100 bg-white flex items-center justify-between px-6 sticky top-0 z-40">
+          <p className="text-sm text-gray-500">Salom, {fullName.split(' ')[0]}! 👋</p>
+          <div className="flex items-center gap-3">
+            <NotificationBell userId={profile.id} />
+            <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">{initials}</div>
+            <span className="text-sm font-medium text-gray-700">{fullName.split(' ')[0]}</span>
           </div>
         </div>
-      </header>
-
-      <main className="p-6 max-w-[1200px] mx-auto">{children}</main>
-      <AIChatWidget
-        apiRoute="/api/ai/director"
-        title="EduFlow AI"
-        subtitle="Maktab tahlili"
-        placeholder="Statistika haqida so'rang..."
-        color="from-purple-500 to-indigo-600"
-      />
+        <main className="p-6">{children}</main>
+      </div>
+      <AIChatWidget apiRoute="/api/ai/director" title="EduFlow AI" subtitle="Maktab tahlili" placeholder="Statistika haqida so'rang..." color="from-purple-500 to-indigo-600" />
     </div>
   )
 }

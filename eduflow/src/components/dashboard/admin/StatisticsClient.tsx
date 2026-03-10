@@ -10,17 +10,22 @@ import {
 
 interface Props {
   userGrowthData: { month: string; count: number }[]
-  categoryData: { name: string; value: number; color: string }[]
+  categoryData: { name: string; value: number; color?: string }[]
   attendanceChartData: { month: string; keldi: number; kelmadi: number; rate: number }[]
-  totalStudents: number
-  totalTeachers: number
-  totalClubs: number
+  totalStudents?: number
+  totalTeachers?: number
+  totalClubs?: number
+  studentsCount?: number
+  teachersCount?: number
+  clubsCount?: number
 }
 
-export default function StatisticsClient({
-  userGrowthData, categoryData, attendanceChartData,
-  totalStudents, totalTeachers, totalClubs,
-}: Props) {
+export default function StatisticsClient(props: Props) {
+  const totalStudents = props.totalStudents ?? props.studentsCount ?? 0
+  const totalTeachers = props.totalTeachers ?? props.teachersCount ?? 0
+  const totalClubs = props.totalClubs ?? props.clubsCount ?? 0
+  const { userGrowthData, categoryData, attendanceChartData } = props
+  const COLORS = ['#6366f1','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4']
   const kpiCards = [
     { label: "O'quvchilar", value: totalStudents, icon: Users, color: 'bg-indigo-50 text-indigo-600' },
     { label: "O'qituvchilar", value: totalTeachers, icon: GraduationCap, color: 'bg-cyan-50 text-cyan-600' },
@@ -77,7 +82,7 @@ export default function StatisticsClient({
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie data={categoryData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={3} dataKey="value">
-                    {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                    {categoryData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />)}
                   </Pie>
                   <Tooltip />
                   <Legend />

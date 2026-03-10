@@ -1,55 +1,55 @@
-'use client'
+import AdminProfileClient from '@/components/dashboard/admin/AdminProfileClient'
+import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { motion } from 'framer-motion'
+export const dynamic = 'force-dynamic'
 
-export default function TeacherProfilePage() {
+export default async function TeacherProfilePage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*, school:schools(*)')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!profile) redirect('/login')
+
+  // Get email via RPC
+  const { data: emailData } = await supabase.rpc('get_user_emails', { user_ids: [profile.user_id] })
+  const email = emailData?.[0]?.email || '—'
+
+  // Teacher's clubs
+  const { data: myClubs } = await supabase
+    .from('clubs')
+    .select('id, name, schedule, max_students')
+    .eq('teacher_id', profile.id)
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Profil</h1>
+      <AdminProfileClient profile={{ ...profile, role: 'teacher' }} email={email} />
 
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl border border-gray-100 p-8 max-w-2xl">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="w-16 h-16 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-xl">SX</div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">Sardor Xolmatov</h2>
-            <p className="text-sm text-gray-500">O&apos;qituvchi · Robototexnika, Musiqa</p>
+      {/* My Clubs Section */}
+      {myClubs && myClubs.length > 0 && (
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+            <h3 className="text-sm font-bold text-gray-700 mb-4">🏫 Mening to&apos;garaklarim ({myClubs.length})</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {myClubs.map(club => (
+                <div key={club.id} className="bg-gray-50 rounded-xl p-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg">📚</div>
+                  <div>
+                    <p className="font-semibold text-sm text-gray-900">{club.name}</p>
+                    <p className="text-xs text-gray-500">{club.schedule || '—'} · {club.max_students || '∞'} o&apos;rin</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
-        <form className="space-y-5">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-gray-700 font-medium">Ism</Label>
-              <Input defaultValue="Sardor" className="mt-2 h-11 rounded-xl border-gray-200" />
-            </div>
-            <div>
-              <Label className="text-gray-700 font-medium">Familiya</Label>
-              <Input defaultValue="Xolmatov" className="mt-2 h-11 rounded-xl border-gray-200" />
-            </div>
-          </div>
-          <div>
-            <Label className="text-gray-700 font-medium">Email</Label>
-            <Input defaultValue="sardor.teacher@eduflow.uz" className="mt-2 h-11 rounded-xl border-gray-200" />
-          </div>
-          <div>
-            <Label className="text-gray-700 font-medium">Telefon</Label>
-            <Input defaultValue="+998 90 987 65 43" className="mt-2 h-11 rounded-xl border-gray-200" />
-          </div>
-          <div>
-            <Label className="text-gray-700 font-medium">Mutaxassislik</Label>
-            <Input defaultValue="Robototexnika, Musiqa" className="mt-2 h-11 rounded-xl border-gray-200" />
-          </div>
-          <div>
-            <Label className="text-gray-700 font-medium">Tajriba</Label>
-            <Input defaultValue="8 yil" className="mt-2 h-11 rounded-xl border-gray-200" readOnly />
-          </div>
-          <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl px-8 h-11">Saqlash</Button>
-        </form>
-      </motion.div>
+      )}
     </div>
   )
 }
