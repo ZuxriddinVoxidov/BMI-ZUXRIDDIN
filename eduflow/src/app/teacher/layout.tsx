@@ -28,7 +28,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
         fullName={profile.full_name || 'O\'qituvchi'}
         clubCount={myClubs?.length || 0}
       />
-      <div className="ml-[250px] transition-all duration-300">
+      <div className="lg:ml-[250px] transition-all duration-300">
         <div className="h-16 border-b border-gray-100 bg-white flex items-center justify-between px-6">
           <p className="text-sm text-gray-500">
             Salom, {profile.full_name?.split(' ')[0] || 'O\'qituvchi'}! 👋
@@ -43,7 +43,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
             </span>
           </div>
         </div>
-        <main className="p-6">{children}</main>
+        <main className="p-4 md:p-6">{children}</main>
       </div>
       <AIChatWidget
         apiRoute="/api/ai/teacher"

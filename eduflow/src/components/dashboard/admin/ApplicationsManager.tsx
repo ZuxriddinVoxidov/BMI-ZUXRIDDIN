@@ -1,9 +1,10 @@
 'use client'
 
 import { approveApplication, rejectApplication } from '@/app/actions/applications'
+import DataLoader from '@/components/ui/DataLoader'
 import { motion } from 'framer-motion'
 import { Check, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Enrollment {
   id: string
@@ -33,6 +34,8 @@ export default function ApplicationsManager({
 }) {
   const [activeTab, setActiveTab] = useState<'pending' | 'processed'>('pending')
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const [dataReady, setDataReady] = useState(false)
+  useEffect(() => { setDataReady(true) }, [])
 
   async function handleApprove(enrollment: Enrollment) {
     setLoadingId(enrollment.id)
@@ -65,6 +68,7 @@ export default function ApplicationsManager({
   }
 
   return (
+    <DataLoader loading={!dataReady} minHeight="min-h-[300px]">
     <div className="space-y-6">
       <h1 className="text-2xl font-extrabold text-gray-900">Arizalar</h1>
 
@@ -220,5 +224,6 @@ export default function ApplicationsManager({
         </motion.div>
       )}
     </div>
+    </DataLoader>
   )
 }

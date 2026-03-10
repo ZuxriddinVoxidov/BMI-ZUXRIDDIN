@@ -47,14 +47,14 @@ export default async function StudentLayout({
   return (
     <div className="min-h-screen bg-gray-50/50">
       <StudentSidebar fullName={fullName} points={points} />
-      <div className="ml-[250px] transition-all duration-300">
+      <div className="lg:ml-[250px] transition-all duration-300">
         <StudentHeader
           fullName={fullName}
           profileId={profile?.id || ''}
           notifications={(notifications || []) as { id: string; message: string; is_read: boolean; created_at: string }[]}
           unreadCount={unreadCount}
         />
-        <main className="p-6">{children}</main>
+        <main className="p-4 md:p-6">{children}</main>
       </div>
       <AIChatWidget
         apiRoute="/api/ai/student"

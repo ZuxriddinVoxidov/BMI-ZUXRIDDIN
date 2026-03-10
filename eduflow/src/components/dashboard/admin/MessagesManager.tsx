@@ -1,7 +1,8 @@
 'use client'
 
 import { markMessageRead, markMessageReplied } from '@/app/actions/contact';
-import { useState } from 'react';
+import DataLoader from '@/components/ui/DataLoader';
+import { useEffect, useState } from 'react';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type Msg = {
@@ -33,6 +34,8 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
   const [filter, setFilter] = useState<'all' | 'unread' | 'read' | 'replied'>('all')
   const [detail, setDetail] = useState<Msg | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
+  const [dataReady, setDataReady] = useState(false)
+  useEffect(() => { setDataReady(true) }, [])
 
   const unreadCount = messages.filter(m => !m.is_read).length
   const filtered = messages.filter(m => {
@@ -58,6 +61,7 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
   }
 
   return (
+    <DataLoader loading={!dataReady} minHeight="min-h-[300px]">
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -182,5 +186,6 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
         </div>
       )}
     </div>
+    </DataLoader>
   )
 }
