@@ -2,7 +2,7 @@ import ClubDetailClient from '@/components/clubs/ClubDetailClient'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default async function ClubDetailPage({ params }: { params: any }) {

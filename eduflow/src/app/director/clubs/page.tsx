@@ -1,11 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export default async function DirectorClubsPage() {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
   if (!user) redirect('/login')
 
   const { data: profile } = await supabase.from('profiles').select('school_id').eq('user_id', user.id).single()

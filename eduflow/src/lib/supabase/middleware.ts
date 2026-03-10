@@ -25,15 +25,21 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  // getSession reads from COOKIE — NO network request! (~0ms)
+  // getUser calls Supabase auth server — network request (~100-200ms)
+  const { data: { session } } = await supabase.auth.getSession()
 
   const protectedRoutes = ['/dashboard', '/student', '/teacher', '/director']
   const isProtected = protectedRoutes.some(route =>
     request.nextUrl.pathname.startsWith(route)
   )
 
-  if (isProtected && !user) {
+  if (isProtected && !session) {
     return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  if (session && (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/register')) {
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
   return supabaseResponse

@@ -6,6 +6,7 @@ const nextConfig = {
       'lucide-react',
       'recharts',
       'framer-motion',
+      'date-fns',
     ],
   },
   images: {
@@ -13,9 +14,13 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'hwwsbwvvlkqqwbjemwhz.supabase.co',
+        pathname: '/storage/v1/object/public/**',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
   },
+  compress: true,
+  poweredByHeader: false,
 };
 
 export default nextConfig;

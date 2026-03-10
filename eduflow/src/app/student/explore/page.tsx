@@ -2,7 +2,7 @@ import ClubCatalog from '@/components/dashboard/student/ClubCatalog'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 30
 
 export default async function StudentExplorePage() {
   const supabase = createClient()

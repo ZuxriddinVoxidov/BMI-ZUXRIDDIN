@@ -27,7 +27,8 @@ export default function AttendancePage() {
   useEffect(() => {
     async function load() {
       const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
       if (!user) return
       const { data: profile } = await supabase
         .from('profiles').select('id').eq('user_id', user.id).single()
@@ -50,7 +51,7 @@ export default function AttendancePage() {
       .eq('club_id', selectedClub)
       .eq('status', 'approved')
 
-    const studentList = (enrollments || []).map((e) => e.student as unknown as Student).filter(Boolean)
+    const studentList = (enrollments || []).map((e: Record<string, unknown>) => e.student as unknown as Student).filter(Boolean)
     setStudents(studentList)
 
     // Load existing attendance
@@ -61,7 +62,7 @@ export default function AttendancePage() {
       .eq('date', selectedDate)
 
     const statusMap: Record<string, 'present' | 'absent' | 'excused'> = {}
-    studentList.forEach((s) => { statusMap[s.id] = 'present' })
+    studentList.forEach((s: Student) => { statusMap[s.id] = 'present' })
     ;(existing as AttendanceRecord[] || []).forEach((a) => {
       statusMap[a.student_id] = a.status as 'present' | 'absent' | 'excused'
     })
