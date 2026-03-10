@@ -19,19 +19,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
 
-// ─── Password Strength ──────────────────────────────────────
-function getPasswordStrength(p: string) {
-  let score = 0
-  if (p.length >= 8) score++
-  if (/[A-Z]/.test(p)) score++
-  if (/[0-9]/.test(p)) score++
-  if (/[^A-Za-z0-9]/.test(p)) score++
-  if (score <= 1) return { label: 'Kuchsiz', color: 'bg-red-500', width: '33%' }
-  if (score <= 2) return { label: "O'rtacha", color: 'bg-yellow-500', width: '66%' }
-  return { label: 'Kuchli', color: 'bg-green-500', width: '100%' }
-}
-
-// ─── Floating Blob ──────────────────────────────────────────
+// ── Floating Blob ──────────────────────────────────────────
 function FloatingBlob({ className, delay = 0 }: { className?: string; delay?: number }) {
   return (
     <motion.div
