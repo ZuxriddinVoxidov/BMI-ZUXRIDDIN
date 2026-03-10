@@ -32,7 +32,7 @@ export default function StudentsManager({ students }: { students: Student[] }) {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
   const [blockingId, setBlockingId] = useState<string | null>(null)
   const [dataReady, setDataReady] = useState(false)
   const [showModalPwd, setShowModalPwd] = useState(false)

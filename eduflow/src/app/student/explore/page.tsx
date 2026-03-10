@@ -43,7 +43,7 @@ export default async function StudentExplorePage() {
 
   // Count approved enrollments per club
   const clubIds = rawClubs?.map(c => c.id) || []
-  let enrollmentCounts: Record<string, number> = {}
+  const enrollmentCounts: Record<string, number> = {}
   if (clubIds.length > 0) {
     const { data: countData } = await supabase
       .from('enrollments')

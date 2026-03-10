@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 export async function POST(request: Request) {
   try {
     const { messages } = await request.json()
-    const lastMessage = messages[messages.length - 1]?.content || ''
+    // Use last message content for context
 
     const supabase = createClient()
     const { data: clubs } = await supabase
@@ -47,7 +47,7 @@ ${clubsInfo}
     `.trim()
 
     const conversationText = messages
-      .map((m: any) => `${m.role === 'user' ? 'Foydalanuvchi' : 'AI'}: ${m.content}`)
+      .map((m: { role: string; content: string }) => `${m.role === 'user' ? 'Foydalanuvchi' : 'AI'}: ${m.content}`)
       .join('\n')
 
     const response = await askGemini(systemPrompt, conversationText)

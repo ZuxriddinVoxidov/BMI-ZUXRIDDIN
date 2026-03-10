@@ -11,14 +11,7 @@ export async function addTeacher(data: {
 }) {
   const supabase = createClient()
 
-  // Check if email already exists
-  const { data: existing } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('user_id', (await supabase.rpc('get_user_id_by_email', { p_email: data.email })).data)
-    .maybeSingle()
-
-  // Use signUp to create the auth user (works with anon key)
+  // Check if email already exists (signUp will handle duplicate emails)  // Use signUp to create the auth user (works with anon key)
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email: data.email,
     password: data.password,

@@ -21,7 +21,7 @@ export default async function TeacherPage() {
   const myClubIds = myClubs?.map(c => c.id) || []
 
   // Count approved enrollments per club
-  let enrollmentCounts: Record<string, number> = {}
+  const enrollmentCounts: Record<string, number> = {}
   if (myClubIds.length > 0) {
     const { data: enrollments } = await supabase
       .from('enrollments')

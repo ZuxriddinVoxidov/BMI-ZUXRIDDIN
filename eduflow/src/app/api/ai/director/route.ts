@@ -16,6 +16,7 @@ export async function POST(request: Request) {
       .eq('user_id', user.id)
       .single()
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const schoolName = (profile as any)?.school?.name || ''
 
     const [

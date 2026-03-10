@@ -34,11 +34,13 @@ export async function POST(request: Request) {
       .limit(20)
 
     const enrolledClubNames = enrollments
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ?.map((e: any) => e.club?.name)
       .filter(Boolean)
       .join(', ') || 'hali yo\'q'
 
     const clubsList = availableClubs
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ?.map((c: any) =>
         `- ${c.name} (${c.category}): ${c.description || 'tavsif yo\'q'}, jadval: ${c.schedule}`
       )

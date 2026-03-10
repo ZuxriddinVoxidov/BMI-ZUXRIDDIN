@@ -103,6 +103,7 @@ export function exportDirectorPDF(data: {
   })
 
   // Teachers
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const teacherY = (doc as any).lastAutoTable.finalY + 15
   doc.text('O\'qituvchilar samaradorligi:', 14, teacherY)
 
@@ -115,6 +116,7 @@ export function exportDirectorPDF(data: {
   })
 
   // Top Students
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const studentsY = (doc as any).lastAutoTable.finalY + 15
   doc.text('Top 5 o\'quvchilar:', 14, studentsY)
 
