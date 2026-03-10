@@ -38,6 +38,10 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
   const [applyingId, setApplyingId] = useState<string | null>(null)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [localEnrollments, setLocalEnrollments] = useState(myEnrollments)
+  const [paidToast, setPaidToast] = useState<{
+    clubName: string; price: number; teacherName: string;
+    teacherPhone: string; teacherTelegram: string;
+  } | null>(null)
 
   const getEnrollmentStatus = (clubId: string) => {
     const enrollment = localEnrollments.find((e) => e.club_id === clubId)
@@ -84,6 +88,59 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
           }`}
         >
           {toast.message}
+        </div>
+      )}
+
+      {/* Paid club toast */}
+      {paidToast && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20" onClick={() => setPaidToast(null)}>
+          <div className="bg-white rounded-2xl shadow-xl border border-amber-100 p-5 w-[340px] animate-in fade-in slide-in-from-top-4" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-xl">💳</div>
+              <div>
+                <p className="font-bold text-gray-900">To&apos;lov talab qilinadi</p>
+                <p className="text-xs text-gray-500">{paidToast.clubName}</p>
+              </div>
+              <button onClick={() => setPaidToast(null)} className="ml-auto text-gray-400 hover:text-gray-600 text-lg">✕</button>
+            </div>
+
+            {/* Price */}
+            <div className="bg-amber-50 rounded-xl px-4 py-2.5 mb-3 flex items-center justify-between">
+              <span className="text-sm text-gray-600">Oylik to&apos;lov</span>
+              <span className="font-black text-amber-600 text-lg">{paidToast.price.toLocaleString()} so&apos;m</span>
+            </div>
+
+            {/* Teacher */}
+            <p className="text-xs text-gray-500 mb-1 px-1">O&apos;qituvchi bilan bog&apos;laning:</p>
+            <p className="font-semibold text-gray-800 text-sm mb-3 px-1">👨‍🏫 {paidToast.teacherName}</p>
+
+            {/* Contact buttons */}
+            <div className="flex gap-2">
+              {paidToast.teacherPhone ? (
+                <a href={`tel:${paidToast.teacherPhone}`}
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-sm font-semibold hover:bg-green-600 transition-all">
+                  📞 Telefon
+                </a>
+              ) : (
+                <div className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-100 text-gray-400 text-sm">
+                  📞 Raqam yo&apos;q
+                </div>
+              )}
+              {paidToast.teacherPhone ? (
+                <a href={`https://t.me/+${paidToast.teacherTelegram}`} target="_blank" rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-all">
+                  ✈️ Telegram
+                </a>
+              ) : (
+                <div className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-100 text-gray-400 text-sm">
+                  ✈️ Telegram yo&apos;q
+                </div>
+              )}
+            </div>
+
+            <p className="text-center text-[10px] text-gray-400 mt-3">Yopish uchun bosing</p>
+          </div>
         </div>
       )}
 
@@ -226,15 +283,48 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
 
                   {/* Action Button */}
                   {!status && (
-                    <button
-                      onClick={() => handleApply(club.id as string)}
-                      disabled={isPending && applyingId === (club.id as string)}
-                      className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-                    >
-                      {isPending && applyingId === (club.id as string)
-                        ? 'Yuborilmoqda...'
-                        : 'Ariza yuborish'}
-                    </button>
+                    <>
+                      {club.is_paid && (club.price as number) > 0 ? (
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              const teacherPhone = (teacher?.phone as string) || ''
+                              const teacherTelegram = teacherPhone.replace(/\D/g, '')
+
+                              setToast(null)
+                              setPaidToast({
+                                clubName: club.name as string,
+                                price: club.price as number,
+                                teacherName: (teacher?.full_name as string) || 'Noma\'lum',
+                                teacherPhone,
+                                teacherTelegram,
+                              })
+                              setTimeout(() => setPaidToast(null), 8000)
+                            }}
+                            className="flex-1 flex items-center justify-center px-4 py-2.5 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-all"
+                          >
+                            💳 To&apos;lov
+                          </button>
+                          <button
+                            onClick={() => handleApply(club.id as string)}
+                            disabled={isPending && applyingId === (club.id as string)}
+                            className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
+                          >
+                            {isPending && applyingId === (club.id as string) ? '⏳' : '📝 Ariza'}
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleApply(club.id as string)}
+                          disabled={isPending && applyingId === (club.id as string)}
+                          className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
+                        >
+                          {isPending && applyingId === (club.id as string)
+                            ? 'Yuborilmoqda...'
+                            : 'Ariza yuborish'}
+                        </button>
+                      )}
+                    </>
                   )}
                   {status === 'pending' && (
                     <div className="w-full py-2.5 bg-amber-50 text-amber-700 rounded-xl text-sm font-semibold text-center">

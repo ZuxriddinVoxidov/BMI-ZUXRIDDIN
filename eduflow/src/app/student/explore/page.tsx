@@ -28,7 +28,7 @@ export default async function StudentExplorePage() {
     .from('clubs')
     .select(`
       *,
-      teacher:profiles!teacher_id(full_name)
+      teacher:profiles!teacher_id(full_name, phone)
     `)
     .eq('is_published', true)
     .order('created_at', { ascending: false })
