@@ -27,8 +27,7 @@ export default function AttendancePage() {
   useEffect(() => {
     async function load() {
       const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user
+      const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       const { data: profile } = await supabase
         .from('profiles').select('id').eq('user_id', user.id).single()

@@ -35,8 +35,7 @@ export default function StudentWorksPage() {
 
   useEffect(() => {
     async function load() {
-      const { data: { session } } = await supabase.auth.getSession()
-  const user = session?.user
+      const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
 
       const { data: p } = await supabase
