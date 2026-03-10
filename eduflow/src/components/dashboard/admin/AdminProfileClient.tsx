@@ -87,7 +87,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
       {/* Profile Card */}
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         {/* Banner */}
-        <div className="h-36 bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-500" />
+        <div className="h-32 rounded-t-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600" />
 
         {/* Profile Row */}
         <div className="px-8 -mt-10 flex items-end gap-5 pb-4">

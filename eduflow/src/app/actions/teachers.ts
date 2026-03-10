@@ -75,3 +75,28 @@ export async function deleteTeacher(profileId: string) {
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function updateTeacherInfo(data: {
+  profile_id: string
+  full_name: string
+  phone?: string
+  teacher_bio?: string
+  new_password?: string
+}) {
+  const supabase = createClient()
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      full_name: data.full_name,
+      phone: data.phone || null,
+      teacher_bio: data.teacher_bio || null,
+      ...(data.new_password && { plain_password: data.new_password }),
+    })
+    .eq('id', data.profile_id)
+
+  if (error) return { success: false, error: error.message }
+  revalidatePath('/dashboard/teachers')
+  revalidatePath('/dashboard')
+  return { success: true }
+}

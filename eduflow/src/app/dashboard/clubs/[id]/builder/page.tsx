@@ -135,10 +135,9 @@ export default function ClubBuilderPage() {
         )}
       </div>
 
-      {/* Split Screen */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* LEFT — PREVIEW */}
-        <div className="lg:w-1/2 bg-gray-100 p-6 overflow-y-auto">
+        {/* LEFT — PREVIEW (sticky) */}
+        <div className="lg:w-[420px] lg:flex-shrink-0 bg-gray-100 p-6 overflow-y-auto border-r border-gray-200">
           <div className="flex gap-2 mb-4">
             {(['card', 'detail'] as const).map(tab => (
               <button
@@ -239,8 +238,8 @@ export default function ClubBuilderPage() {
           )}
         </div>
 
-        {/* RIGHT — FORM */}
-        <div className="lg:w-1/2 bg-white border-l overflow-y-auto">
+        {/* RIGHT — FORM (scrollable) */}
+        <div className="flex-1 bg-white overflow-y-auto">
           <div className="p-6 space-y-6">
             {/* Description */}
             <div>
@@ -255,9 +254,11 @@ export default function ClubBuilderPage() {
               <p className="text-xs text-gray-400 mt-1">{formData.full_description.length} / 1000</p>
             </div>
 
-            {/* Achievements */}
+            <hr className="border-gray-100" />
+
+            {/* Section 2: Achievements */}
             <div>
-              <h3 className="text-sm font-bold text-gray-900 mb-2">🏆 Yutuqlar va imkoniyatlar</h3>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-2">🏆 YUTUQLAR VA IMKONIYATLAR</h3>
               <div className="flex gap-2 flex-wrap mb-2">
                 {formData.achievements.map((ach, i) => (
                   <span key={i} className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
@@ -293,9 +294,11 @@ export default function ClubBuilderPage() {
               />
             </div>
 
-            {/* Images */}
+            <hr className="border-gray-100" />
+
+            {/* Section 4: Images */}
             <div>
-              <h3 className="text-sm font-bold text-gray-900 mb-3">🖼️ Rasmlar</h3>
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">📸 RASMLAR</h3>
               <div className="space-y-4">
                 {/* Cover */}
                 <ImageUploader

@@ -1,6 +1,6 @@
 'use client'
 
-import { addTeacher, toggleBlockTeacher } from '@/app/actions/teachers'
+import { addTeacher, toggleBlockTeacher, updateTeacherInfo } from '@/app/actions/teachers'
 import DataLoader from '@/components/ui/DataLoader'
 import { motion } from 'framer-motion'
 import { Copy, Eye, EyeOff, Search, ShieldCheck, ShieldX, UserPlus, Users } from 'lucide-react'
@@ -12,6 +12,7 @@ interface Teacher {
   email?: string
   plain_password?: string
   phone?: string
+  teacher_bio?: string
   user_id?: string
   is_blocked?: boolean
   created_at: string
@@ -32,7 +33,59 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
   const [formLoading, setFormLoading] = useState(false)
   const [dataReady, setDataReady] = useState(false)
 
+  // Edit modal states
+  const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null)
+  const [teacherForm, setTeacherForm] = useState({ full_name: '', phone: '', teacher_bio: '', new_password: '' })
+  const [showTeacherModal, setShowTeacherModal] = useState(false)
+  const [showTeacherPwd, setShowTeacherPwd] = useState(false)
+  const [savingTeacher, setSavingTeacher] = useState(false)
+  const [modalBlockingTeacher, setModalBlockingTeacher] = useState(false)
+  const [teacherToast, setTeacherToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
   useEffect(() => { setDataReady(true) }, [])
+
+  function openTeacherEdit(teacher: Teacher) {
+    setEditingTeacher(teacher)
+    setTeacherForm({
+      full_name: teacher.full_name || '',
+      phone: teacher.phone || '',
+      teacher_bio: teacher.teacher_bio || '',
+      new_password: '',
+    })
+    setShowTeacherPwd(false)
+    setModalBlockingTeacher(false)
+    setShowTeacherModal(true)
+  }
+
+  async function handleTeacherSave() {
+    if (!editingTeacher) return
+    if (!teacherForm.full_name.trim()) { setTeacherToast({ message: 'Ism kiritilmagan', type: 'error' }); setTimeout(() => setTeacherToast(null), 3000); return }
+    if (teacherForm.new_password && teacherForm.new_password.length < 8) { setTeacherToast({ message: 'Parol kamida 8 ta belgi', type: 'error' }); setTimeout(() => setTeacherToast(null), 3000); return }
+    setSavingTeacher(true)
+    const result = await updateTeacherInfo({
+      profile_id: editingTeacher.id,
+      full_name: teacherForm.full_name,
+      phone: teacherForm.phone,
+      teacher_bio: teacherForm.teacher_bio,
+      new_password: teacherForm.new_password || undefined,
+    })
+    setSavingTeacher(false)
+    if (result.success) {
+      setShowTeacherModal(false)
+      setTeacherToast({ message: 'Saqlandi ✅', type: 'success' })
+    } else {
+      setTeacherToast({ message: result.error || 'Xatolik', type: 'error' })
+    }
+    setTimeout(() => setTeacherToast(null), 3000)
+  }
+
+  async function handleModalTeacherBlock() {
+    if (!editingTeacher) return
+    setModalBlockingTeacher(true)
+    await toggleBlockTeacher(editingTeacher.id, !editingTeacher.is_blocked)
+    setEditingTeacher({ ...editingTeacher, is_blocked: !editingTeacher.is_blocked })
+    setModalBlockingTeacher(false)
+  }
 
   const filtered = teachers.filter(
     (t) =>
@@ -171,13 +224,21 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                       </span>
                     </td>
                     <td className="py-4 px-5">
-                      <button
-                        onClick={() => handleToggleBlock(teacher.id, !teacher.is_blocked)}
-                        disabled={isPending}
-                        className={`text-xs px-3 py-1.5 rounded-lg font-medium transition ${teacher.is_blocked ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-red-50 text-red-600 hover:bg-red-100'} disabled:opacity-50`}
-                      >
-                        {teacher.is_blocked ? <><ShieldCheck size={12} className="inline mr-1" />Faollashtirish</> : <><ShieldX size={12} className="inline mr-1" />Bloklash</>}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => openTeacherEdit(teacher)}
+                          className="px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 flex items-center gap-1"
+                        >
+                          ✏️ Tahrir
+                        </button>
+                        <button
+                          onClick={() => handleToggleBlock(teacher.id, !teacher.is_blocked)}
+                          disabled={isPending}
+                          className={`text-xs px-3 py-1.5 rounded-lg font-medium transition ${teacher.is_blocked ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-red-50 text-red-600 hover:bg-red-100'} disabled:opacity-50`}
+                        >
+                          {teacher.is_blocked ? <><ShieldCheck size={12} className="inline mr-1" />Faollashtirish</> : <><ShieldX size={12} className="inline mr-1" />Bloklash</>}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 )
@@ -217,6 +278,127 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                 {formLoading ? '⏳ Yaratilmoqda...' : '✅ Yaratish'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Teacher Toast */}
+      {teacherToast && (
+        <div className={`fixed top-6 right-6 z-[60] px-5 py-3 rounded-xl shadow-lg text-white text-sm font-medium ${teacherToast.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`}>
+          {teacherToast.message}
+        </div>
+      )}
+
+      {/* Teacher Edit Modal */}
+      {showTeacherModal && editingTeacher && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShowTeacherModal(false)}>
+          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="flex items-center gap-3 p-6 border-b border-gray-100">
+              <div className="w-11 h-11 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
+                {(editingTeacher.full_name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900">✏️ {editingTeacher.full_name}</h3>
+                <p className="text-xs text-gray-500">O&apos;qituvchi ma&apos;lumotlarini tahrirlash</p>
+              </div>
+              <button onClick={() => setShowTeacherModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Section 1: Personal */}
+              <div>
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">👤 SHAXSIY MA&apos;LUMOTLAR</h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">To&apos;liq ism *</label>
+                    <input value={teacherForm.full_name} onChange={e => setTeacherForm(p => ({ ...p, full_name: e.target.value }))}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">📱 Telefon</label>
+                    <input value={teacherForm.phone} onChange={e => setTeacherForm(p => ({ ...p, phone: e.target.value }))}
+                      placeholder="+998 90 123 45 67" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">📝 Bio</label>
+                    <textarea value={teacherForm.teacher_bio} onChange={e => setTeacherForm(p => ({ ...p, teacher_bio: e.target.value }))}
+                      placeholder="O'qituvchi haqida qisqacha..." rows={3}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400 resize-none" />
+                  </div>
+                </div>
+              </div>
+
+              <hr className="border-gray-100" />
+
+              {/* Section 2: Login */}
+              <div>
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">🔐 LOGIN MA&apos;LUMOTLARI</h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">📧 Email (Login)</label>
+                    <input value={editingTeacher.email || ''} readOnly
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-600 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">🔑 Joriy parol</label>
+                    <div className="relative">
+                      <input value={showTeacherPwd ? (editingTeacher.plain_password || '—') : '••••••••'} readOnly
+                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 pr-20 text-sm bg-gray-50 font-mono outline-none" />
+                      <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                        <button onClick={() => setShowTeacherPwd(!showTeacherPwd)} className="p-1.5 text-gray-400 hover:text-gray-600">
+                          {showTeacherPwd ? <EyeOff size={14} /> : <Eye size={14} />}
+                        </button>
+                        {editingTeacher.plain_password && (
+                          <button onClick={() => { navigator.clipboard.writeText(editingTeacher.plain_password!); setCopiedId('modal-teacher') }}
+                            className="p-1.5 text-gray-400 hover:text-indigo-600">
+                            <Copy size={14} />
+                            {copiedId === 'modal-teacher' && <span className="text-xs text-emerald-500">✓</span>}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    {!editingTeacher.plain_password && <p className="text-xs text-gray-400 mt-1">O&apos;qituvchi o&apos;zi ro&apos;yxatdan o&apos;tgan</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">🔒 Yangi parol (ixtiyoriy)</label>
+                    <input type="password" value={teacherForm.new_password} onChange={e => setTeacherForm(p => ({ ...p, new_password: e.target.value }))}
+                      placeholder="O'zgartirish uchun kiriting..." className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400" />
+                    <p className="text-xs text-gray-400 mt-1">Kamida 8 belgi. Bo&apos;sh qolsa o&apos;zgarmaydi.</p>
+                  </div>
+                </div>
+              </div>
+
+              <hr className="border-gray-100" />
+
+              {/* Section 3: Block */}
+              <div>
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">🚫 KIRISH HUQUQI</h4>
+                <div className={`flex items-center justify-between p-4 rounded-xl border-2 ${editingTeacher.is_blocked ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
+                  <div>
+                    <p className={`font-bold ${editingTeacher.is_blocked ? 'text-red-700' : 'text-green-700'}`}>
+                      ● {editingTeacher.is_blocked ? 'Bloklangan' : 'Faol'}
+                    </p>
+                    <p className={`text-sm ${editingTeacher.is_blocked ? 'text-red-500' : 'text-green-600'}`}>
+                      {editingTeacher.is_blocked ? 'Tizimga kira olmaydi' : 'Tizimga kirish mumkin'}
+                    </p>
+                  </div>
+                  <button onClick={handleModalTeacherBlock} disabled={modalBlockingTeacher}
+                    className={`px-4 py-2 rounded-xl text-sm font-bold text-white transition disabled:opacity-50 ${editingTeacher.is_blocked ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-red-500 hover:bg-red-600'}`}>
+                    {modalBlockingTeacher ? '⏳' : editingTeacher.is_blocked ? '✅ Faollashtirish' : '🚫 Bloklash'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-3 p-6 border-t border-gray-100">
+              <button onClick={() => setShowTeacherModal(false)}
+                className="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Bekor qilish</button>
+              <button onClick={handleTeacherSave} disabled={savingTeacher}
+                className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition disabled:opacity-50">
+                {savingTeacher ? '⏳ Saqlanmoqda...' : '💾 Saqlash'}
+              </button>
+            </div>
           </div>
         </div>
       )}

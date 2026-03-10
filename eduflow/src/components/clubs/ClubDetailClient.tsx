@@ -3,7 +3,6 @@
 import { applyToClub } from '@/app/actions/enrollment'
 import { getCategoryColor, getDefaultEmoji } from '@/lib/utils'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -29,23 +28,22 @@ function timeAgo(dateStr: string) {
 export default function ClubDetailClient({
   club, enrolledCount, avgRating, userEnrollment, userProfile,
 }: ClubDetailClientProps) {
-  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [localStatus, setLocalStatus] = useState(userEnrollment?.status || null)
 
   const emoji = club.emoji || getDefaultEmoji(club.category || '')
   const catColor = getCategoryColor(club.category || '')
-  const targetGrades = club.target_grades as string[] | null
   const isFull = enrolledCount >= (club.max_students || 30)
   const reviews = (club.reviews || []) as any[]
+  const spotsLeft = (club.max_students || 30) - enrolledCount
 
   const handleApply = () => {
     startTransition(async () => {
       const result = await applyToClub(club.id)
       if (result.success) {
         setLocalStatus('pending')
-        setToast({ message: "Ariza muvaffaqiyatli yuborildi!", type: 'success' })
+        setToast({ message: "Ariza muvaffaqiyatli yuborildi! 🎉", type: 'success' })
       } else {
         setToast({ message: result.error || 'Xatolik', type: 'error' })
       }
@@ -54,82 +52,149 @@ export default function ClubDetailClient({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f6f6f8] relative">
+      {/* Blurred background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {club.cover_image_url && (
+          <div className="absolute inset-0 bg-cover bg-center opacity-30 blur-2xl scale-110"
+            style={{ backgroundImage: `url(${club.cover_image_url})` }} />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-100/40 via-gray-100/80 to-gray-100" />
+      </div>
+
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
+        <div className={`fixed top-6 right-6 z-[60] px-5 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
           {toast.message}
         </div>
       )}
 
-      {/* Back button */}
-      <div className="absolute top-4 left-4 z-20">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 px-4 py-2 rounded-full text-sm font-medium transition-all"
-        >
-          ← Orqaga
-        </button>
-      </div>
+      {/* Sticky Header */}
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-white/50 px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2">
+          <span className="text-2xl">🎓</span>
+          <span className="font-bold text-indigo-600 text-lg">EduFlow</span>
+        </Link>
+        <Link href="/#clubs"
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-sm font-semibold hover:shadow-md transition-all">
+          ← To&apos;garaklarga qaytish
+        </Link>
+      </header>
 
-      {/* HERO */}
-      <div className="relative h-[350px] sm:h-[400px] flex items-center justify-center overflow-hidden">
-        {club.cover_image_url ? (
-          <>
-            <img src={club.cover_image_url} alt={club.name} className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/50" />
-          </>
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-500 to-cyan-400" />
-        )}
-        <div className="relative z-10 text-center text-white px-4">
-          <span className="text-6xl mb-4 block">{emoji}</span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3">{club.name}</h1>
-          <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-semibold ${catColor}`}>
-            {club.category}
-          </span>
-          {avgRating && (
-            <div className="flex items-center justify-center gap-1 mt-3">
-              {[1, 2, 3, 4, 5].map(s => (
-                <span key={s} className={s <= Math.round(Number(avgRating)) ? 'text-yellow-400 text-xl' : 'text-white/30 text-xl'}>★</span>
-              ))}
-              <span className="text-white/80 text-sm ml-1">{avgRating}</span>
-            </div>
-          )}
+      {/* Main Content */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+          <Link href="/" className="hover:text-indigo-600 transition">Asosiy</Link>
+          <span>›</span>
+          <Link href="/#clubs" className="hover:text-indigo-600 transition">To&apos;garaklar</Link>
+          <span>›</span>
+          <span className="text-gray-900 font-semibold">{club.name}</span>
         </div>
-      </div>
 
-      {/* MAIN CONTENT */}
-      <div className="max-w-5xl mx-auto px-4 py-8 -mt-8 relative z-10">
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* LEFT */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Description */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-              <h2 className="text-lg font-bold text-gray-900 mb-3">📖 To&apos;garak haqida</h2>
-              <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">
-                {club.full_description || club.description || "Ma'lumot kiritilmagan"}
-              </p>
-            </div>
-
-            {/* Schedule */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-              <h2 className="text-lg font-bold text-gray-900 mb-3">📅 Dars jadvali</h2>
-              <div className="space-y-2">
-                <p className="text-gray-600 text-sm flex items-center gap-2">
-                  <span>🕐</span> {club.schedule || 'Belgilanmagan'}
-                </p>
-                {club.room && (
-                  <p className="text-gray-600 text-sm flex items-center gap-2">
-                    <span>📍</span> {club.room}-xona
-                  </p>
+        <div className="grid lg:grid-cols-12 gap-8">
+          {/* LEFT COLUMN */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Club Info Card */}
+            <div className="bg-white/70 backdrop-blur-md rounded-2xl p-8 shadow-sm border border-white/50">
+              {/* Category + Rating */}
+              <div className="flex items-center gap-3 mb-4">
+                <span className={`px-3 py-1 rounded-full text-xs font-bold ${catColor}`}>
+                  {club.category}
+                </span>
+                {avgRating && (
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <span key={s} className={`text-sm ${s <= Math.round(Number(avgRating)) ? 'text-yellow-400' : 'text-gray-200'}`}>★</span>
+                    ))}
+                    <span className="text-sm text-gray-500 ml-1">{avgRating}</span>
+                  </div>
                 )}
+              </div>
+
+              {/* Member avatars */}
+              <div className="flex items-center gap-1 mb-4">
+                {['bg-indigo-400', 'bg-blue-400', 'bg-purple-400', 'bg-pink-400', 'bg-cyan-400'].slice(0, Math.min(enrolledCount, 5)).map((color, i) => (
+                  <div key={i} className={`w-7 h-7 rounded-full ${color} border-2 border-white -ml-${i > 0 ? '2' : '0'}`} />
+                ))}
+                {enrolledCount > 5 && (
+                  <span className="text-xs text-gray-500 ml-2">+{enrolledCount - 5}</span>
+                )}
+              </div>
+
+              {/* Club Name */}
+              <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-3 flex items-center gap-3">
+                <span className="text-4xl">{emoji}</span>
+                {club.name}
+              </h1>
+
+              {/* Description */}
+              <p className="text-lg text-gray-600 leading-relaxed mb-6">
+                {club.description || "Ma'lumot kiritilmagan"}
+              </p>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-4">
+                {/* Price */}
+                <div className="p-5 rounded-2xl bg-white/50 border border-gray-200 flex flex-col items-center text-center hover:bg-indigo-600 hover:border-indigo-600 group transition-all duration-300 cursor-default">
+                  <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mb-3 text-2xl group-hover:bg-white group-hover:text-indigo-600">
+                    💰
+                  </div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-white/70">Narxi</p>
+                  <p className="font-bold text-gray-900 group-hover:text-white text-sm">
+                    {club.is_paid ? `${club.price?.toLocaleString('uz-UZ')} so'm` : 'Bepul'}
+                  </p>
+                </div>
+
+                {/* Schedule */}
+                <div className="p-5 rounded-2xl bg-white/50 border border-gray-200 flex flex-col items-center text-center hover:bg-indigo-600 hover:border-indigo-600 group transition-all duration-300 cursor-default">
+                  <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mb-3 text-2xl group-hover:bg-white group-hover:text-indigo-600">
+                    📅
+                  </div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-white/70">Jadval</p>
+                  <p className="font-bold text-gray-900 group-hover:text-white text-sm">
+                    {club.schedule || '—'}
+                  </p>
+                </div>
+
+                {/* Students */}
+                <div className="p-5 rounded-2xl bg-white/50 border border-gray-200 flex flex-col items-center text-center hover:bg-indigo-600 hover:border-indigo-600 group transition-all duration-300 cursor-default">
+                  <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mb-3 text-2xl group-hover:bg-white group-hover:text-indigo-600">
+                    👥
+                  </div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-white/70">O&apos;quvchilar</p>
+                  <p className="font-bold text-gray-900 group-hover:text-white text-sm">
+                    {enrolledCount} / {club.max_students || 30}
+                  </p>
+                </div>
               </div>
             </div>
 
+            {/* Gallery */}
+            {(club.cover_image_url || club.room_image_url) && (
+              <div className="grid grid-cols-2 gap-4">
+                {club.cover_image_url && (
+                  <div className="h-48 rounded-xl bg-cover bg-center shadow-lg hover:scale-[1.02] transition-transform"
+                    style={{ backgroundImage: `url(${club.cover_image_url})` }} />
+                )}
+                {club.room_image_url && (
+                  <div className="h-48 rounded-xl bg-cover bg-center shadow-lg hover:scale-[1.02] transition-transform"
+                    style={{ backgroundImage: `url(${club.room_image_url})` }} />
+                )}
+              </div>
+            )}
+
+            {/* Full Description */}
+            {club.full_description && (
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-8 shadow-sm border border-white/50">
+                <h2 className="text-lg font-bold text-gray-900 mb-3">📖 Batafsil ma&apos;lumot</h2>
+                <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">{club.full_description}</p>
+              </div>
+            )}
+
             {/* Achievements */}
             {club.achievements && club.achievements.length > 0 && (
-              <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-8 shadow-sm border border-white/50">
                 <h2 className="text-lg font-bold text-gray-900 mb-3">🏆 Yutuqlar va imkoniyatlar</h2>
                 <div className="flex flex-wrap gap-2">
                   {club.achievements.map((a: string, i: number) => (
@@ -142,7 +207,7 @@ export default function ClubDetailClient({
             )}
 
             {/* Reviews */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+            <div className="bg-white/70 backdrop-blur-md rounded-2xl p-8 shadow-sm border border-white/50">
               <h2 className="text-lg font-bold text-gray-900 mb-1">⭐ O&apos;quvchilar fikri</h2>
               {avgRating && (
                 <div className="flex items-center gap-2 mb-4">
@@ -160,7 +225,7 @@ export default function ClubDetailClient({
               ) : (
                 <div className="space-y-4">
                   {reviews.slice(0, 5).map((r: any) => (
-                    <div key={r.id} className="border-b border-gray-50 pb-4 last:border-0">
+                    <div key={r.id} className="border-b border-gray-100 pb-4 last:border-0">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
                           {r.student?.full_name?.charAt(0) || '?'}
@@ -185,111 +250,102 @@ export default function ClubDetailClient({
             </div>
           </div>
 
-          {/* RIGHT SIDEBAR */}
-          <div className="space-y-5">
-            {/* Enrollment Card */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm sticky top-6">
-              <div className="text-center mb-4">
-                <span className="text-4xl">{emoji}</span>
-                <h3 className="text-lg font-bold text-gray-900 mt-2">{club.name}</h3>
-              </div>
+          {/* RIGHT COLUMN */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-24 space-y-6">
+              {/* Teacher + Enrollment Card */}
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-indigo-100/50 relative overflow-hidden">
+                {/* Background accent */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -mr-10 -mt-10" />
 
-              {/* Price & Grade */}
-              <div className="flex flex-wrap justify-center gap-2 mb-4">
-                {club.is_paid ? (
-                  <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full">
-                    💳 {club.price?.toLocaleString('uz-UZ')} so&apos;m/oy
-                  </span>
-                ) : (
-                  <span className="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
-                    🆓 Bepul
-                  </span>
-                )}
-                <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
-                  📚 {targetGrades && targetGrades.length > 0
-                    ? `${targetGrades.sort((a, b) => Number(a) - Number(b)).join(', ')}-sinf`
-                    : 'Barcha sinflar'}
-                </span>
-              </div>
-
-              {/* Stats */}
-              <div className="space-y-2 mb-5 text-sm text-gray-600">
-                <p>👥 {enrolledCount} / {club.max_students || 30} o&apos;quvchi</p>
-                <p>📅 {club.schedule || 'Belgilanmagan'}</p>
-                {club.room && <p>📍 {club.room}-xona</p>}
-              </div>
-
-              {/* Enrollment progress */}
-              <div className="mb-5">
-                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${Math.min((enrolledCount / (club.max_students || 30)) * 100, 100)}%` }} />
+                {/* Teacher info */}
+                <div className="relative text-center mb-6">
+                  {club.teacher_image_url ? (
+                    <img src={club.teacher_image_url} alt={club.teacher?.full_name || ''}
+                      className="w-24 h-24 rounded-full object-cover mx-auto ring-4 ring-indigo-600 ring-offset-4" />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-black text-2xl mx-auto ring-4 ring-indigo-600 ring-offset-4">
+                      {club.teacher?.full_name?.charAt(0) || '?'}
+                    </div>
+                  )}
+                  <h3 className="text-xl font-black text-gray-900 mt-4">{club.teacher?.full_name || 'Belgilanmagan'}</h3>
+                  <p className="text-xs text-indigo-600 font-bold uppercase tracking-widest mt-1">O&apos;qituvchi</p>
+                  {club.teacher_bio && (
+                    <p className="text-sm text-gray-500 italic mt-3 leading-relaxed">{club.teacher_bio}</p>
+                  )}
                 </div>
-              </div>
 
-              {/* Enroll Button */}
-              {!userProfile ? (
-                <Link href="/login" className="block w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold text-center transition-colors">
-                  Kirish va ariza topshirish
-                </Link>
-              ) : userProfile.role !== 'student' ? null : localStatus === 'pending' ? (
-                <div className="w-full py-3 bg-amber-50 text-amber-700 rounded-xl text-sm font-semibold text-center">
-                  ⏳ Arizangiz ko&apos;rib chiqilmoqda
-                </div>
-              ) : localStatus === 'approved' ? (
-                <div className="w-full py-3 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-semibold text-center">
-                  ✅ Siz a&apos;zo bo&apos;lgansiz
-                </div>
-              ) : localStatus === 'rejected' ? (
-                <button
-                  onClick={handleApply}
-                  disabled={isPending}
-                  className="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-                >
-                  {isPending ? 'Yuborilmoqda...' : '❌ Ariza rad etildi. Qayta topshirish'}
-                </button>
-              ) : isFull ? (
-                <div className="w-full py-3 bg-gray-100 text-gray-500 rounded-xl text-sm font-semibold text-center">
-                  To&apos;lgan
-                </div>
-              ) : (
-                <button
-                  onClick={handleApply}
-                  disabled={isPending}
-                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-                >
-                  {isPending ? 'Yuborilmoqda...' : '📝 Ariza topshirish'}
-                </button>
-              )}
-            </div>
+                <hr className="border-gray-100 my-5" />
 
-            {/* Teacher */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-              <h3 className="text-sm font-bold text-gray-900 mb-3">👨‍🏫 O&apos;qituvchi</h3>
-              <div className="flex items-center gap-3 mb-3">
-                {club.teacher_image_url ? (
-                  <img src={club.teacher_image_url} alt="" className="w-12 h-12 rounded-full object-cover" />
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
-                    {club.teacher?.full_name?.charAt(0) || '?'}
+                {/* Room & Schedule */}
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="bg-indigo-50/50 rounded-xl p-3 text-center">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase">Jadval</p>
+                    <p className="text-sm font-bold text-gray-800 mt-1">{club.schedule || '—'}</p>
                   </div>
-                )}
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">{club.teacher?.full_name || 'Belgilanmagan'}</p>
-                  <span className="text-xs bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full inline-block mt-0.5">Mutaxassis o&apos;qituvchi</span>
+                  <div className="bg-indigo-50/50 rounded-xl p-3 text-center">
+                    <p className="text-[10px] font-bold text-gray-400 uppercase">Xona</p>
+                    <p className="text-sm font-bold text-gray-800 mt-1">{club.room ? `${club.room}` : '—'}</p>
+                  </div>
                 </div>
+
+                {/* Progress bar */}
+                <div className="mb-6">
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>{enrolledCount} ta a&apos;zo</span>
+                    <span>{club.max_students || 30} ta joy</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all"
+                      style={{ width: `${Math.min((enrolledCount / (club.max_students || 30)) * 100, 100)}%` }} />
+                  </div>
+                </div>
+
+                {/* Enrollment Button */}
+                {!userProfile ? (
+                  <Link href="/login"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-3 transition-all active:scale-95">
+                    Kirish va ro&apos;yxatdan o&apos;tish 🚀
+                  </Link>
+                ) : userProfile.role !== 'student' ? null : localStatus === 'pending' ? (
+                  <div className="w-full py-4 rounded-xl bg-amber-50 border-2 border-amber-200 text-center">
+                    <p className="font-bold text-amber-700">⏳ Arizangiz ko&apos;rib chiqilmoqda</p>
+                    <p className="text-sm text-amber-500 mt-1">Admin tasdiqlashini kuting</p>
+                  </div>
+                ) : localStatus === 'approved' ? (
+                  <div className="w-full py-4 rounded-xl bg-green-50 border-2 border-green-200 text-center">
+                    <p className="font-bold text-green-700">✅ Siz bu to&apos;garak a&apos;zosisiz!</p>
+                  </div>
+                ) : localStatus === 'rejected' ? (
+                  <button onClick={handleApply} disabled={isPending}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white font-black py-4 rounded-xl shadow-lg flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50">
+                    {isPending ? '⏳ Yuborilmoqda...' : '❌ Rad etildi — Qayta ariza'}
+                  </button>
+                ) : isFull ? (
+                  <div className="w-full py-4 rounded-xl bg-gray-50 border-2 border-gray-200 text-center">
+                    <p className="font-bold text-gray-600">😔 To&apos;garak to&apos;lgan</p>
+                  </div>
+                ) : (
+                  <>
+                    <button onClick={handleApply} disabled={isPending}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-3 transition-all active:scale-95 disabled:opacity-50">
+                      {isPending ? '⏳ Yuborilmoqda...' : "To'garakka a'zo bo'lish 🚀"}
+                    </button>
+                    <p className="mt-3 text-xs text-gray-500 text-center">
+                      {spotsLeft} ta joy qoldi
+                    </p>
+                  </>
+                )}
               </div>
-              {club.teacher_bio && (
-                <p className="text-sm text-gray-500 leading-relaxed">{club.teacher_bio}</p>
+
+              {/* Room Image */}
+              {club.room_image_url && (
+                <div className="bg-white/70 backdrop-blur-md rounded-2xl overflow-hidden border border-white/50 shadow-sm">
+                  <img src={club.room_image_url} alt="Dars xonasi" className="w-full h-48 object-cover" />
+                  <p className="text-center text-xs text-gray-500 py-3">📍 Dars xonasi</p>
+                </div>
               )}
             </div>
-
-            {/* Room Image */}
-            {club.room_image_url && (
-              <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                <img src={club.room_image_url} alt="Dars xonasi" className="w-full h-48 object-cover" />
-                <p className="text-center text-xs text-gray-500 py-2">📍 Dars xonasi</p>
-              </div>
-            )}
           </div>
         </div>
       </div>
