@@ -224,7 +224,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">🔐 Login ma&apos;lumotlari</h3>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
-                  <input value={form.email} disabled className="w-full border rounded-xl px-3 py-2.5 text-sm bg-gray-50 text-gray-500" />
+                  <input value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} type="email" className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1 block">Joriy parol</label>
