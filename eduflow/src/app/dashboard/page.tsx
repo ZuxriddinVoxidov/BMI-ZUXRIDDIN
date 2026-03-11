@@ -81,7 +81,7 @@ export default async function DashboardPage() {
     student_id: s.id,
     full_name: s.full_name,
     grade: s.grade,
-    total_points: (s.student_points as any)?.[0]
+    total_points: (s.student_points as { total_points: number }[])?.[0]
       ?.total_points ?? 0,
   }))
 
