@@ -87,10 +87,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
       {/* Profile Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {/* Banner */}
-        <div className="h-36 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative overflow-hidden">
-          <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"/>
-          <div className="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"/>
-          <div className="absolute top-4 right-20 w-12 h-12 bg-white/10 rounded-full"/>
+        <div className="h-20 bg-gray-50 border-b border-gray-100 relative">
         </div>
 
         {/* Profile Row */}
