@@ -104,10 +104,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
               className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all"
             >
               {/* Banner */}
-              <div className="h-20 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative overflow-hidden">
-                <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full"/>
-                <div className="absolute -bottom-6 -left-3 w-16 h-16 bg-white/10 rounded-full"/>
-                <div className="absolute top-2 right-16 w-8 h-8 bg-white/10 rounded-full"/>
+              <div className="h-24 bg-indigo-600 relative">
                 {director.is_blocked && (
                   <span className="absolute top-3 right-3 px-2 py-1 bg-red-500 text-white text-xs rounded-full font-medium">
                     🚫 Bloklangan
@@ -119,7 +116,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
               <div className="px-5 pb-5">
                 {/* Avatar */}
                 <div className="flex items-end gap-4 -mt-8 mb-4">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl font-black border-4 border-white shadow-lg flex-shrink-0">
+                  <div className="w-14 h-14 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-lg font-black border-4 border-white shadow-lg flex-shrink-0">
                     {director.full_name?.charAt(0) || 'D'}
                   </div>
                   <div className="pb-1">
