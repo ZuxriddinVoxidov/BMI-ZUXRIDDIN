@@ -104,7 +104,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
               className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all"
             >
               {/* Banner */}
-              <div className="h-20 bg-gray-50 border-b border-gray-100 relative">
+              <div className="h-24 bg-indigo-600 relative">
                 {director.is_blocked && (
                   <span className="absolute top-3 right-3 px-2 py-1 bg-red-500 text-white text-xs rounded-full font-medium">
                     🚫 Bloklangan
