@@ -52,9 +52,23 @@ export default async function ClubDetailPage({ params }: { params: any }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const enrolledCount = club.enrollments?.filter((e: any) => e.status === 'approved').length || 0
 
-  const avgRating = club.reviews?.length > 0
+  const { data: reviews } = await supabase
+    .from('reviews')
+    .select(`
+      id,
+      rating,
+      comment,
+      created_at,
+      profiles!student_id(full_name, grade)
+    `)
+    .eq('club_id', id)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  // Calculate average rating
+  const avgRating = reviews && reviews.length > 0
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ? (club.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / club.reviews.length).toFixed(1)
+    ? (reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length).toFixed(1)
     : null
 
   return (
@@ -64,6 +78,7 @@ export default async function ClubDetailPage({ params }: { params: any }) {
       avgRating={avgRating}
       userEnrollment={userEnrollment}
       userProfile={userProfile}
+      reviews={reviews || []}
     />
   )
 }

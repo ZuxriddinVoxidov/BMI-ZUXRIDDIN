@@ -12,6 +12,7 @@ interface ClubDetailClientProps {
   avgRating: string | null
   userEnrollment: any
   userProfile: any
+  reviews: any[]
 }
 
 function timeAgo(dateStr: string) {
@@ -26,7 +27,7 @@ function timeAgo(dateStr: string) {
 }
 
 export default function ClubDetailClient({
-  club, enrolledCount, avgRating, userEnrollment, userProfile,
+  club, enrolledCount, avgRating, userEnrollment, userProfile, reviews,
 }: ClubDetailClientProps) {
   const [isPending, startTransition] = useTransition()
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
@@ -35,7 +36,6 @@ export default function ClubDetailClient({
   const emoji = club.emoji || getDefaultEmoji(club.category || '')
   const catColor = getCategoryColor(club.category || '')
   const isFull = enrolledCount >= (club.max_students || 30)
-  const reviews = (club.reviews || []) as any[]
   const spotsLeft = (club.max_students || 30) - enrolledCount
 
   const handleApply = () => {
@@ -211,45 +211,72 @@ export default function ClubDetailClient({
 
             {/* Reviews */}
             <div className="bg-white/70 backdrop-blur-md rounded-2xl p-8 shadow-sm border border-white/50">
-              <h2 className="text-lg font-bold text-gray-900 mb-1">⭐ O&apos;quvchilar fikri</h2>
+              <h2 className="text-lg font-bold text-gray-900 mb-4">⭐ O&apos;quvchilar fikri</h2>
+              
+              {/* Average rating */}
               {avgRating && (
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-2xl font-bold text-gray-900">{avgRating}</span>
-                  <div className="flex gap-0.5">
-                    {[1, 2, 3, 4, 5].map(s => (
-                      <span key={s} className={s <= Math.round(Number(avgRating)) ? 'text-yellow-400' : 'text-gray-200'}>★</span>
-                    ))}
-                  </div>
-                  <span className="text-sm text-gray-500">({reviews.length} ta baholash)</span>
-                </div>
-              )}
-              {reviews.length === 0 ? (
-                <p className="text-gray-400 text-sm py-4">Hali baholash yo&apos;q</p>
-              ) : (
-                <div className="space-y-4">
-                  {reviews.slice(0, 5).map((r: any) => (
-                    <div key={r.id} className="border-b border-gray-100 pb-4 last:border-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
-                          {r.student?.full_name?.charAt(0) || '?'}
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-gray-800">{r.student?.full_name}</p>
-                          <p className="text-xs text-gray-400">
-                            {r.student?.grade ? `${r.student.grade}-sinf` : "O'quvchi"} · {timeAgo(r.created_at)}
-                          </p>
-                        </div>
-                        <div className="ml-auto flex gap-0.5">
-                          {[1, 2, 3, 4, 5].map(s => (
-                            <span key={s} className={`text-sm ${s <= r.rating ? 'text-yellow-400' : 'text-gray-200'}`}>★</span>
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-sm text-gray-600 italic">&ldquo;{r.comment}&rdquo;</p>
+                <div className="flex items-center gap-2 mb-6">
+                  <span className="text-4xl font-black 
+                                  text-gray-900">
+                    {avgRating}
+                  </span>
+                  <div>
+                    <div className="flex text-amber-400">
+                      {[1,2,3,4,5].map(s => (
+                        <span key={s}>
+                          {s <= Math.round(Number(avgRating)) 
+                            ? '⭐' : '☆'}
+                        </span>
+                      ))}
                     </div>
-                  ))}
+                    <p className="text-sm text-gray-500">
+                      {reviews?.length} ta fikr
+                    </p>
+                  </div>
                 </div>
               )}
+
+              {/* Reviews list */}
+              <div className="space-y-4">
+                {(reviews || []).map(review => (
+                  <div key={review.id}
+                    className="bg-gray-50 rounded-2xl p-4">
+                    <div className="flex items-center 
+                                  justify-between mb-2">
+                      <div>
+                        <p className="font-semibold text-gray-900 
+                                    text-sm">
+                          {(review.profiles as any)?.full_name || 
+                          'O\'quvchi'}
+                        </p>
+                        {(review.profiles as any)?.grade && (
+                          <p className="text-xs text-gray-400">
+                            {(review.profiles as any).grade}-sinf
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex text-amber-400 text-sm">
+                        {'⭐'.repeat(review.rating)}
+                      </div>
+                    </div>
+                    {review.comment && (
+                      <p className="text-sm text-gray-600 
+                                  leading-relaxed">
+                        {review.comment}
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                {(!reviews || reviews.length === 0) && (
+                  <div className="text-center py-8 text-gray-400">
+                    <p className="text-3xl mb-2">💬</p>
+                    <p className="text-sm">
+                      Hali fikr bildirilmagan
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

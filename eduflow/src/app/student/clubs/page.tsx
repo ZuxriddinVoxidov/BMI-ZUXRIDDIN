@@ -1,4 +1,4 @@
-import StudentClubs from '@/components/dashboard/student/StudentClubs'
+import MyClubsWithReview from '@/components/dashboard/student/MyClubsWithReview'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -18,17 +18,15 @@ export default async function StudentClubsPage() {
   const { data: enrollments } = await supabase
     .from('enrollments')
     .select(`
-      *,
-      club:clubs(
-        *,
-        teacher:profiles!teacher_id(full_name)
-      )
+      id,
+      club_id,
+      clubs(id, name, category, image_url, 
+            profiles!teacher_id(full_name))
     `)
     .eq('student_id', profile.id)
-    .order('created_at', { ascending: false })
+    .eq('status', 'approved')
 
-  // Fetch existing reviews
-  const { data: reviews } = await supabase
+  const { data: myReviews } = await supabase
     .from('reviews')
     .select('club_id, rating, comment')
     .eq('student_id', profile.id)
@@ -36,9 +34,9 @@ export default async function StudentClubsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-extrabold text-gray-900">Mening To&apos;garaklarim</h1>
-      <StudentClubs
-        enrollments={(enrollments || []) as Record<string, unknown>[]}
-        existingReviews={(reviews || []) as Record<string, unknown>[]}
+      <MyClubsWithReview
+        enrollments={enrollments || []}
+        myReviews={myReviews || []}
       />
     </div>
   )

@@ -59,11 +59,11 @@ export default function StudentClubs({ enrollments, existingReviews }: StudentCl
   const handleReviewSubmit = () => {
     if (!reviewDialog || rating === 0) return
     startTransition(async () => {
-      const result = await submitReview({
-        club_id: reviewDialog.clubId,
+      const result = await submitReview(
+        reviewDialog.clubId,
         rating,
-        comment,
-      })
+        comment
+      )
       if (result.success) {
         showToast("Baholash yuborildi! +2 ball 🎉", 'success')
         setReviewDialog(null)

@@ -1,16 +1,16 @@
 'use server'
-
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-export async function submitReview(data: {
-  club_id: string
-  rating: number
+// Submit or update review
+export async function submitReview(
+  clubId: string,
+  rating: number,
   comment: string
-}) {
+) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { success: false, error: 'Foydalanuvchi topilmadi' }
+  if (!user) return { success: false, error: 'Unauthorized' }
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -18,27 +18,43 @@ export async function submitReview(data: {
     .eq('user_id', user.id)
     .single()
 
-  if (!profile) return { success: false, error: 'Profil topilmadi' }
+  if (!profile) return { success: false, error: 'Profile not found' }
 
+  // Upsert — if exists update, if not insert
   const { error } = await supabase
     .from('reviews')
     .upsert({
       student_id: profile.id,
-      club_id: data.club_id,
-      rating: data.rating,
-      comment: data.comment,
-    }, { onConflict: 'student_id,club_id' })
+      club_id: clubId,
+      rating,
+      comment,
+    }, {
+      onConflict: 'student_id,club_id'
+    })
 
   if (error) return { success: false, error: error.message }
 
-  // Add 2 points for leaving a review
-  await supabase.rpc('add_student_points', {
-    p_student_id: profile.id,
-    p_points: 2,
-  })
-
+  revalidatePath(`/clubs/${clubId}`)
   revalidatePath('/student/clubs')
-  revalidatePath('/')
-  revalidatePath('/director')
   return { success: true }
+}
+
+// Get reviews for a club
+export async function getClubReviews(clubId: string) {
+  const supabase = createClient()
+
+  const { data, error } = await supabase
+    .from('reviews')
+    .select(`
+      id,
+      rating,
+      comment,
+      created_at,
+      profiles!student_id(full_name, grade)
+    `)
+    .eq('club_id', clubId)
+    .order('created_at', { ascending: false })
+
+  if (error) return []
+  return data || []
 }

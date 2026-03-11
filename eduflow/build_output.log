@@ -1,0 +1,26 @@
+  ▲ Next.js 14.2.35
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./src/components/dashboard/student/MyClubsWithReview.tsx
+Error: 
+  [31mx[0m You're importing a component that needs useState. It only works in a Client Component but none of its parents are marked with "use client", so they're Server Components by default.
+  [31m|[0m Learn more: https://nextjs.org/docs/getting-started/react-essentials
+  [31m|[0m 
+  [31m|[0m 
+   ,-[[36;1;4mC:\Users\Zuxriddin\Desktop\bmi-zuxriddin\eduflow\src\components\dashboard\student\MyClubsWithReview.tsx[0m:1:1]
+ [2m1[0m | import { useState } from 'react'
+   : [31;1m         ^^^^^^^^[0m
+ [2m2[0m | import { submitReview } from '@/app/actions/reviews'
+ [2m3[0m | 
+ [2m4[0m | // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   `----
+
+Import trace for requested module:
+./src/components/dashboard/student/MyClubsWithReview.tsx
+./src/app/student/clubs/page.tsx
+
+
+> Build failed because of webpack errors
