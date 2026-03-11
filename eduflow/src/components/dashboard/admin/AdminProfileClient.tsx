@@ -94,7 +94,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
         </div>
 
         {/* Profile Row */}
-        <div className="px-8 pb-8">
+        <div className="px-8 pb-8 relative z-10">
           <div className="flex items-end gap-5 -mt-10 mb-6">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-black border-4 border-white shadow-lg flex-shrink-0">
               {initials}

@@ -16,6 +16,7 @@ interface Director {
 }
 
 export default function DirectorsManager({ directors }: { directors: Director[] }) {
+  const [directorsList, setDirectorsList] = useState(directors)
   const router = useRouter()
   const [editingDirector, setEditingDirector] = useState<Director | null>(null)
   const [showModal, setShowModal] = useState(false)
@@ -52,6 +53,16 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
     })
     if (result.success) {
       showToast('success', "Direktor ma'lumotlari saqlandi ✅")
+      setDirectorsList(prev => prev.map(d =>
+        d.id === editingDirector.id
+          ? {
+              ...d,
+              full_name: form.full_name,
+              phone: form.phone,
+              ...(form.new_password && { plain_password: form.new_password })
+            }
+          : d
+      ))
       setShowModal(false)
       router.refresh()
     } else {
@@ -65,6 +76,11 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
     const result = await toggleBlockDirector(director.id, !director.is_blocked)
     if (result.success) {
       showToast('success', director.is_blocked ? 'Direktor faollashtirildi ✅' : 'Direktor bloklandi 🚫')
+      setDirectorsList(prev => prev.map(d =>
+        d.id === director.id
+          ? { ...d, is_blocked: !d.is_blocked }
+          : d
+      ))
       setShowModal(false)
       router.refresh()
     } else {
@@ -86,19 +102,19 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Direktor boshqaruvi</h1>
-          <p className="text-gray-500 text-sm mt-1">{directors.length} ta direktor</p>
+          <p className="text-gray-500 text-sm mt-1">{directorsList.length} ta direktor</p>
         </div>
       </div>
 
       {/* Director Cards */}
-      {directors.length === 0 ? (
+      {directorsList.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
           <p className="text-5xl mb-4">🏫</p>
           <p className="font-medium">Hali direktor qo&apos;shilmagan</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {directors.map((director) => (
+          {directorsList.map((director) => (
             <div
               key={director.id}
               className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all"
@@ -115,7 +131,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
               {/* Content */}
               <div className="px-5 pb-5">
                 {/* Avatar */}
-                <div className="flex items-end gap-4 -mt-8 mb-4">
+                <div className="flex items-end gap-4 -mt-8 mb-4 relative z-10">
                   <div className="w-14 h-14 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-lg font-black border-4 border-white shadow-lg flex-shrink-0">
                     {director.full_name?.charAt(0) || 'D'}
                   </div>
