@@ -104,13 +104,10 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
               className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all"
             >
               {/* Banner */}
-              <div className="h-20 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 relative">
-                <div className="absolute inset-0 opacity-10"
-                  style={{
-                    backgroundImage: `radial-gradient(circle at 20% 50%, white 1px, transparent 1px)`,
-                    backgroundSize: '20px 20px'
-                  }}
-                />
+              <div className="h-20 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative overflow-hidden">
+                <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full"/>
+                <div className="absolute -bottom-6 -left-3 w-16 h-16 bg-white/10 rounded-full"/>
+                <div className="absolute top-2 right-16 w-8 h-8 bg-white/10 rounded-full"/>
                 {director.is_blocked && (
                   <span className="absolute top-3 right-3 px-2 py-1 bg-red-500 text-white text-xs rounded-full font-medium">
                     🚫 Bloklangan
