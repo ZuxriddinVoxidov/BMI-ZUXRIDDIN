@@ -202,33 +202,42 @@ export default function DashboardContent({
         >
           <h3 className="text-lg font-bold text-gray-900 mb-4">🏆 Top o&apos;quvchilar</h3>
           {topStudents.length === 0 ? (
-            <div className="py-8 text-center">
-              <span className="text-3xl">🏅</span>
-              <p className="text-sm text-gray-500 mt-2">Hali ball to&apos;planmagan</p>
+            <div className="text-center py-8 text-gray-400">
+              <p className="text-3xl mb-2">🏆</p>
+              <p className="text-sm">Hali reytingda hech kim yo&apos;q</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {topStudents.map((s, i) => {
-                const student = s.student as Record<string, unknown> | null
-                return (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-amber-50/30">
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{medals[i] || '🎖️'}</span>
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {(student?.full_name as string) || "O'quvchi"}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {student?.grade ? `${student.grade}-sinf` : ""}
-                        </p>
-                      </div>
-                    </div>
-                    <span className="text-sm font-bold text-amber-600">
-                      {s.total_points as number} ball
-                    </span>
+              {topStudents.map((s, i) => (
+                <div key={(s as Record<string, unknown>).student_id as string || i}
+                  className={`flex items-center gap-3 p-3 rounded-xl ${
+                    i === 0 ? 'bg-amber-50 border border-amber-100'
+                    : i === 1 ? 'bg-gray-50 border border-gray-100'
+                    : i === 2 ? 'bg-orange-50 border border-orange-100'
+                    : 'hover:bg-gray-50'
+                  }`}>
+                  <span className="text-xl w-8 text-center">
+                    {i < 3 ? medals[i] : (
+                      <span className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 text-xs font-bold inline-flex items-center justify-center">
+                        {i + 1}
+                      </span>
+                    )}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm truncate">
+                      {(s as Record<string, unknown>).full_name as string || "Noma'lum"}
+                    </p>
+                    {!!(s as Record<string, unknown>).grade ? (
+                      <p className="text-xs text-gray-400">
+                        {String((s as Record<string, unknown>).grade)}-sinf
+                      </p>
+                    ) : null}
                   </div>
-                )
-              })}
+                  <span className="font-bold text-amber-600 text-sm whitespace-nowrap">
+                    {(s as Record<string, unknown>).total_points as number} ball
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </motion.div>

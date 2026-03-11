@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 // ─── Password Strength ──────────────────────────────────────
 function getPasswordStrength(p: string) {
@@ -91,6 +91,20 @@ export default function LoginPage() {
   // ── Shared state ────────────────────────────────────────
   const [activeTab, setActiveTab] = useState('login')
   const [loginRole, setLoginRole] = useState<'student' | 'teacher'>('student')
+
+  // Real stats from DB
+  const [stats, setStats] = useState({ students: 0, clubs: 0, schools: 0 })
+  useEffect(() => {
+    async function loadStats() {
+      const [s1, s2, s3] = await Promise.all([
+        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
+        supabase.from('clubs').select('*', { count: 'exact', head: true }).eq('is_published', true),
+        supabase.from('schools').select('*', { count: 'exact', head: true }),
+      ])
+      setStats({ students: s1.count || 0, clubs: s2.count || 0, schools: s3.count || 0 })
+    }
+    loadStats()
+  }, [supabase])
 
   // ── Login state ─────────────────────────────────────────
   const [loginEmail, setLoginEmail] = useState('')
@@ -298,9 +312,9 @@ export default function LoginPage() {
           className="relative z-10 flex items-center gap-6"
         >
           {[
-            { value: "500+", label: "O'quvchi" },
-            { value: '20+', label: "To'garak" },
-            { value: '46', label: 'Maktab' },
+            { value: `${stats.students}+`, label: "O'quvchi" },
+            { value: `${stats.clubs}+`, label: "To'garak" },
+            { value: `${stats.schools}`, label: 'Maktab' },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <p className="text-xl font-bold text-white">{s.value}</p>
@@ -520,16 +534,6 @@ export default function LoginPage() {
                   exit={{ opacity: 0, x: -10 }}
                   transition={{ duration: 0.25 }}
                 >
-                  {/* Info banner */}
-                  <div className="flex items-center gap-3 bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-6">
-                    <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <GraduationCap size={22} className="text-indigo-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">O&apos;quvchi sifatida ro&apos;yxatdan o&apos;ting</p>
-                      <p className="text-xs text-gray-500">O&apos;qituvchi va boshqa rollar admin tomonidan tayinlanadi</p>
-                    </div>
-                  </div>
 
                   {/* Success message */}
                   <AnimatePresence>

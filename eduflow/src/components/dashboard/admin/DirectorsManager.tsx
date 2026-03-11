@@ -101,30 +101,69 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
           {directors.map((director) => (
             <div
               key={director.id}
-              className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-all"
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all"
             >
-              <div className="h-24 bg-gradient-to-r from-slate-600 to-slate-800 relative">
+              {/* Banner */}
+              <div className="h-20 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-800 relative">
+                <div className="absolute inset-0 opacity-10"
+                  style={{
+                    backgroundImage: `radial-gradient(circle at 20% 50%, white 1px, transparent 1px)`,
+                    backgroundSize: '20px 20px'
+                  }}
+                />
                 {director.is_blocked && (
                   <span className="absolute top-3 right-3 px-2 py-1 bg-red-500 text-white text-xs rounded-full font-medium">
-                    Bloklangan
+                    🚫 Bloklangan
                   </span>
                 )}
               </div>
-              <div className="-mt-10 px-6 pb-6">
-                <div className="w-20 h-20 rounded-full bg-slate-700 flex items-center justify-center text-white text-2xl font-bold mb-4 border-4 border-white shadow">
-                  {director.full_name?.charAt(0) || 'D'}
+
+              {/* Content */}
+              <div className="px-5 pb-5">
+                {/* Avatar */}
+                <div className="flex items-end gap-4 -mt-8 mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl font-black border-4 border-white shadow-lg flex-shrink-0">
+                    {director.full_name?.charAt(0) || 'D'}
+                  </div>
+                  <div className="pb-1">
+                    <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                      director.is_blocked
+                        ? 'bg-red-100 text-red-600'
+                        : 'bg-green-100 text-green-600'
+                    }`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${
+                        director.is_blocked ? 'bg-red-500' : 'bg-green-500'
+                      }`}/>
+                      {director.is_blocked ? 'Bloklangan' : 'Faol'}
+                    </div>
+                  </div>
                 </div>
-                <h3 className="font-bold text-gray-900 text-lg">{director.full_name}</h3>
-                <p className="text-indigo-600 text-sm font-medium mb-1">Direktor</p>
-                <p className="text-gray-500 text-sm mb-4">{director.email}</p>
-                {director.phone && <p className="text-gray-500 text-sm mb-4">📞 {director.phone}</p>}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className={`w-2 h-2 rounded-full ${director.is_blocked ? 'bg-red-500' : 'bg-green-500'}`} />
-                  <span className="text-sm text-gray-600">{director.is_blocked ? 'Bloklangan' : 'Faol'}</span>
+
+                {/* Info */}
+                <h3 className="font-bold text-gray-900 text-lg leading-tight mb-1">
+                  {director.full_name}
+                </h3>
+                <p className="text-indigo-600 text-sm font-semibold mb-3">
+                  🏫 Direktor
+                </p>
+
+                <div className="space-y-1.5 mb-4">
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <span>📧</span>
+                    <span className="truncate">{director.email}</span>
+                  </div>
+                  {director.phone && (
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <span>📞</span>
+                      <span>{director.phone}</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Button */}
                 <button
                   onClick={() => openEdit(director)}
-                  className="w-full py-2.5 border-2 border-indigo-200 text-indigo-600 rounded-xl text-sm font-semibold hover:bg-indigo-50 transition-all"
+                  className="w-full py-2.5 rounded-xl bg-indigo-50 text-indigo-600 text-sm font-semibold hover:bg-indigo-100 border border-indigo-100 transition-all flex items-center justify-center gap-2"
                 >
                   ✏️ Tahrirlash
                 </button>

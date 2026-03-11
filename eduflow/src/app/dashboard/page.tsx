@@ -29,7 +29,6 @@ export default async function DashboardPage() {
     { count: thisMonthEnrollments },
     { data: recentApplications },
     { data: recentClubs },
-    { data: topStudents },
   ] = await Promise.all([
     supabase.from('profiles')
       .select('*', { count: 'exact', head: true })
@@ -60,10 +59,30 @@ export default async function DashboardPage() {
       .select('*, teacher:profiles!teacher_id(full_name)')
       .eq('school_id', schoolId)
       .order('created_at', { ascending: false }).limit(4),
-    supabase.from('student_points')
-      .select('total_points, student:profiles!student_id(full_name, grade)')
-      .order('total_points', { ascending: false }).limit(5),
   ])
+
+  // Fetch top students separately (two-step for reliability)
+  const { data: pointsData } = await supabase
+    .from('student_points')
+    .select('student_id, total_points')
+    .order('total_points', { ascending: false })
+    .limit(5)
+
+  const studentIds = pointsData?.map(p => p.student_id) || []
+
+  const { data: studentProfiles } = studentIds.length > 0
+    ? await supabase
+        .from('profiles')
+        .select('id, full_name, grade')
+        .in('id', studentIds)
+    : { data: [] as { id: string; full_name: string; grade: string }[] }
+
+  const topStudents = (pointsData || []).map(p => ({
+    student_id: p.student_id,
+    total_points: p.total_points,
+    full_name: studentProfiles?.find(s => s.id === p.student_id)?.full_name || 'Noma\'lum',
+    grade: studentProfiles?.find(s => s.id === p.student_id)?.grade,
+  }))
 
   return (
     <DashboardContent

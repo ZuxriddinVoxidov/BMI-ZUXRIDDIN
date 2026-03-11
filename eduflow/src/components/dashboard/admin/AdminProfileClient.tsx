@@ -1,7 +1,7 @@
 'use client'
 
 import { updateAdminProfile } from '@/app/actions/profile'
-import { Copy, Eye, EyeOff, Shield, User, X } from 'lucide-react'
+import { Copy, Eye, EyeOff, X } from 'lucide-react'
 import { useState, useTransition } from 'react'
 
 interface Props {
@@ -85,66 +85,85 @@ export default function AdminProfileClient({ profile, email }: Props) {
       )}
 
       {/* Profile Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {/* Banner */}
-        <div className="h-32 rounded-t-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600" />
-
-        {/* Profile Row */}
-        <div className="px-8 -mt-10 flex items-end gap-5 pb-4">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-500 flex items-center justify-center text-white font-black text-2xl shadow-lg border-4 border-white flex-shrink-0">
-            {initials}
-          </div>
-          <div className="pb-1">
-            <h2 className="text-xl font-bold text-gray-900">{profile.full_name}</h2>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">
-                <Shield size={10} /> {roleLabel}
-              </span>
-              {profile.school?.name && (
-                <span className="text-xs text-gray-500">📍 {profile.school.name}</span>
-              )}
-            </div>
-          </div>
+        <div className="h-36 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative overflow-hidden">
+          <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"/>
+          <div className="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"/>
+          <div className="absolute top-4 right-20 w-12 h-12 bg-white/10 rounded-full"/>
         </div>
 
-        {/* Info Grid */}
-        <div className="p-8 pt-4 grid md:grid-cols-2 gap-6">
-          {/* Personal Info */}
-          <div className="bg-gray-50 rounded-2xl p-5">
-            <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-              <User size={14} /> 👤 Shaxsiy ma&apos;lumotlar
-            </h3>
-            {infoRow("To'liq ism", profile.full_name)}
-            {infoRow('Telefon', profile.phone || '—')}
-            {infoRow('Maktab', profile.school?.name || '—')}
-            {infoRow('Rol', (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-600">
-                {roleLabel}
-              </span>
-            ))}
+        {/* Profile Row */}
+        <div className="px-8 pb-8">
+          <div className="flex items-end gap-5 -mt-10 mb-6">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-black border-4 border-white shadow-lg flex-shrink-0">
+              {initials}
+            </div>
+            <div className="pb-1">
+              <h2 className="text-xl font-bold text-gray-900">{profile.full_name}</h2>
+              <div className="flex items-center gap-3 mt-1">
+                <span className="text-sm text-indigo-600 font-medium">🛡️ {roleLabel}</span>
+                {profile.school?.name && (
+                  <>
+                    <span className="text-gray-300">•</span>
+                    <span className="text-sm text-gray-500">📍 {profile.school.name}</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Login Info */}
-          <div className="bg-gray-50 rounded-2xl p-5">
-            <h3 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-              <Shield size={14} /> 🔐 Tizimga kirish
-            </h3>
-            {infoRow('Email', <span className="font-mono text-xs">{email}</span>)}
-            <div className="flex justify-between items-center py-3">
-              <span className="text-sm text-gray-500">Parol</span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-mono text-gray-800">
-                  {showPassword ? (profile.plain_password || '—') : '••••••••'}
-                </span>
-                <button onClick={() => setShowPassword(!showPassword)} className="text-gray-400 hover:text-gray-600 p-0.5">
-                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-                {profile.plain_password && (
-                  <button onClick={() => handleCopy(profile.plain_password!)} className="text-gray-400 hover:text-indigo-600 p-0.5">
-                    <Copy size={14} />
-                    {copied && <span className="text-xs text-emerald-500 ml-1">✓</span>}
-                  </button>
-                )}
+          {/* Info Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Personal Info Card */}
+            <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                👤 Shaxsiy ma&apos;lumotlar
+              </h3>
+              <div className="space-y-3">
+                {[
+                  { label: "To'liq ism", value: profile.full_name },
+                  { label: 'Telefon', value: profile.phone || '—' },
+                  { label: 'Maktab', value: profile.school?.name || '—' },
+                  { label: 'Rol', value: roleLabel, highlight: true },
+                ].map(item => (
+                  <div key={item.label} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                    <span className="text-sm text-gray-500">{item.label}</span>
+                    <span className={`text-sm font-medium ${'highlight' in item && item.highlight ? 'text-indigo-600' : 'text-gray-900'}`}>
+                      {item.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Login Info Card */}
+            <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                🔐 Tizimga kirish
+              </h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-sm text-gray-500">Email</span>
+                  <span className="text-sm font-medium text-gray-900 truncate max-w-[160px]">{email}</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-sm text-gray-500">Parol</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-sm">
+                      {showPassword ? (profile.plain_password || '—') : '••••••••'}
+                    </span>
+                    <button onClick={() => setShowPassword(!showPassword)} className="text-gray-400 hover:text-gray-600">
+                      {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                    {profile.plain_password && (
+                      <button onClick={() => handleCopy(profile.plain_password!)} className="text-gray-400 hover:text-indigo-600">
+                        <Copy size={14} />
+                        {copied && <span className="text-xs text-emerald-500 ml-1">✓</span>}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
