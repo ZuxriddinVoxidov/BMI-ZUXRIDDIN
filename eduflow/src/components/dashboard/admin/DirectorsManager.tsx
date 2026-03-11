@@ -24,6 +24,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
   const [saving, setSaving] = useState(false)
   const [blocking, setBlocking] = useState(false)
   const [showPwd, setShowPwd] = useState(false)
+  const [showNewPwd, setShowNewPwd] = useState(false)
   const [toastMsg, setToastMsg] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   function showToast(type: 'success' | 'error', message: string) {
@@ -251,13 +252,22 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1 block">Yangi parol (ixtiyoriy)</label>
-                  <input
-                    value={form.new_password}
-                    onChange={e => setForm(p => ({ ...p, new_password: e.target.value }))}
-                    type="password"
-                    placeholder="Kamida 8 belgi..."
-                    className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400"
-                  />
+                  <div className="relative">
+                    <input
+                      value={form.new_password}
+                      onChange={e => setForm(p => ({ ...p, new_password: e.target.value }))}
+                      type={showNewPwd ? 'text' : 'password'}
+                      placeholder="Kamida 8 belgi..."
+                      className="w-full border rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPwd(!showNewPwd)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showNewPwd ? '🙈' : '👁'}
+                    </button>
+                  </div>
                 </div>
               </div>
 

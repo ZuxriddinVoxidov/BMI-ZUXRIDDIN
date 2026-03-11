@@ -1,7 +1,17 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseAdmin } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
+
+function getAdminClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (!serviceRoleKey || !supabaseUrl) return null
+  return createSupabaseAdmin(supabaseUrl, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  })
+}
 
 export async function addTeacher(data: {
   full_name: string
@@ -9,43 +19,79 @@ export async function addTeacher(data: {
   password: string
   school_id: string
 }) {
-  const supabase = createClient()
+  // Try admin client first (skips email confirmation)
+  const adminClient = getAdminClient()
 
-  // Check if email already exists (signUp will handle duplicate emails)  // Use signUp to create the auth user (works with anon key)
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email: data.email,
-    password: data.password,
-    options: {
-      data: {
+  if (adminClient) {
+    const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
+      email: data.email,
+      password: data.password,
+      email_confirm: true,
+      user_metadata: {
         full_name: data.full_name,
         role: 'teacher',
       },
-    },
-  })
-
-  if (authError) return { success: false, error: authError.message }
-  if (!authData.user) return { success: false, error: "Foydalanuvchi yaratilmadi" }
-
-  // Update profile
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .update({
-      role: 'teacher',
-      full_name: data.full_name,
-      school_id: data.school_id,
-      plain_password: data.password,
     })
-    .eq('user_id', authData.user.id)
 
-  if (profileError) {
-    // If profile doesn't exist yet (trigger might not have fired), insert it
-    await supabase.from('profiles').insert({
-      user_id: authData.user.id,
-      role: 'teacher',
-      full_name: data.full_name,
-      school_id: data.school_id,
-      plain_password: data.password,
+    if (authError) return { success: false, error: authError.message }
+    if (!authData.user) return { success: false, error: "Foydalanuvchi yaratilmadi" }
+
+    const supabase = createClient()
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        role: 'teacher',
+        full_name: data.full_name,
+        school_id: data.school_id,
+        plain_password: data.password,
+      })
+      .eq('user_id', authData.user.id)
+
+    if (profileError) {
+      await supabase.from('profiles').insert({
+        user_id: authData.user.id,
+        role: 'teacher',
+        full_name: data.full_name,
+        school_id: data.school_id,
+        plain_password: data.password,
+      })
+    }
+  } else {
+    // Fallback: use signUp (may require email confirmation)
+    const supabase = createClient()
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: {
+        data: {
+          full_name: data.full_name,
+          role: 'teacher',
+        },
+      },
     })
+
+    if (authError) return { success: false, error: authError.message }
+    if (!authData.user) return { success: false, error: "Foydalanuvchi yaratilmadi" }
+
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({
+        role: 'teacher',
+        full_name: data.full_name,
+        school_id: data.school_id,
+        plain_password: data.password,
+      })
+      .eq('user_id', authData.user.id)
+
+    if (profileError) {
+      await supabase.from('profiles').insert({
+        user_id: authData.user.id,
+        role: 'teacher',
+        full_name: data.full_name,
+        school_id: data.school_id,
+        plain_password: data.password,
+      })
+    }
   }
 
   revalidatePath('/dashboard/teachers')
@@ -78,6 +124,7 @@ export async function deleteTeacher(profileId: string) {
 
 export async function updateTeacherInfo(data: {
   profile_id: string
+  user_id?: string
   full_name: string
   phone?: string
   teacher_bio?: string
@@ -96,6 +143,18 @@ export async function updateTeacherInfo(data: {
     .eq('id', data.profile_id)
 
   if (error) return { success: false, error: error.message }
+
+  // Update Supabase Auth password
+  if (data.new_password && data.new_password.length >= 6 && data.user_id) {
+    const adminClient = getAdminClient()
+    if (adminClient) {
+      const { error: authError } = await adminClient.auth.admin.updateUserById(data.user_id, {
+        password: data.new_password
+      })
+      if (authError) console.error('Auth password update failed:', authError.message)
+    }
+  }
+
   revalidatePath('/dashboard/teachers')
   revalidatePath('/dashboard')
   return { success: true }

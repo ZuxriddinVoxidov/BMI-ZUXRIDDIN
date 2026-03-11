@@ -1,6 +1,16 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createSupabaseAdmin } from '@supabase/supabase-js'
 import { revalidatePath } from 'next/cache'
+
+function getAdminClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (!serviceRoleKey || !supabaseUrl) return null
+  return createSupabaseAdmin(supabaseUrl, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  })
+}
 
 export async function updateDirectorInfo(
   directorId: string,
@@ -27,6 +37,17 @@ export async function updateDirectorInfo(
     .eq('id', directorId)
 
   if (error) return { success: false, error: error.message }
+
+  // Update Supabase Auth password
+  if (data.new_password && data.new_password.length >= 6) {
+    const adminClient = getAdminClient()
+    if (adminClient) {
+      const { error: authError } = await adminClient.auth.admin.updateUserById(userId, {
+        password: data.new_password
+      })
+      if (authError) console.error('Auth password update failed:', authError.message)
+    }
+  }
 
   revalidatePath('/dashboard/directors')
   return { success: true }
