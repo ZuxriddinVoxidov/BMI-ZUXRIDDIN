@@ -75,14 +75,21 @@ export default async function DashboardPage() {
         .from('profiles')
         .select('id, full_name, grade')
         .in('id', studentIds)
-    : { data: [] as { id: string; full_name: string; grade: string }[] }
+        .eq('role', 'student')
+    : { data: [] }
 
-  const topStudents = (pointsData || []).map(p => ({
-    student_id: p.student_id,
-    total_points: p.total_points,
-    full_name: studentProfiles?.find(s => s.id === p.student_id)?.full_name || 'Noma\'lum',
-    grade: studentProfiles?.find(s => s.id === p.student_id)?.grade,
-  }))
+  const topStudents = (pointsData || [])
+    .map(p => ({
+      student_id: p.student_id,
+      total_points: p.total_points,
+      full_name: studentProfiles?.find(
+        s => s.id === p.student_id
+      )?.full_name || null,
+      grade: studentProfiles?.find(
+        s => s.id === p.student_id
+      )?.grade || null,
+    }))
+    .filter(s => s.full_name !== null)
 
   return (
     <DashboardContent
