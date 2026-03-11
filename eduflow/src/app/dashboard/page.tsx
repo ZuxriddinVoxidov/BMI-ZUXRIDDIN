@@ -61,27 +61,27 @@ export default async function DashboardPage() {
       .order('created_at', { ascending: false }).limit(4),
   ])
 
-  // Fetch top students separately (two-step for reliability)
-  const { data: pointsData } = await supabase
-    .from('student_points')
-    .select('student_id, total_points')
-    .order('total_points', { ascending: false })
+  // Fetch top students (single join query)
+  const { data: topStudents } = await supabase
+    .from('profiles')
+    .select(`
+      id,
+      full_name,
+      grade,
+      student_points!inner(total_points)
+    `)
+    .eq('role', 'student')
+    .order('student_points(total_points)', {
+      ascending: false
+    })
     .limit(5)
 
-  const studentIds = pointsData?.map(p => p.student_id) || []
-
-  const { data: studentProfiles } = studentIds.length > 0
-    ? await supabase
-        .from('profiles')
-        .select('id, full_name, grade')
-        .in('id', studentIds)
-    : { data: [] as { id: string; full_name: string; grade: string }[] }
-
-  const topStudents = (pointsData || []).map(p => ({
-    student_id: p.student_id,
-    total_points: p.total_points,
-    full_name: studentProfiles?.find(s => s.id === p.student_id)?.full_name || 'Noma\'lum',
-    grade: studentProfiles?.find(s => s.id === p.student_id)?.grade,
+  const topStudentsFormatted = (topStudents || []).map(s => ({
+    student_id: s.id,
+    full_name: s.full_name,
+    grade: s.grade,
+    total_points: (s.student_points as any)?.[0]
+      ?.total_points ?? 0,
   }))
 
   return (
@@ -95,7 +95,7 @@ export default async function DashboardPage() {
       thisMonthEnrollments={thisMonthEnrollments || 0}
       recentApplications={recentApplications || []}
       recentClubs={recentClubs || []}
-      topStudents={topStudents || []}
+      topStudents={topStudentsFormatted}
       adminName={adminProfile.full_name}
     />
   )
