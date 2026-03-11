@@ -71,6 +71,7 @@ export default async function DashboardPage() {
       student_points!inner(total_points)
     `)
     .eq('role', 'student')
+    .eq('school_id', schoolId)
     .order('student_points(total_points)', {
       ascending: false
     })
