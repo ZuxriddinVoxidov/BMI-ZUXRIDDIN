@@ -5,8 +5,8 @@ import DataLoader from '@/components/ui/DataLoader'
 import { getStudentLevel } from '@/lib/levels'
 import { GRADES } from '@/lib/utils'
 import { motion } from 'framer-motion'
-import { Copy, Edit3, Eye, EyeOff, Search, ShieldCheck, ShieldX, Users, X } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { Copy, Edit3, Eye, EyeOff, Search, Users, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface Student {
   id: string
@@ -33,8 +33,6 @@ export default function StudentsManager({ students }: { students: Student[] }) {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
   const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [, startTransition] = useTransition()
-  const [blockingId, setBlockingId] = useState<string | null>(null)
   const [dataReady, setDataReady] = useState(false)
   const [showModalPwd, setShowModalPwd] = useState(false)
   const [modalBlocking, setModalBlocking] = useState(false)
@@ -133,15 +131,6 @@ export default function StudentsManager({ students }: { students: Student[] }) {
     navigator.clipboard.writeText(text)
     setCopiedId(id)
     setTimeout(() => setCopiedId(null), 1500)
-  }
-
-  async function handleToggleBlock(student: Student) {
-    setBlockingId(student.id)
-    startTransition(async () => {
-      const { toggleBlockStudent } = await import('@/app/actions/admin-students')
-      await toggleBlockStudent(student.id, !student.is_blocked)
-      setBlockingId(null)
-    })
   }
 
   return (
@@ -258,7 +247,7 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                           })}
                           className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-sm hover:bg-red-100 border border-red-200 transition-colors flex items-center gap-1"
                         >
-                          🗑️ O'chirish
+                          🗑️ O&apos;chirish
                         </button>
                       </div>
                     </td>
@@ -419,9 +408,9 @@ export default function StudentsManager({ students }: { students: Student[] }) {
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
             <div className="text-center mb-5">
               <div className="text-5xl mb-3">🗑️</div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">O'chirishni tasdiqlang</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">O&apos;chirishni tasdiqlang</h3>
               <p className="text-gray-500 text-sm">
-                <span className="font-semibold text-gray-700">{deleteTarget.name}</span> ni haqiqatan ham o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.
+                <span className="font-semibold text-gray-700">{deleteTarget.name}</span> ni haqiqatan ham o&apos;chirmoqchimisiz? Bu amalni qaytarib bo&apos;lmaydi.
               </p>
             </div>
             <div className="flex gap-3">

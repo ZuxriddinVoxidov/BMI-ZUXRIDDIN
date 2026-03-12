@@ -3,8 +3,8 @@
 import { addTeacher, toggleBlockTeacher, updateTeacherInfo, deleteTeacher } from '@/app/actions/teachers'
 import DataLoader from '@/components/ui/DataLoader'
 import { motion } from 'framer-motion'
-import { Copy, Eye, EyeOff, Search, ShieldCheck, ShieldX, UserPlus, Users } from 'lucide-react'
-import { useEffect, useState, useTransition } from 'react'
+import { Copy, Eye, EyeOff, Search, UserPlus, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface Teacher {
   id: string
@@ -24,7 +24,6 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
   const [search, setSearch] = useState('')
   const [showAddModal, setShowAddModal] = useState(false)
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
-  const [isPending, startTransition] = useTransition()
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
   // Add teacher form
@@ -137,12 +136,6 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
     navigator.clipboard.writeText(text)
     setCopiedId(id)
     setTimeout(() => setCopiedId(null), 1500)
-  }
-
-  function handleToggleBlock(profileId: string, block: boolean) {
-    startTransition(async () => {
-      await toggleBlockTeacher(profileId, block)
-    })
   }
 
   return (
@@ -262,7 +255,7 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                           })}
                           className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-sm hover:bg-red-100 border border-red-200 transition-colors flex items-center gap-1"
                         >
-                          🗑️ O'chirish
+                          🗑️ O&apos;chirish
                         </button>
                       </div>
                     </td>
@@ -442,9 +435,9 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
             <div className="text-center mb-5">
               <div className="text-5xl mb-3">🗑️</div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">O'chirishni tasdiqlang</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">O&apos;chirishni tasdiqlang</h3>
               <p className="text-gray-500 text-sm">
-                <span className="font-semibold text-gray-700">{deleteTarget.name}</span> ni haqiqatan ham o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.
+                <span className="font-semibold text-gray-700">{deleteTarget.name}</span> ni haqiqatan ham o&apos;chirmoqchimisiz? Bu amalni qaytarib bo&apos;lmaydi.
               </p>
             </div>
             <div className="flex gap-3">
