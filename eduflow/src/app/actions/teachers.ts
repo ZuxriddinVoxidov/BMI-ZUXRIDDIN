@@ -11,6 +11,9 @@ export async function addTeacher(data: {
 }) {
   const supabase = createAdminClient()
 
+  let userId: string
+
+  // Try to create auth user
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email: data.email,
     password: data.password,
@@ -21,22 +24,44 @@ export async function addTeacher(data: {
     },
   })
 
-  if (authError) return { success: false, error: authError.message }
-  if (!authData.user) return { success: false, error: "Foydalanuvchi yaratilmadi" }
+  if (authError) {
+    // If user already exists, find them and update
+    if (authError.message.includes('already been registered')) {
+      const { data: users } = await supabase.auth.admin.listUsers()
+      const existingUser = users?.users?.find(u => u.email === data.email)
+      if (!existingUser) return { success: false, error: 'Foydalanuvchi topilmadi' }
+      userId = existingUser.id
 
-  const { error: profileError } = await supabase
+      // Update password
+      await supabase.auth.admin.updateUserById(userId, { password: data.password })
+    } else {
+      return { success: false, error: authError.message }
+    }
+  } else {
+    if (!authData.user) return { success: false, error: "Foydalanuvchi yaratilmadi" }
+    userId = authData.user.id
+  }
+
+  // Upsert profile — update if exists, insert if not
+  const { data: existingProfile } = await supabase
     .from('profiles')
-    .update({
-      role: 'teacher',
-      full_name: data.full_name,
-      school_id: data.school_id,
-      plain_password: data.password,
-    })
-    .eq('user_id', authData.user.id)
+    .select('id')
+    .eq('user_id', userId)
+    .single()
 
-  if (profileError) {
+  if (existingProfile) {
+    await supabase
+      .from('profiles')
+      .update({
+        role: 'teacher',
+        full_name: data.full_name,
+        school_id: data.school_id,
+        plain_password: data.password,
+      })
+      .eq('user_id', userId)
+  } else {
     await supabase.from('profiles').insert({
-      user_id: authData.user.id,
+      user_id: userId,
       role: 'teacher',
       full_name: data.full_name,
       school_id: data.school_id,
