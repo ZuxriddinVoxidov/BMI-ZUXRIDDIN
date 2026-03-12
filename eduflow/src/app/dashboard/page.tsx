@@ -85,6 +85,21 @@ export default async function DashboardPage() {
       ?.total_points ?? 0,
   }))
 
+  const daysUz = ['yakshanba', 'dushanba', 'seshanba', 'chorshanba', 'payshanba', 'juma', 'shanba']
+  const dayNameUz = daysUz[new Date().getDay()]
+
+  const { data: allClubs } = await supabase.from('clubs').select('id, name, schedule, teacher:profiles!teacher_id(full_name)').eq('school_id', schoolId)
+  const clubsToday = (allClubs || []).filter(c => c.schedule?.toLowerCase().includes(dayNameUz))
+  const { data: todayAttendance } = await supabase.from('attendance').select('club_id').eq('date', today)
+  const attendanceClubIds = new Set((todayAttendance || []).map(a => a.club_id))
+  
+  const missedAttendanceClubs = clubsToday.filter(c => !attendanceClubIds.has(c.id)).map(c => ({
+    id: c.id,
+    name: c.name,
+    schedule: c.schedule,
+    teacher_name: (c.teacher as unknown as { full_name: string })?.full_name || 'Noma\'lum',
+  }))
+
   return (
     <DashboardContent
       studentsCount={studentsCount || 0}
@@ -98,6 +113,7 @@ export default async function DashboardPage() {
       recentClubs={recentClubs || []}
       topStudents={topStudentsFormatted}
       adminName={adminProfile.full_name}
+      missedAttendanceClubs={missedAttendanceClubs}
     />
   )
 }

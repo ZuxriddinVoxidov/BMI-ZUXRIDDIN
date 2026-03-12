@@ -22,6 +22,8 @@ export default async function StudentLayout({
     .eq('user_id', user.id)
     .single()
 
+  if (profile?.is_blocked) redirect('/login?error=blocked')
+
   const fullName =
     profile?.full_name || user.user_metadata?.full_name || "O'quvchi"
 

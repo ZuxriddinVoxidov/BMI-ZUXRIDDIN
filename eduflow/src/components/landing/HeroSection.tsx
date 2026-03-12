@@ -1,9 +1,10 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Play } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface HeroSectionProps {
   studentsCount: number
@@ -11,24 +12,47 @@ interface HeroSectionProps {
   avgRating: string
 }
 
+const BACKGROUND_IMAGES = [
+  '/school-bg-new.jpg',
+  '/school-bg.jpg',
+]
+
+// 1 hour in milliseconds
+const SLIDESHOW_INTERVAL = 60 * 60 * 1000
+
 export default function HeroSection({ studentsCount, clubsCount, avgRating }: HeroSectionProps) {
+  const [currentBgIndex, setCurrentBgIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentBgIndex((prevIndex) => (prevIndex + 1) % BACKGROUND_IMAGES.length)
+    }, SLIDESHOW_INTERVAL)
+
+    return () => clearInterval(timer)
+  }, [])
+
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 bg-indigo-900"
     >
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-blue-500 to-cyan-400" />
-      <div
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1920&q=80')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/80 via-blue-500/80 to-cyan-400/80" />
+      {/* Background Slideshow */}
+      <AnimatePresence mode="popLayout">
+        <motion.div
+          key={currentBgIndex}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5, ease: 'easeInOut' }}
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url('${BACKGROUND_IMAGES[currentBgIndex]}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+      </AnimatePresence>
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/60 via-blue-900/40 to-cyan-800/60 pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">

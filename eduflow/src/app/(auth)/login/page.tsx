@@ -92,20 +92,6 @@ export default function LoginPage() {
   const [activeTab, setActiveTab] = useState('login')
   const [loginRole, setLoginRole] = useState<'student' | 'teacher'>('student')
 
-  // Real stats from DB
-  const [stats, setStats] = useState({ students: 0, clubs: 0, schools: 0 })
-  useEffect(() => {
-    async function loadStats() {
-      const [s1, s2, s3] = await Promise.all([
-        supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
-        supabase.from('clubs').select('*', { count: 'exact', head: true }).eq('is_published', true),
-        supabase.from('schools').select('*', { count: 'exact', head: true }),
-      ])
-      setStats({ students: s1.count || 0, clubs: s2.count || 0, schools: s3.count || 0 })
-    }
-    loadStats()
-  }, [supabase])
-
   // ── Login state ─────────────────────────────────────────
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
@@ -178,9 +164,16 @@ export default function LoginPage() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, is_blocked')
         .eq('user_id', user.id)
         .single()
+
+      if (profile?.is_blocked) {
+        await supabase.auth.signOut()
+        setLoginLoading(false)
+        setLoginError('Akkauntingiz faollashtirilmagan yoki bloklangan. Iltimos admin bilan bog\'laning.')
+        return
+      }
 
       const role = profile?.role || 'student'
       const routes: Record<string, string> = {
@@ -303,25 +296,6 @@ export default function LoginPage() {
             <p className="text-white/50 text-sm">— Benjamin Franklin</p>
           </motion.div>
         </div>
-
-        {/* Stats */}
-        <motion.div
-          initial={{ y: 30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.7 }}
-          className="relative z-10 flex items-center gap-6"
-        >
-          {[
-            { value: `${stats.students}+`, label: "O'quvchi" },
-            { value: `${stats.clubs}+`, label: "To'garak" },
-            { value: `${stats.schools}`, label: 'Maktab' },
-          ].map((s) => (
-            <div key={s.label} className="text-center">
-              <p className="text-xl font-bold text-white">{s.value}</p>
-              <p className="text-white/50 text-xs">{s.label}</p>
-            </div>
-          ))}
-        </motion.div>
       </motion.div>
 
       {/* ╔═══════════════════════════════════════╗ */}

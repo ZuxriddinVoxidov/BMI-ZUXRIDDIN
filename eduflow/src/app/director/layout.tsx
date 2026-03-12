@@ -15,7 +15,7 @@ export default async function DirectorLayout({ children }: { children: React.Rea
     .eq('user_id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'director') redirect('/login')
+  if (!profile || profile.role !== 'director' || profile.is_blocked) redirect('/login?error=blocked')
 
   const fullName = profile.full_name || 'Direktor'
   const initials = fullName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)

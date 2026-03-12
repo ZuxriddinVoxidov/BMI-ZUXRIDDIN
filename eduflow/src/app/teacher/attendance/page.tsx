@@ -132,6 +132,20 @@ export default function AttendancePage() {
     )
   }
 
+  const selectedClubData = clubs.find(c => c.id === selectedClub)
+  let isAllowedToTakeAttendance = true
+  let restrictionMessage = ''
+
+  if (selectedClubData && selectedClubData.schedule) {
+    const daysUz = ['yakshanba', 'dushanba', 'seshanba', 'chorshanba', 'payshanba', 'juma', 'shanba']
+    const dateObj = new Date(selectedDate)
+    const dayNameUz = daysUz[dateObj.getDay()]
+    if (!selectedClubData.schedule.toLowerCase().includes(dayNameUz)) {
+      isAllowedToTakeAttendance = false
+      restrictionMessage = `Bugun ${dayNameUz}. To'garak darslari: ${selectedClubData.schedule}`
+    }
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-extrabold text-gray-900">Davomat Olish</h1>
@@ -149,12 +163,21 @@ export default function AttendancePage() {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1.5">Sana</label>
-            <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)}
+            <input type="date" value={selectedDate} onChange={e => {
+              setSelectedDate(e.target.value)
+              setStudents([]) // Clear students if date changes to avoid invalid saves
+            }}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+            {!isAllowedToTakeAttendance && (
+              <p className="text-xs text-red-500 font-medium mt-1.5 flex items-start gap-1">
+                <X size={14} className="mt-0.5 shrink-0" />
+                Dars faqat belgilangan kunlarda olinadi ({restrictionMessage}).
+              </p>
+            )}
           </div>
           <div className="flex items-end">
-            <button onClick={loadStudents} disabled={!selectedClub}
-              className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 text-white rounded-xl text-sm font-medium transition-colors">
+            <button onClick={loadStudents} disabled={!selectedClub || !isAllowedToTakeAttendance}
+              className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-medium transition-colors">
               Davomatni yuklash
             </button>
           </div>

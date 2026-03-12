@@ -15,7 +15,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
     .eq('user_id', user.id)
     .single()
 
-  if (!profile || profile.role !== 'teacher') redirect('/login')
+  if (!profile || profile.role !== 'teacher' || profile.is_blocked) redirect('/login?error=blocked')
 
   const { data: myClubs } = await supabase
     .from('clubs')

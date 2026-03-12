@@ -1,6 +1,7 @@
 'use client'
 
 import { addTeacher, toggleBlockTeacher, updateTeacherInfo, deleteTeacher } from '@/app/actions/teachers'
+import { fixGhostUserAction } from '@/app/actions/fix-ghost'
 import DataLoader from '@/components/ui/DataLoader'
 import { motion } from 'framer-motion'
 import { Copy, Eye, EyeOff, Search, UserPlus, Users } from 'lucide-react'

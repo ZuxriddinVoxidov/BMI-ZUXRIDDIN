@@ -22,12 +22,19 @@ interface Props {
   recentClubs: Record<string, unknown>[]
   topStudents: Record<string, unknown>[]
   adminName: string
+  missedAttendanceClubs?: {
+    id: string
+    name: string
+    schedule: string
+    teacher_name: string
+  }[]
 }
 
 export default function DashboardContent({
   studentsCount, teachersCount, clubsCount, pendingCount,
   todayPresentCount, todayAbsentCount, thisMonthEnrollments,
   recentApplications, recentClubs, topStudents, adminName,
+  missedAttendanceClubs = [],
 }: Props) {
   const today = new Date().toISOString().split('T')[0]
   const stats = [
@@ -104,6 +111,34 @@ export default function DashboardContent({
           </Link>
         ))}
       </div>
+
+      {/* Missed Attendance Alerts */}
+      {missedAttendanceClubs.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-50/80 border border-red-200 rounded-2xl p-6"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+              ⚠️
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-red-900">Davomat olinmagan to&apos;garaklar</h3>
+              <p className="text-sm text-red-700">Quyidagi to&apos;garaklar bugun dars o&apos;tishi kerak edi, lekin davomat kiritilmadi:</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {missedAttendanceClubs.map(club => (
+              <div key={club.id} className="bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-red-100 flex flex-col">
+                <span className="font-semibold text-gray-900 text-sm">{club.name}</span>
+                <span className="text-xs text-gray-600 mt-1">👨‍🏫 {club.teacher_name}</span>
+                <span className="text-[10px] text-red-500 font-medium mt-1">🕒 {club.schedule}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Three Column Content */}
       <div className="grid lg:grid-cols-3 gap-6">

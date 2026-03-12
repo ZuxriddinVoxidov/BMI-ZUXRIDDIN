@@ -19,8 +19,8 @@ export default async function Home() {
     { count: clubsCount },
     { data: ratingsData },
   ] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
-    supabase.from('clubs').select('*', { count: 'exact', head: true }),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student').not('school_id', 'is', null),
+    supabase.from('clubs').select('*', { count: 'exact', head: true }).eq('is_published', true),
     supabase.from('reviews').select('rating'),
   ])
 
