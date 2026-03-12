@@ -57,18 +57,35 @@ export async function toggleBlockStudent(profileId: string, block: boolean) {
 }
 
 export async function deleteStudent(studentId: string, userId: string) {
-  const supabase = createAdminClient()
+  try {
+    const supabase = createAdminClient()
 
-  const { error } = await supabase
-    .from('profiles')
-    .delete()
-    .eq('id', studentId)
+    // Delete all related records first (FK constraints)
+    await supabase.from('teacher_rewards').delete().eq('student_id', studentId)
+    await supabase.from('attendance').delete().eq('student_id', studentId)
+    await supabase.from('enrollments').delete().eq('student_id', studentId)
+    await supabase.from('notifications').delete().eq('user_id', studentId)
+    await supabase.from('reviews').delete().eq('student_id', studentId)
 
-  if (error) return { success: false, error: error.message }
+    // Now delete the profile
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', studentId)
 
-  await supabase.auth.admin.deleteUser(userId)
+    if (error) {
+      console.error('Delete profile error:', error.message)
+      return { success: false, error: error.message }
+    }
 
-  revalidatePath('/dashboard/students')
-  revalidatePath('/dashboard')
-  return { success: true }
+    // Delete auth user
+    await supabase.auth.admin.deleteUser(userId)
+
+    revalidatePath('/dashboard/students')
+    revalidatePath('/dashboard')
+    return { success: true }
+  } catch (err: unknown) {
+    console.error('deleteStudent crash:', err)
+    return { success: false, error: String(err) }
+  }
 }

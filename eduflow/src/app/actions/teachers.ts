@@ -102,18 +102,32 @@ export async function updateTeacherInfo(data: {
 }
 
 export async function deleteTeacher(teacherId: string, userId: string) {
-  const supabase = createAdminClient()
+  try {
+    const supabase = createAdminClient()
 
-  const { error } = await supabase
-    .from('profiles')
-    .delete()
-    .eq('id', teacherId)
+    // Delete all related records first (FK constraints)
+    await supabase.from('teacher_rewards').delete().eq('teacher_id', teacherId)
+    await supabase.from('notifications').delete().eq('user_id', teacherId)
 
-  if (error) return { success: false, error: error.message }
+    // Now delete the profile
+    const { error } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', teacherId)
 
-  await supabase.auth.admin.deleteUser(userId)
+    if (error) {
+      console.error('Delete teacher profile error:', error.message)
+      return { success: false, error: error.message }
+    }
 
-  revalidatePath('/dashboard/teachers')
-  revalidatePath('/dashboard')
-  return { success: true }
+    // Delete auth user
+    await supabase.auth.admin.deleteUser(userId)
+
+    revalidatePath('/dashboard/teachers')
+    revalidatePath('/dashboard')
+    return { success: true }
+  } catch (err: unknown) {
+    console.error('deleteTeacher crash:', err)
+    return { success: false, error: String(err) }
+  }
 }
