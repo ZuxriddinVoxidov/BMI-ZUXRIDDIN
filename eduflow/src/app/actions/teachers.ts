@@ -110,17 +110,6 @@ export async function toggleBlockTeacher(profileId: string, block: boolean) {
   return { success: true }
 }
 
-export async function deleteTeacher(profileId: string) {
-  const supabase = createClient()
-  await supabase
-    .from('profiles')
-    .delete()
-    .eq('id', profileId)
-
-  revalidatePath('/dashboard/teachers')
-  revalidatePath('/dashboard')
-  return { success: true }
-}
 
 export async function updateTeacherInfo(data: {
   profile_id: string
@@ -128,6 +117,7 @@ export async function updateTeacherInfo(data: {
   full_name: string
   phone?: string
   teacher_bio?: string
+  email?: string
   new_password?: string
 }) {
   const supabase = createClient()
@@ -144,18 +134,57 @@ export async function updateTeacherInfo(data: {
 
   if (error) return { success: false, error: error.message }
 
-  // Update Supabase Auth password
-  if (data.new_password && data.new_password.length >= 6 && data.user_id) {
+  // Update Supabase Auth password and/or email
+  if (data.user_id && (data.new_password || data.email)) {
     const adminClient = getAdminClient()
     if (adminClient) {
-      const { error: authError } = await adminClient.auth.admin.updateUserById(data.user_id, {
-        password: data.new_password
-      })
-      if (authError) console.error('Auth password update failed:', authError.message)
+      const authUpdate: Record<string, string> = {}
+      if (data.new_password && data.new_password.length >= 6) authUpdate.password = data.new_password
+      if (data.email) authUpdate.email = data.email
+      if (Object.keys(authUpdate).length > 0) {
+        const { error: authError } = await adminClient.auth.admin.updateUserById(data.user_id, authUpdate)
+        if (authError) console.error('Auth update failed:', authError.message)
+      }
     }
   }
 
   revalidatePath('/dashboard/teachers')
   revalidatePath('/dashboard')
+  return { success: true }
+}
+
+export async function deleteTeacher(
+  teacherId: string,
+  userId: string
+) {
+  const supabase = createClient()
+
+  const { error } = await supabase
+    .from('profiles')
+    .delete()
+    .eq('id', teacherId)
+
+  if (error) return { 
+    success: false, error: error.message 
+  }
+
+  const serviceRoleKey = 
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  const supabaseUrl = 
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+
+  if (serviceRoleKey && supabaseUrl) {
+    const { createClient: createAdminClient } = 
+      await import('@supabase/supabase-js')
+    const adminClient = createAdminClient(
+      supabaseUrl,
+      serviceRoleKey,
+      { auth: { autoRefreshToken: false, 
+                persistSession: false } }
+    )
+    await adminClient.auth.admin.deleteUser(userId)
+  }
+
+  revalidatePath('/dashboard/teachers')
   return { success: true }
 }

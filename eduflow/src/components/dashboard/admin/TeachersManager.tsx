@@ -1,6 +1,6 @@
 'use client'
 
-import { addTeacher, toggleBlockTeacher, updateTeacherInfo } from '@/app/actions/teachers'
+import { addTeacher, toggleBlockTeacher, updateTeacherInfo, deleteTeacher } from '@/app/actions/teachers'
 import DataLoader from '@/components/ui/DataLoader'
 import { motion } from 'framer-motion'
 import { Copy, Eye, EyeOff, Search, ShieldCheck, ShieldX, UserPlus, Users } from 'lucide-react'
@@ -35,12 +35,17 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
 
   // Edit modal states
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null)
-  const [teacherForm, setTeacherForm] = useState({ full_name: '', phone: '', teacher_bio: '', new_password: '' })
+  const [teacherForm, setTeacherForm] = useState({ full_name: '', phone: '', teacher_bio: '', email: '', new_password: '' })
   const [showTeacherModal, setShowTeacherModal] = useState(false)
   const [showTeacherPwd, setShowTeacherPwd] = useState(false)
+  const [showNewTeacherPwd, setShowNewTeacherPwd] = useState(false)
   const [savingTeacher, setSavingTeacher] = useState(false)
   const [modalBlockingTeacher, setModalBlockingTeacher] = useState(false)
   const [teacherToast, setTeacherToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; userId: string; name: string } | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [teachersList, setTeachersList] = useState(teachers)
 
   useEffect(() => { setDataReady(true) }, [])
 
@@ -50,9 +55,11 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
       full_name: teacher.full_name || '',
       phone: teacher.phone || '',
       teacher_bio: teacher.teacher_bio || '',
+      email: teacher.email || '',
       new_password: '',
     })
     setShowTeacherPwd(false)
+    setShowNewTeacherPwd(false)
     setModalBlockingTeacher(false)
     setShowTeacherModal(true)
   }
@@ -64,9 +71,11 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
     setSavingTeacher(true)
     const result = await updateTeacherInfo({
       profile_id: editingTeacher.id,
+      user_id: editingTeacher.user_id,
       full_name: teacherForm.full_name,
       phone: teacherForm.phone,
       teacher_bio: teacherForm.teacher_bio,
+      email: teacherForm.email || undefined,
       new_password: teacherForm.new_password || undefined,
     })
     setSavingTeacher(false)
@@ -87,7 +96,21 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
     setModalBlockingTeacher(false)
   }
 
-  const filtered = teachers.filter(
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setDeleteLoading(true)
+    const result = await deleteTeacher(deleteTarget.id, deleteTarget.userId)
+    setDeleteLoading(false)
+    if (result.success) {
+      setTeacherToast({ message: "O'qituvchi o'chirildi ✅", type: 'success' })
+      setDeleteTarget(null)
+      setTeachersList(prev => prev.filter(t => t.id !== deleteTarget.id))
+    } else {
+      setTeacherToast({ message: 'Xatolik: ' + result.error, type: 'error' })
+    }
+  }
+
+  const filtered = teachersList.filter(
     (t) =>
       t.full_name?.toLowerCase().includes(search.toLowerCase()) ||
       t.email?.toLowerCase().includes(search.toLowerCase())
@@ -232,11 +255,14 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                           ✏️ Tahrir
                         </button>
                         <button
-                          onClick={() => handleToggleBlock(teacher.id, !teacher.is_blocked)}
-                          disabled={isPending}
-                          className={`text-xs px-3 py-1.5 rounded-lg font-medium transition ${teacher.is_blocked ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-red-50 text-red-600 hover:bg-red-100'} disabled:opacity-50`}
+                          onClick={() => setDeleteTarget({
+                            id: teacher.id,
+                            userId: teacher.user_id!,
+                            name: teacher.full_name
+                          })}
+                          className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-sm hover:bg-red-100 border border-red-200 transition-colors flex items-center gap-1"
                         >
-                          {teacher.is_blocked ? <><ShieldCheck size={12} className="inline mr-1" />Faollashtirish</> : <><ShieldX size={12} className="inline mr-1" />Bloklash</>}
+                          🗑️ O'chirish
                         </button>
                       </div>
                     </td>
@@ -336,8 +362,9 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                 <div className="space-y-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">📧 Email (Login)</label>
-                    <input value={editingTeacher.email || ''} readOnly
-                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-50 text-gray-600 outline-none" />
+                    <input value={teacherForm.email} onChange={e => setTeacherForm(p => ({ ...p, email: e.target.value }))}
+                      type="email" placeholder="teacher@eduflow.uz"
+                      className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">🔑 Joriy parol</label>
@@ -361,9 +388,15 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">🔒 Yangi parol (ixtiyoriy)</label>
-                    <input type="password" value={teacherForm.new_password} onChange={e => setTeacherForm(p => ({ ...p, new_password: e.target.value }))}
-                      placeholder="O'zgartirish uchun kiriting..." className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400" />
-                    <p className="text-xs text-gray-400 mt-1">Kamida 8 belgi. Bo&apos;sh qolsa o&apos;zgarmaydi.</p>
+                    <div className="relative">
+                      <input type={showNewTeacherPwd ? 'text' : 'password'} value={teacherForm.new_password} onChange={e => setTeacherForm(p => ({ ...p, new_password: e.target.value }))}
+                        placeholder="Kamida 8 belgi. Bo'sh qolsa o'zgarmaydi."
+                        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400 pr-10" />
+                      <button type="button" onClick={() => setShowNewTeacherPwd(!showNewTeacherPwd)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        {showNewTeacherPwd ? '🙈' : '👁'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -397,6 +430,29 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
               <button onClick={handleTeacherSave} disabled={savingTeacher}
                 className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition disabled:opacity-50">
                 {savingTeacher ? '⏳ Saqlanmoqda...' : '💾 Saqlash'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <div className="text-center mb-5">
+              <div className="text-5xl mb-3">🗑️</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">O'chirishni tasdiqlang</h3>
+              <p className="text-gray-500 text-sm">
+                <span className="font-semibold text-gray-700">{deleteTarget.name}</span> ni haqiqatan ham o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteTarget(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50">
+                Bekor qilish
+              </button>
+              <button onClick={handleDelete} disabled={deleteLoading} className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 disabled:opacity-50">
+                {deleteLoading ? '...' : "Ha, o'chirish"}
               </button>
             </div>
           </div>

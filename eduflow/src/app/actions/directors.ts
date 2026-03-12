@@ -18,6 +18,7 @@ export async function updateDirectorInfo(
   data: {
     full_name: string
     phone?: string
+    email?: string
     new_password?: string
   }
 ) {
@@ -38,14 +39,17 @@ export async function updateDirectorInfo(
 
   if (error) return { success: false, error: error.message }
 
-  // Update Supabase Auth password
-  if (data.new_password && data.new_password.length >= 6) {
+  // Update Supabase Auth password and/or email
+  if (data.new_password || data.email) {
     const adminClient = getAdminClient()
     if (adminClient) {
-      const { error: authError } = await adminClient.auth.admin.updateUserById(userId, {
-        password: data.new_password
-      })
-      if (authError) console.error('Auth password update failed:', authError.message)
+      const authUpdate: Record<string, string> = {}
+      if (data.new_password && data.new_password.length >= 6) authUpdate.password = data.new_password
+      if (data.email) authUpdate.email = data.email
+      if (Object.keys(authUpdate).length > 0) {
+        const { error: authError } = await adminClient.auth.admin.updateUserById(userId, authUpdate)
+        if (authError) console.error('Auth update failed:', authError.message)
+      }
     }
   }
 

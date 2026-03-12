@@ -1,6 +1,6 @@
 'use client'
 
-import { updateStudentInfo } from '@/app/actions/admin-students'
+import { updateStudentInfo, deleteStudent } from '@/app/actions/admin-students'
 import DataLoader from '@/components/ui/DataLoader'
 import { getStudentLevel } from '@/lib/levels'
 import { GRADES } from '@/lib/utils'
@@ -27,7 +27,8 @@ interface Student {
 export default function StudentsManager({ students }: { students: Student[] }) {
   const [search, setSearch] = useState('')
   const [editStudent, setEditStudent] = useState<Student | null>(null)
-  const [formData, setFormData] = useState({ full_name: '', parent_name: '', parent_telegram_id: '', grade: '', phone: '', new_password: '' })
+  const [formData, setFormData] = useState({ full_name: '', parent_name: '', parent_telegram_id: '', grade: '', phone: '', email: '', new_password: '' })
+  const [showNewPwd, setShowNewPwd] = useState(false)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [showPasswords, setShowPasswords] = useState<Record<string, boolean>>({})
@@ -38,9 +39,13 @@ export default function StudentsManager({ students }: { students: Student[] }) {
   const [showModalPwd, setShowModalPwd] = useState(false)
   const [modalBlocking, setModalBlocking] = useState(false)
 
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; userId: string; name: string } | null>(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [studentsList, setStudentsList] = useState(students)
+
   useEffect(() => { setDataReady(true) }, [])
 
-  const filtered = students.filter((s) =>
+  const filtered = studentsList.filter((s) =>
     s.full_name?.toLowerCase().includes(search.toLowerCase()) ||
     s.email?.toLowerCase().includes(search.toLowerCase())
   )
@@ -53,8 +58,10 @@ export default function StudentsManager({ students }: { students: Student[] }) {
       parent_telegram_id: student.parent_telegram_id || '',
       grade: student.grade || '',
       phone: student.phone || '',
+      email: student.email || '',
       new_password: '',
     })
+    setShowNewPwd(false)
     setShowModalPwd(false)
     setModalBlocking(false)
   }
@@ -74,10 +81,12 @@ export default function StudentsManager({ students }: { students: Student[] }) {
     setSaving(true)
     const result = await updateStudentInfo({
       profile_id: editStudent.id,
+      user_id: editStudent.user_id,
       full_name: formData.full_name,
       parent_name: formData.parent_name,
       parent_telegram_id: formData.parent_telegram_id,
       grade: formData.grade,
+      email: formData.email || undefined,
       new_password: formData.new_password || undefined,
     })
     setSaving(false)
@@ -102,6 +111,22 @@ export default function StudentsManager({ students }: { students: Student[] }) {
       setTimeout(() => setToast(null), 3000)
     }
     setModalBlocking(false)
+  }
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return
+    setDeleteLoading(true)
+    const result = await deleteStudent(deleteTarget.id, deleteTarget.userId)
+    setDeleteLoading(false)
+    if (result.success) {
+      setToast({ message: "O'quvchi o'chirildi ✅", type: 'success' })
+      setDeleteTarget(null)
+      setStudentsList(prev => prev.filter(s => s.id !== deleteTarget.id))
+      setTimeout(() => setToast(null), 3000)
+    } else {
+      setToast({ message: 'Xatolik: ' + result.error, type: 'error' })
+      setTimeout(() => setToast(null), 3000)
+    }
   }
 
   function handleCopy(text: string, id: string) {
@@ -133,7 +158,7 @@ export default function StudentsManager({ students }: { students: Student[] }) {
           <h1 className="text-2xl font-extrabold text-gray-900">O&apos;quvchilar</h1>
           <p className="text-sm text-gray-500 mt-1">
             <Users size={14} className="inline mr-1" />
-            {students.length} ta o&apos;quvchi
+            {studentsList.length} ta o&apos;quvchi
           </p>
         </div>
       </div>
@@ -225,9 +250,15 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors">
                           <Edit3 size={11} /> Tahrir
                         </button>
-                        <button onClick={() => handleToggleBlock(student)} disabled={blockingId === student.id}
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${student.is_blocked ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-red-50 text-red-500 hover:bg-red-100'}`}>
-                          {blockingId === student.id ? '⏳' : student.is_blocked ? <><ShieldCheck size={11} /> Faol</> : <><ShieldX size={11} /> Blok</>}
+                        <button
+                          onClick={() => setDeleteTarget({
+                            id: student.id,
+                            userId: student.user_id!,
+                            name: student.full_name
+                          })}
+                          className="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-sm hover:bg-red-100 border border-red-200 transition-colors flex items-center gap-1"
+                        >
+                          🗑️ O'chirish
                         </button>
                       </div>
                     </td>
@@ -306,9 +337,9 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                 <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">🔐 Login ma&apos;lumotlari</h3>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1 block">📧 Email (Login)</label>
-                  <div className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-gray-600">
-                    {editStudent.email || '—'}
-                  </div>
+                  <input value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
+                    type="email" placeholder="student@eduflow.uz"
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-mono outline-none focus:border-indigo-400" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1 block">🔑 Joriy parol</label>
@@ -328,10 +359,15 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1 block">🔒 Yangi parol (ixtiyoriy)</label>
-                  <input value={formData.new_password} onChange={e => setFormData(p => ({ ...p, new_password: e.target.value }))}
-                    type="password" placeholder="O'zgartirish uchun kiriting..." minLength={8}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
-                  <p className="text-[11px] text-gray-400 mt-1">Kamida 8 belgi. Bo&apos;sh qolsa o&apos;zgarmaydi.</p>
+                  <div className="relative">
+                    <input value={formData.new_password} onChange={e => setFormData(p => ({ ...p, new_password: e.target.value }))}
+                      type={showNewPwd ? 'text' : 'password'} placeholder="Kamida 8 belgi. Bo'sh qolsa o'zgarmaydi."
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400 pr-10" />
+                    <button type="button" onClick={() => setShowNewPwd(!showNewPwd)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                      {showNewPwd ? '🙈' : '👁'}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -376,6 +412,27 @@ export default function StudentsManager({ students }: { students: Student[] }) {
 
             </div>
           </motion.div>
+        </div>
+      )}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+            <div className="text-center mb-5">
+              <div className="text-5xl mb-3">🗑️</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">O'chirishni tasdiqlang</h3>
+              <p className="text-gray-500 text-sm">
+                <span className="font-semibold text-gray-700">{deleteTarget.name}</span> ni haqiqatan ham o'chirmoqchimisiz? Bu amalni qaytarib bo'lmaydi.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteTarget(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50">
+                Bekor qilish
+              </button>
+              <button onClick={handleDelete} disabled={deleteLoading} className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 disabled:opacity-50">
+                {deleteLoading ? '...' : "Ha, o'chirish"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

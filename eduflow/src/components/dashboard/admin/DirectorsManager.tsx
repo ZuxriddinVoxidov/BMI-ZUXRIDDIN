@@ -50,6 +50,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
     const result = await updateDirectorInfo(editingDirector.id, editingDirector.user_id, {
       full_name: form.full_name,
       phone: form.phone,
+      email: form.email || undefined,
       new_password: form.new_password || undefined,
     })
     if (result.success) {

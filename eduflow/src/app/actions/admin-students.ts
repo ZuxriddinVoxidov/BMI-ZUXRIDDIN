@@ -19,6 +19,7 @@ export async function updateStudentInfo(data: {
   parent_name: string
   parent_telegram_id: string
   grade?: string
+  email?: string
   new_password?: string
 }) {
   const supabase = createClient()
@@ -36,14 +37,17 @@ export async function updateStudentInfo(data: {
 
   if (error) return { success: false, error: error.message }
 
-  // Update Supabase Auth password
-  if (data.new_password && data.new_password.length >= 6 && data.user_id) {
+  // Update Supabase Auth password and/or email
+  if (data.user_id && (data.new_password || data.email)) {
     const adminClient = getAdminClient()
     if (adminClient) {
-      const { error: authError } = await adminClient.auth.admin.updateUserById(data.user_id, {
-        password: data.new_password
-      })
-      if (authError) console.error('Auth password update failed:', authError.message)
+      const authUpdate: Record<string, string> = {}
+      if (data.new_password && data.new_password.length >= 6) authUpdate.password = data.new_password
+      if (data.email) authUpdate.email = data.email
+      if (Object.keys(authUpdate).length > 0) {
+        const { error: authError } = await adminClient.auth.admin.updateUserById(data.user_id, authUpdate)
+        if (authError) console.error('Auth update failed:', authError.message)
+      }
     }
   }
 
@@ -62,5 +66,44 @@ export async function toggleBlockStudent(profileId: string, block: boolean) {
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/students')
   revalidatePath('/dashboard')
+  return { success: true }
+}
+
+
+export async function deleteStudent(
+  studentId: string,
+  userId: string
+) {
+  const supabase = createClient()
+
+  // Delete from profiles first
+  const { error } = await supabase
+    .from('profiles')
+    .delete()
+    .eq('id', studentId)
+
+  if (error) return { 
+    success: false, error: error.message 
+  }
+
+  // Delete from Supabase Auth using service role
+  const serviceRoleKey = 
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  const supabaseUrl = 
+    process.env.NEXT_PUBLIC_SUPABASE_URL
+
+  if (serviceRoleKey && supabaseUrl) {
+    const { createClient: createAdminClient } = 
+      await import('@supabase/supabase-js')
+    const adminClient = createAdminClient(
+      supabaseUrl,
+      serviceRoleKey,
+      { auth: { autoRefreshToken: false, 
+                persistSession: false } }
+    )
+    await adminClient.auth.admin.deleteUser(userId)
+  }
+
+  revalidatePath('/dashboard/students')
   return { success: true }
 }
