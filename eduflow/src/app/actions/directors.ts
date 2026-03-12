@@ -1,16 +1,6 @@
 'use server'
-import { createClient } from '@/lib/supabase/server'
-import { createClient as createSupabaseAdmin } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
-
-function getAdminClient() {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  if (!serviceRoleKey || !supabaseUrl) return null
-  return createSupabaseAdmin(supabaseUrl, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
-  })
-}
 
 export async function updateDirectorInfo(
   directorId: string,
@@ -22,7 +12,7 @@ export async function updateDirectorInfo(
     new_password?: string
   }
 ) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
 
   const updateData: Record<string, unknown> = {
     full_name: data.full_name,
@@ -41,27 +31,22 @@ export async function updateDirectorInfo(
 
   // Update Supabase Auth password and/or email
   if (data.new_password || data.email) {
-    const adminClient = getAdminClient()
-    if (adminClient) {
-      const authUpdate: Record<string, string> = {}
-      if (data.new_password && data.new_password.length >= 6) authUpdate.password = data.new_password
-      if (data.email) authUpdate.email = data.email
-      if (Object.keys(authUpdate).length > 0) {
-        const { error: authError } = await adminClient.auth.admin.updateUserById(userId, authUpdate)
-        if (authError) console.error('Auth update failed:', authError.message)
-      }
+    const authUpdate: Record<string, string> = {}
+    if (data.new_password && data.new_password.length >= 6) authUpdate.password = data.new_password
+    if (data.email) authUpdate.email = data.email
+    if (Object.keys(authUpdate).length > 0) {
+      const { error: authError } = await supabase.auth.admin.updateUserById(userId, authUpdate)
+      if (authError) console.error('Auth update failed:', authError.message)
     }
   }
 
   revalidatePath('/dashboard/directors')
+  revalidatePath('/dashboard')
   return { success: true }
 }
 
-export async function toggleBlockDirector(
-  directorId: string,
-  block: boolean
-) {
-  const supabase = createClient()
+export async function toggleBlockDirector(directorId: string, block: boolean) {
+  const supabase = createAdminClient()
 
   const { error } = await supabase
     .from('profiles')
@@ -71,5 +56,6 @@ export async function toggleBlockDirector(
   if (error) return { success: false, error: error.message }
 
   revalidatePath('/dashboard/directors')
+  revalidatePath('/dashboard')
   return { success: true }
 }

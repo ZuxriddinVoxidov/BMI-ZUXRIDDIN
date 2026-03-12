@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import TeacherStudents from '@/components/dashboard/teacher/TeacherStudents'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'

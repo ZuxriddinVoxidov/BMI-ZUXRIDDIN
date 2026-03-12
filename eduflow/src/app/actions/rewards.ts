@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function giveReward(
@@ -9,13 +10,15 @@ export async function giveReward(
   lessonDate: string
 ) {
   const supabase = createClient()
+  const admin = createAdminClient()
+
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) return { success: false, error: 'Tizimga kiring' }
 
-  const { data: teacher } = await supabase
+  const { data: teacher } = await admin
     .from('profiles')
     .select('id')
     .eq('user_id', user.id)
@@ -24,7 +27,7 @@ export async function giveReward(
   if (!teacher) return { success: false, error: "O'qituvchi topilmadi" }
 
   // Check if already rewarded this student today
-  const { data: existing } = await supabase
+  const { data: existing } = await admin
     .from('teacher_rewards')
     .select('id')
     .eq('teacher_id', teacher.id)
@@ -41,7 +44,7 @@ export async function giveReward(
   }
 
   // Check 7 reward limit
-  const { count } = await supabase
+  const { count } = await admin
     .from('teacher_rewards')
     .select('id', { count: 'exact' })
     .eq('teacher_id', teacher.id)
@@ -56,7 +59,7 @@ export async function giveReward(
   }
 
   // Insert reward
-  const { error: rewardError } = await supabase
+  const { error: rewardError } = await admin
     .from('teacher_rewards')
     .insert({
       teacher_id: teacher.id,
@@ -71,7 +74,7 @@ export async function giveReward(
   }
 
   // Add points to student
-  await supabase.rpc('add_student_points', {
+  await admin.rpc('add_student_points', {
     p_student_id: studentId,
     p_points: 10,
   })

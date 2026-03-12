@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function applyToClub(clubId: string) {
@@ -11,7 +12,9 @@ export async function applyToClub(clubId: string) {
 
   if (!user) return { success: false, error: 'Foydalanuvchi topilmadi' }
 
-  const { data: profile } = await supabase
+  const admin = createAdminClient()
+
+  const { data: profile } = await admin
     .from('profiles')
     .select('id')
     .eq('user_id', user.id)
@@ -20,7 +23,7 @@ export async function applyToClub(clubId: string) {
   if (!profile) return { success: false, error: 'Profil topilmadi' }
 
   // Check if already enrolled
-  const { data: existing } = await supabase
+  const { data: existing } = await admin
     .from('enrollments')
     .select('id, status')
     .eq('student_id', profile.id)
@@ -33,10 +36,10 @@ export async function applyToClub(clubId: string) {
 
   // If was rejected, delete old and create new
   if (existing && existing.status === 'rejected') {
-    await supabase.from('enrollments').delete().eq('id', existing.id)
+    await admin.from('enrollments').delete().eq('id', existing.id)
   }
 
-  const { error } = await supabase.from('enrollments').insert({
+  const { error } = await admin.from('enrollments').insert({
     student_id: profile.id,
     club_id: clubId,
     status: 'pending',
@@ -57,7 +60,7 @@ export async function applyToClub(clubId: string) {
 }
 
 export async function cancelApplication(enrollmentId: string) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase
     .from('enrollments')
     .delete()

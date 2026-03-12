@@ -2,7 +2,7 @@ import AdminProfileClient from '@/components/dashboard/admin/AdminProfileClient'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function TeacherProfilePage() {
   const supabase = createClient()

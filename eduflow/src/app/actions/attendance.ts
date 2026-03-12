@@ -1,5 +1,6 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
     buildAbsentMessage,
     buildExcusedMessage,
@@ -15,16 +16,17 @@ export async function saveAttendance(records: {
   note?: string
 }[]) {
   const supabase = createClient()
+  const admin = createAdminClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-  const { data: teacher } = await supabase
+  const { data: teacher } = await admin
     .from('profiles')
     .select('full_name')
     .eq('user_id', user!.id)
     .single()
 
   const clubId = records[0]?.club_id
-  const { data: club } = await supabase
+  const { data: club } = await admin
     .from('clubs')
     .select('name')
     .eq('id', clubId)
@@ -32,7 +34,7 @@ export async function saveAttendance(records: {
 
   // Save all attendance records
   for (const record of records) {
-    await supabase
+    await admin
       .from('attendance')
       .upsert(record, { onConflict: 'club_id,student_id,date' })
   }
@@ -43,7 +45,7 @@ export async function saveAttendance(records: {
   )
 
   for (const record of notifyRecords) {
-    const { data: student } = await supabase
+    const { data: student } = await admin
       .from('profiles')
       .select('full_name, parent_telegram_id')
       .eq('id', record.student_id)
@@ -70,7 +72,7 @@ export async function saveAttendance(records: {
       )
 
       if (result.success) {
-        await supabase.from('notifications').insert({
+        await admin.from('notifications').insert({
           user_id: record.student_id,
           message:
             record.status === 'absent'

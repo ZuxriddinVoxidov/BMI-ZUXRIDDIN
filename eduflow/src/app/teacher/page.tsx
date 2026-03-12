@@ -2,7 +2,7 @@ import TeacherHome from '@/components/dashboard/teacher/TeacherHome'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export default async function TeacherPage() {
   const supabase = createClient()

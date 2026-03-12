@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import ApplicationsManager from '@/components/dashboard/admin/ApplicationsManager'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'

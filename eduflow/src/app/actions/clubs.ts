@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function createClub(formData: {
@@ -17,7 +17,7 @@ export async function createClub(formData: {
   is_paid?: boolean
   price?: number
 }) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('clubs').insert(formData)
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/clubs')
@@ -43,7 +43,7 @@ export async function updateClub(
     price?: number
   }
 ) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('clubs').update(formData).eq('id', id)
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/clubs')
@@ -54,7 +54,7 @@ export async function updateClub(
 }
 
 export async function deleteClub(id: string) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('clubs').delete().eq('id', id)
   if (error) return { success: false, error: error.message }
   revalidatePath('/dashboard/clubs')
@@ -75,7 +75,7 @@ export async function saveClubDetail(
     room_image_url?: string
   }
 ) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('clubs').update(data).eq('id', clubId)
   if (error) return { success: false, error: error.message }
   revalidatePath(`/clubs/${clubId}`)
@@ -85,7 +85,7 @@ export async function saveClubDetail(
 }
 
 export async function publishClub(clubId: string, publish: boolean) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   const { error } = await supabase.from('clubs').update({ is_published: publish }).eq('id', clubId)
   if (error) return { success: false, error: error.message }
   revalidatePath(`/clubs/${clubId}`)

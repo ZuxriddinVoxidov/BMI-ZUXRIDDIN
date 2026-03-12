@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export default async function StudentHomePage() {
   const supabase = createClient()

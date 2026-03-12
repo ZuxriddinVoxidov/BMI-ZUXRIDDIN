@@ -1,5 +1,6 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 // Submit or update review
@@ -9,10 +10,12 @@ export async function submitReview(
   comment: string
 ) {
   const supabase = createClient()
+  const admin = createAdminClient()
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false, error: 'Unauthorized' }
 
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from('profiles')
     .select('id')
     .eq('user_id', user.id)
@@ -21,7 +24,7 @@ export async function submitReview(
   if (!profile) return { success: false, error: 'Profile not found' }
 
   // Upsert — if exists update, if not insert
-  const { error } = await supabase
+  const { error } = await admin
     .from('reviews')
     .upsert({
       student_id: profile.id,
@@ -41,9 +44,9 @@ export async function submitReview(
 
 // Get reviews for a club
 export async function getClubReviews(clubId: string) {
-  const supabase = createClient()
+  const admin = createAdminClient()
 
-  const { data, error } = await supabase
+  const { data, error } = await admin
     .from('reviews')
     .select(`
       id,

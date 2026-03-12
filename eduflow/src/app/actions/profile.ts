@@ -1,5 +1,6 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function updateParentTelegram(data: {
@@ -7,15 +8,17 @@ export async function updateParentTelegram(data: {
   parent_telegram_id: string
 }) {
   const supabase = createClient()
+  const admin = createAdminClient()
+
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from('profiles')
     .select('id')
     .eq('user_id', user!.id)
     .single()
 
-  const { error } = await supabase
+  const { error } = await admin
     .from('profiles')
     .update({
       parent_name: data.parent_name,
@@ -30,15 +33,17 @@ export async function updateParentTelegram(data: {
 
 export async function updateStudentGrade(grade: string) {
   const supabase = createClient()
+  const admin = createAdminClient()
+
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from('profiles')
     .select('id')
     .eq('user_id', user!.id)
     .single()
 
-  const { error } = await supabase
+  const { error } = await admin
     .from('profiles')
     .update({ grade })
     .eq('id', profile!.id)
@@ -56,10 +61,12 @@ export async function updateAdminProfile(data: {
   new_password?: string
 }) {
   const supabase = createClient()
+  const admin = createAdminClient()
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false, error: 'Not authenticated' }
 
-  await supabase
+  await admin
     .from('profiles')
     .update({
       full_name: data.full_name,
@@ -69,7 +76,7 @@ export async function updateAdminProfile(data: {
     .eq('user_id', user.id)
 
   if (data.new_password) {
-    await supabase.auth.updateUser({ password: data.new_password })
+    await admin.auth.admin.updateUserById(user.id, { password: data.new_password })
   }
 
   revalidatePath('/dashboard/settings')

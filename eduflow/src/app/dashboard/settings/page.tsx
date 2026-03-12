@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import AdminProfileClient from '@/components/dashboard/admin/AdminProfileClient'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'

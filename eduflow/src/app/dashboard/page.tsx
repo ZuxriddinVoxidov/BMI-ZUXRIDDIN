@@ -2,7 +2,7 @@ import DashboardContent from '@/components/dashboard/admin/DashboardContent'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export const revalidate = 30
+export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const supabase = createClient()

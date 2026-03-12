@@ -2,7 +2,7 @@ import DirectorDashboardClient from '@/components/dashboard/director/DirectorDas
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function DirectorPage() {
   const supabase = createClient()

@@ -2,7 +2,7 @@ import MessagesManager from '@/components/dashboard/admin/MessagesManager'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function MessagesPage() {
   const supabase = createClient()

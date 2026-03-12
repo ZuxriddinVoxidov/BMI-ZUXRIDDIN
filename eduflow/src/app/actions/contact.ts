@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function sendContactMessage(data: {
@@ -10,7 +10,7 @@ export async function sendContactMessage(data: {
   subject: string
   message: string
 }) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
 
   const { error } = await supabase.from('contact_messages').insert(data)
   if (error) return { success: false, error: error.message }
@@ -36,14 +36,14 @@ export async function sendContactMessage(data: {
 }
 
 export async function markMessageRead(messageId: string) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   await supabase.from('contact_messages').update({ is_read: true }).eq('id', messageId)
   revalidatePath('/dashboard/messages')
   return { success: true }
 }
 
 export async function markMessageReplied(messageId: string) {
-  const supabase = createClient()
+  const supabase = createAdminClient()
   await supabase.from('contact_messages').update({ is_read: true, is_replied: true }).eq('id', messageId)
   revalidatePath('/dashboard/messages')
   return { success: true }

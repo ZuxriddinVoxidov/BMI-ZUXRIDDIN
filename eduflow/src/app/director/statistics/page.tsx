@@ -2,7 +2,7 @@ import StatisticsClient from '@/components/dashboard/admin/StatisticsClient'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export default async function DirectorStatisticsPage() {
   const supabase = createClient()

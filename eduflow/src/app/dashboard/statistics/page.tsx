@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import StatisticsClient from '@/components/dashboard/admin/StatisticsClient'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'

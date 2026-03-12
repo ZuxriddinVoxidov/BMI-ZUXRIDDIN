@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import WeeklySchedule from '@/components/dashboard/student/WeeklySchedule'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'

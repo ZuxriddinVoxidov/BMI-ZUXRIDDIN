@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import GradeSelector from '@/components/dashboard/student/GradeSelector'
 import GrowingTree from '@/components/dashboard/student/GrowingTree'
 import PasswordChangeForm from '@/components/dashboard/student/PasswordChangeForm'
