@@ -74,9 +74,9 @@ export default async function StudentProfilePage() {
             </div>
             <div>
               <h1 className="text-2xl font-extrabold text-gray-900">{profile.full_name}</h1>
-              <p className="text-gray-500 text-sm">🏫 {(school?.name as string) || "Maktab ko'rsatilmagan"}</p>
-              <div className="mt-2">
-                <GradeSelector currentGrade={profile.grade} />
+              <p className="text-gray-500 text-sm">🏫 {school?.name ? `${school.name}-maktab` : "Maktab ko'rsatilmagan"}</p>
+              <div className="mt-2 text-sm font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-full inline-block">
+                Sinf: {profile.grade || '-'}
               </div>
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ backgroundColor: level.bgColor, color: level.textColor }}>
@@ -213,8 +213,7 @@ export default async function StudentProfilePage() {
             {[
               { label: "To'liq ism", value: profile.full_name || '-' },
               { label: 'Email', value: user.email || '-' },
-              { label: 'Maktab', value: (school?.name as string) || '-' },
-              { label: 'Tuman', value: (school?.district as string) || '-' },
+              { label: 'Maktab', value: school?.name ? `${school.name}-maktab` : '-' },
               { label: "Ro'yxatdan o'tgan", value: regDate },
             ].map((item, i) => (
               <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
