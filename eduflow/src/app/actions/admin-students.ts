@@ -89,3 +89,27 @@ export async function deleteStudent(studentId: string, userId: string) {
     return { success: false, error: String(err) }
   }
 }
+
+export async function approveParentRequest(requestId: string, studentId: string, chatId: number) {
+  const supabase = createAdminClient()
+
+  // 1. Update Student profile
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .update({ parent_telegram_id: chatId.toString() })
+    .eq('id', studentId)
+
+  if (profileError) return { success: false, error: profileError.message }
+
+  // 2. Mark request as approved
+  const { error: requestError } = await supabase
+    .from('parent_registration_requests')
+    .update({ status: 'approved' })
+    .eq('id', requestId)
+
+  if (requestError) return { success: false, error: requestError.message }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/students')
+  return { success: true }
+}

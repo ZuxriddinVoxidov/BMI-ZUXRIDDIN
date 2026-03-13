@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { Check, Search, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { approveParentRequest } from '@/app/actions/admin-students'
 
 interface RequestRecord {
   id: string
@@ -52,22 +53,16 @@ export default function ParentRequests() {
     if (!showModal || !selectedStudent) return
     setProcessing(true)
     try {
-      // 1. Update Student profile
-      await supabase
-        .from('profiles')
-        .update({ parent_telegram_id: showModal.chat_id.toString() })
-        .eq('id', selectedStudent)
-
-      // 2. Mark request as approved
-      await supabase
-        .from('parent_registration_requests')
-        .update({ status: 'approved' })
-        .eq('id', showModal.id)
-
-      alert("Muvaffaqiyatli biriktirildi!")
-      setShowModal(null)
-      setSelectedStudent('')
-      setRequests(reqs => reqs.filter(r => r.id !== showModal.id))
+      const result = await approveParentRequest(showModal.id, selectedStudent, showModal.chat_id)
+      
+      if (result.success) {
+        alert("Muvaffaqiyatli biriktirildi!")
+        setShowModal(null)
+        setSelectedStudent('')
+        setRequests(reqs => reqs.filter(r => r.id !== showModal.id))
+      } else {
+        alert("Xatolik: " + result.error)
+      }
     } catch (e) {
       alert("Xatolik yuz berdi")
     }

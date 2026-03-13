@@ -81,8 +81,7 @@ export default async function DashboardPage() {
     student_id: s.id,
     full_name: s.full_name,
     grade: s.grade,
-    total_points: (s.student_points as { total_points: number }[])?.[0]
-      ?.total_points ?? 0,
+    total_points: (s.student_points as any)?.total_points ?? 0,
   }))
 
   const daysUz = ['yakshanba', 'dushanba', 'seshanba', 'chorshanba', 'payshanba', 'juma', 'shanba']

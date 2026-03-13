@@ -9,6 +9,7 @@ import {
     Users
 } from 'lucide-react'
 import Link from 'next/link'
+import { useState } from 'react'
 import ParentRequests from './ParentRequests'
 
 interface Props {
@@ -37,6 +38,9 @@ export default function DashboardContent({
   recentApplications, recentClubs, topStudents, adminName,
   missedAttendanceClubs = [],
 }: Props) {
+  const [showAllMissed, setShowAllMissed] = useState(false)
+  const [showAllApps, setShowAllApps] = useState(false)
+
   const today = new Date().toISOString().split('T')[0]
   const stats = [
     {
@@ -130,7 +134,7 @@ export default function DashboardContent({
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {missedAttendanceClubs.map(club => (
+            {(showAllMissed ? missedAttendanceClubs : missedAttendanceClubs.slice(0, 3)).map(club => (
               <div key={club.id} className="bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-red-100 flex flex-col">
                 <span className="font-semibold text-gray-900 text-sm">{club.name}</span>
                 <span className="text-xs text-gray-600 mt-1">👨‍🏫 {club.teacher_name}</span>
@@ -138,6 +142,14 @@ export default function DashboardContent({
               </div>
             ))}
           </div>
+          {missedAttendanceClubs.length > 3 && (
+            <button 
+              onClick={() => setShowAllMissed(!showAllMissed)}
+              className="mt-4 text-sm font-medium text-red-700 hover:text-red-800 underline transition-colors"
+            >
+              {showAllMissed ? 'Yashirish' : `Barchasini ko'rish (${missedAttendanceClubs.length})`}
+            </button>
+          )}
         </motion.div>
       )}
 
@@ -167,7 +179,7 @@ export default function DashboardContent({
             </div>
           ) : (
             <div className="space-y-3">
-              {recentApplications.map(app => {
+              {(showAllApps ? recentApplications : recentApplications.slice(0, 2)).map(app => {
                 const student = app.student as Record<string, unknown> | null
                 const club = app.club as Record<string, unknown> | null
                 return (
@@ -183,6 +195,15 @@ export default function DashboardContent({
                   </div>
                 )
               })}
+              
+              {recentApplications.length > 2 && (
+                <button 
+                  onClick={() => setShowAllApps(!showAllApps)}
+                  className="w-full text-center mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+                >
+                  {showAllApps ? 'Yashirish' : `Barchasini ko'rish (${recentApplications.length})`}
+                </button>
+              )}
             </div>
           )}
         </motion.div>
