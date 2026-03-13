@@ -67,12 +67,3 @@ Assalomu alaykum!
 — <i>EduFlow tizimi</i>
   `.trim()
 }
-
-// Temporary in-memory state for bot conversation
-// (works for small scale, resets on redeploy)
-const conversationState = new Map<number, {
-  step: 'waiting_parent_name' | 'waiting_child_name'
-  parent_name?: string
-}>()
-
-export { conversationState }

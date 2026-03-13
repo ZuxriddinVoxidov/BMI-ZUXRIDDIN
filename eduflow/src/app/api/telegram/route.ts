@@ -1,18 +1,21 @@
 import { NextRequest } from 'next/server'
-import { conversationState } from '@/lib/telegram'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN!
 
 async function sendMessage(chat_id: number, text: string) {
-  await fetch(
-    `https://api.telegram.org/bot${TOKEN}/sendMessage`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id, text, parse_mode: 'HTML' })
-    }
-  )
+  try {
+    await fetch(
+      `https://api.telegram.org/bot${TOKEN}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id, text, parse_mode: 'HTML' })
+      }
+    )
+  } catch (err) {
+    console.error('Failed to send telegram message:', err)
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -23,13 +26,26 @@ export async function POST(req: NextRequest) {
 
     const chatId: number = message.chat.id
     const text: string = message.text?.trim() || ''
-    const state = conversationState.get(chatId)
+
+    const supabase = createAdminClient()
+
+    // GET state
+    const { data: state } = await supabase
+      .from('telegram_conversation_state')
+      .select('*')
+      .eq('chat_id', chatId)
+      .single()
 
     // /start command
     if (text === '/start') {
-      conversationState.set(chatId, { 
-        step: 'waiting_parent_name' 
-      })
+      await supabase
+        .from('telegram_conversation_state')
+        .upsert({ 
+          chat_id: chatId, 
+          step: 'waiting_parent_name',
+          updated_at: new Date().toISOString()
+        })
+      
       await sendMessage(
         chatId,
         `🎓 <b>EduFlow — 46-maktab</b>\n\nXush kelibsiz!\n\nFarzandingiz haqida xabarnomalar olish uchun ro'yxatdan o'ting.\n\n👤 Iltimos, <b>ism va familiyangizni</b> kiriting:\n<i>(Masalan: Karimova Zilola)</i>`
@@ -39,10 +55,15 @@ export async function POST(req: NextRequest) {
 
     // Step 1: waiting for parent name
     if (state?.step === 'waiting_parent_name') {
-      conversationState.set(chatId, {
-        step: 'waiting_child_name',
-        parent_name: text
-      })
+      await supabase
+        .from('telegram_conversation_state')
+        .upsert({ 
+          chat_id: chatId, 
+          step: 'waiting_child_name',
+          parent_name: text,
+          updated_at: new Date().toISOString()
+        })
+
       await sendMessage(
         chatId,
         `✅ Rahmat, <b>${text}</b>!\n\n👦 Endi <b>farzandingizning to'liq ismi</b>ni kiriting:\n<i>(Masalan: Karimov Jasur)</i>`
@@ -52,11 +73,10 @@ export async function POST(req: NextRequest) {
 
     // Step 2: waiting for child name
     if (state?.step === 'waiting_child_name') {
-      const parentName = state.parent_name!
+      const parentName = state.parent_name
       const childName = text
 
       // Save to database
-      const supabase = createAdminClient()
       const { error } = await supabase
         .from('parent_registration_requests')
         .insert({
@@ -66,7 +86,11 @@ export async function POST(req: NextRequest) {
           status: 'pending'
         })
 
-      conversationState.delete(chatId)
+      // DELETE state
+      await supabase
+        .from('telegram_conversation_state')
+        .delete()
+        .eq('chat_id', chatId)
 
       if (error) {
         await sendMessage(

@@ -1,4 +1,12 @@
--- Step 1: Create the parent registration requests table to hold webhook data
+-- Step 1.1: Create table to hold conversation state for Telegram bot
+CREATE TABLE IF NOT EXISTS telegram_conversation_state (
+  chat_id BIGINT PRIMARY KEY,
+  step TEXT NOT NULL,
+  parent_name TEXT,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Step 1.2: Create the parent registration requests table to hold webhook data
 CREATE TABLE IF NOT EXISTS parent_registration_requests (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   chat_id BIGINT NOT NULL,
