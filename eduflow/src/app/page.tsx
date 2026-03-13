@@ -19,7 +19,7 @@ export default async function Home() {
     { count: clubsCount },
     { data: ratingsData },
   ] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student').not('school_id', 'is', null),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'student'),
     supabase.from('clubs').select('*', { count: 'exact', head: true }).eq('is_published', true),
     supabase.from('reviews').select('rating'),
   ])
@@ -29,16 +29,24 @@ export default async function Home() {
     : '—'
 
   // Fetch clubs
-  const { data: clubs } = await supabase
+  const { data: rawClubs } = await supabase
     .from('clubs')
     .select(`
       *,
       teacher:profiles!teacher_id(full_name),
-      enrollments:enrollments(count),
+      enrollments:enrollments(status),
       reviews:reviews(rating)
     `)
     .eq('is_published', true)
     .order('created_at', { ascending: false })
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const clubs = rawClubs?.map((club: any) => ({
+    ...club,
+    enrollments: [{
+      count: club.enrollments?.filter((e: { status: string }) => e.status === 'approved').length || 0
+    }]
+  })) || []
 
   // Fetch reviews
   const { data: reviews } = await supabase

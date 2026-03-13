@@ -36,5 +36,9 @@ export default async function StudentsPage() {
     email: emailData?.find((e: { user_id: string; email: string }) => e.user_id === s.user_id)?.email || '—'
   })) || []
 
+  console.log("DEBUG Admin schoolId:", adminProfile.school_id);
+  console.log("DEBUG Fetched students:", students);
+  console.log("DEBUG Students with email:", studentsWithEmail);
+
   return <StudentsManager students={studentsWithEmail} />
 }

@@ -69,7 +69,7 @@ export default function TestimonialsSection({ reviews }: { reviews?: any[] }) {
             variant="outline"
             className="text-indigo-600 border-indigo-200 bg-indigo-50 mb-4 px-4 py-1"
           >
-            Fikrlar
+            Fikrlar ({data.length})
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
             O&apos;quvchilar fikri
@@ -95,9 +95,9 @@ export default function TestimonialsSection({ reviews }: { reviews?: any[] }) {
           <div className="overflow-hidden">
             <div
               className="flex animate-scroll hover:[animation-play-state:paused]"
-              style={{ width: `${data.length * 2 * 340}px` }}
+              style={{ width: `${data.length * 340}px` }}
             >
-              {[...data, ...data].map((review, i) => (
+              {data.map((review, i) => (
                 <ReviewCard key={`${review.id}-${i}`} review={review} />
               ))}
             </div>

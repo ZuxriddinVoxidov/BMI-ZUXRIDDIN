@@ -14,11 +14,15 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('is_blocked')
+    .select('is_blocked, role')
     .eq('user_id', user.id)
     .single()
 
-  if (profile?.is_blocked) redirect('/login?error=blocked')
+  if (!profile || profile.is_blocked) redirect('/login?error=blocked')
+
+  if (profile.role !== 'school_admin' && profile.role !== 'super_admin') {
+    redirect(`/${profile.role || 'student'}`)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50/50">

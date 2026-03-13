@@ -98,18 +98,15 @@ export default function AttendancePage() {
 
   async function giveReward(studentId: string) {
     setRewardLoading(studentId)
-    const supabase = createClient()
-    await supabase.from('teacher_rewards').insert({
-      teacher_id: profileId,
-      student_id: studentId,
-      club_id: selectedClub,
-      lesson_date: selectedDate,
-      badge_type: 'star',
-      badge_label: 'Faol ishtirok',
-    })
-    // Also add 3 points
-    await supabase.rpc('add_student_points', { p_student_id: studentId, p_points: 3, p_reason: "O'qituvchi rag'bati" })
-    setRewards(prev => [...prev, { student_id: studentId }])
+    const { giveReward: giveRewardAction } = await import('@/app/actions/rewards')
+    const result = await giveRewardAction(studentId, selectedClub, selectedDate)
+    
+    if (result.success) {
+      setRewards(prev => [...prev, { student_id: studentId }])
+      alert("10 ball rag'bat berildi! ⭐")
+    } else {
+      alert(result.error || "Xatolik yuz berdi")
+    }
     setRewardLoading(null)
   }
 

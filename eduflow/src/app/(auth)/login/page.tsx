@@ -215,7 +215,7 @@ export default function LoginPage() {
         email: regEmail,
         password: regPassword,
         options: {
-          data: { full_name: regName, role: 'student', grade: regGrade || undefined },
+          data: { full_name: regName, role: 'student', grade: regGrade || undefined, school_id: '00000000-0000-0000-0000-000000000001' },
         },
       })
 

@@ -9,6 +9,7 @@ import {
     Users
 } from 'lucide-react'
 import Link from 'next/link'
+import ParentRequests from './ParentRequests'
 
 interface Props {
   studentsCount: number
@@ -139,6 +140,9 @@ export default function DashboardContent({
           </div>
         </motion.div>
       )}
+
+      {/* Parent Telegram Registration Requests */}
+      <ParentRequests />
 
       {/* Three Column Content */}
       <div className="grid lg:grid-cols-3 gap-6">

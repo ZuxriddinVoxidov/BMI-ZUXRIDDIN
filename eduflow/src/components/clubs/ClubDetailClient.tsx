@@ -27,6 +27,17 @@ export default function ClubDetailClient({
   const isFull = enrolledCount >= (club.max_students || 30)
   const spotsLeft = (club.max_students || 30) - enrolledCount
 
+  const role = userProfile?.role
+  const getBreadcrumbLinks = () => {
+    switch(role) {
+      case 'student': return { home: '/student', catalog: '/student/explore' }
+      case 'admin': return { home: '/dashboard', catalog: '/dashboard/clubs' }
+      case 'teacher': return { home: '/teacher', catalog: '/teacher/clubs' }
+      default: return { home: '/', catalog: '/#clubs' }
+    }
+  }
+  const { home, catalog } = getBreadcrumbLinks()
+
   const handleApply = () => {
     startTransition(async () => {
       const result = await applyToClub(club.id)
@@ -60,11 +71,11 @@ export default function ClubDetailClient({
 
       {/* Sticky Header */}
       <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-white/50 px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href={home} className="flex items-center gap-2">
           <span className="text-2xl">🎓</span>
           <span className="font-bold text-indigo-600 text-lg">EduFlow</span>
         </Link>
-        <Link href="/#clubs"
+        <Link href={catalog}
           className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 text-sm font-semibold hover:shadow-md transition-all">
           ← To&apos;garaklarga qaytish
         </Link>
@@ -74,9 +85,9 @@ export default function ClubDetailClient({
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-          <Link href="/" className="hover:text-indigo-600 transition">Asosiy</Link>
+          <Link href={home} className="hover:text-indigo-600 transition">Asosiy</Link>
           <span>›</span>
-          <Link href="/#clubs" className="hover:text-indigo-600 transition">To&apos;garaklar</Link>
+          <Link href={catalog} className="hover:text-indigo-600 transition">To&apos;garaklar</Link>
           <span>›</span>
           <span className="text-gray-900 font-semibold">{club.name}</span>
         </div>

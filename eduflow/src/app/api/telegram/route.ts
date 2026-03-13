@@ -1,43 +1,107 @@
-import { NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { conversationState } from '@/lib/telegram'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-export async function POST(request: Request) {
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN!
+
+async function sendMessage(chat_id: number, text: string) {
+  await fetch(
+    `https://api.telegram.org/bot${TOKEN}/sendMessage`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id, text, parse_mode: 'HTML' })
+    }
+  )
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const body = await request.json()
-    const chatId = body?.message?.chat?.id
-    const text = body?.message?.text
-    const firstName = body?.message?.from?.first_name || 'Foydalanuvchi'
+    const update = await req.json()
+    const message = update?.message
+    if (!message) return Response.json({ ok: true })
 
-    if (!chatId) return NextResponse.json({ ok: true })
+    const chatId: number = message.chat.id
+    const text: string = message.text?.trim() || ''
+    const state = conversationState.get(chatId)
 
-    const token = process.env.TELEGRAM_BOT_TOKEN!
-
-    if (text === '/start' || text === '/id') {
-      const message = `
-Assalomu alaykum, ${firstName}! 👋
-
-Sizning Telegram Chat ID ingiz:
-<code>${chatId}</code>
-
-Bu ID ni maktab ma'muriyatiga bering.
-Ular tizimga kiritgandan so'ng farzandingizning 
-davomat haqida xabarnomalar olasiz. 📚
-
-— <i>EduFlow tizimi</i>
-      `.trim()
-
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-          parse_mode: 'HTML',
-        }),
+    // /start command
+    if (text === '/start') {
+      conversationState.set(chatId, { 
+        step: 'waiting_parent_name' 
       })
+      await sendMessage(
+        chatId,
+        `🎓 <b>EduFlow — 46-maktab</b>\n\nXush kelibsiz!\n\nFarzandingiz haqida xabarnomalar olish uchun ro'yxatdan o'ting.\n\n👤 Iltimos, <b>ism va familiyangizni</b> kiriting:\n<i>(Masalan: Karimova Zilola)</i>`
+      )
+      return Response.json({ ok: true })
     }
 
-    return NextResponse.json({ ok: true })
-  } catch {
-    return NextResponse.json({ ok: false }, { status: 500 })
+    // Step 1: waiting for parent name
+    if (state?.step === 'waiting_parent_name') {
+      conversationState.set(chatId, {
+        step: 'waiting_child_name',
+        parent_name: text
+      })
+      await sendMessage(
+        chatId,
+        `✅ Rahmat, <b>${text}</b>!\n\n👦 Endi <b>farzandingizning to'liq ismi</b>ni kiriting:\n<i>(Masalan: Karimov Jasur)</i>`
+      )
+      return Response.json({ ok: true })
+    }
+
+    // Step 2: waiting for child name
+    if (state?.step === 'waiting_child_name') {
+      const parentName = state.parent_name!
+      const childName = text
+
+      // Save to database
+      const supabase = createAdminClient()
+      const { error } = await supabase
+        .from('parent_registration_requests')
+        .insert({
+          chat_id: chatId,
+          parent_name: parentName,
+          child_name: childName,
+          status: 'pending'
+        })
+
+      conversationState.delete(chatId)
+
+      if (error) {
+        await sendMessage(
+          chatId,
+          `❌ Xatolik yuz berdi. Qaytadan urinib ko'ring: /start`
+        )
+        return Response.json({ ok: true })
+      }
+
+      await sendMessage(
+        chatId,
+        `✅ <b>Ma'lumotlar qabul qilindi!</b>\n\n👤 Ota-ona: ${parentName}\n👦 Farzand: ${childName}\n\nAdmin ma'lumotlarni ko'rib chiqadi va tizimga kiritadi. Keyin siz xabarnomalar olishni boshlaysiz! 🎉`
+      )
+
+      // Notify admin via telegram if ADMIN_CHAT_ID set
+      const adminChatId = process.env.ADMIN_TELEGRAM_CHAT_ID
+      if (adminChatId) {
+        await sendMessage(
+          Number(adminChatId),
+          `🔔 <b>Yangi ota-ona so'rovi!</b>\n\n👤 Ota-ona: ${parentName}\n👦 Farzand: ${childName}\n🆔 Chat ID: <code>${chatId}</code>\n\nAdmin panelda tasdiqlang.`
+        )
+      }
+
+      return Response.json({ ok: true })
+    }
+
+    // Unknown message
+    await sendMessage(
+      chatId,
+      `Botdan foydalanish uchun /start buyrug'ini yuboring.`
+    )
+    return Response.json({ ok: true })
+
+  } catch (err) {
+    console.error('Telegram webhook error:', err)
+    return Response.json({ ok: true })
   }
 }
