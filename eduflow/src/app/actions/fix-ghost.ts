@@ -44,7 +44,10 @@ export async function fixGhostUserAction(email: string, fullName: string, plainP
     if (insertError) return { success: false, error: 'Insert failed: ' + insertError.message }
 
     return { success: true, message: 'Ghost user fixed!' }
-  } catch (e: any) {
-    return { success: false, error: e.message }
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      return { success: false, error: e.message }
+    }
+    return { success: false, error: 'Unknown error' }
   }
 }

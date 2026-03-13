@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 // ─── Password Strength ──────────────────────────────────────
 function getPasswordStrength(p: string) {
@@ -243,7 +243,7 @@ export default function LoginPage() {
       setRegGrade('')
       setTimeout(() => setActiveTab('login'), 2000)
     },
-    [regName, regEmail, regPassword, regConfirm, supabase]
+    [regName, regEmail, regPassword, regConfirm, regGrade, supabase]
   )
 
   const pwStrength = getPasswordStrength(regPassword)
