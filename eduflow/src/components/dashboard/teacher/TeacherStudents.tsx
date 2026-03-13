@@ -52,7 +52,7 @@ export default function TeacherStudents({ enrollments, attendanceData }: { enrol
     const map: Record<string, { name: string; club: string; points: number; present: number; total: number }> = {}
     enrollments.forEach((e) => {
       const sid = e.student?.id as string
-      const pts = (e.student?.student_points as Record<string, unknown>[])?.[0]?.total_points as number || 0
+      const pts = (e.student?.student_points as any)?.total_points as number || 0
       if (sid) {
         map[sid] = { name: e.student?.full_name as string, club: e.club?.name as string, points: pts, present: 0, total: 0 }
       }

@@ -70,8 +70,7 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                           <tbody>
                             {approvedStudents.map((e) => {
                               const student = e.student as Record<string, unknown>
-                              const points = (student?.student_points as Record<string, unknown>[])?.[0]
-                              const totalPts = (points?.total_points as number) || 0
+                              const totalPts = ((student?.student_points as any)?.total_points) as number || 0
                               const level = getStudentLevel(totalPts)
                               const initials = ((student?.full_name as string) || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
                               const date = new Date(e.created_at as string)

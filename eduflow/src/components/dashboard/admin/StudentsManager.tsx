@@ -26,6 +26,7 @@ interface Student {
 
 export default function StudentsManager({ students }: { students: Student[] }) {
   const [search, setSearch] = useState('')
+  const [gradeFilter, setGradeFilter] = useState('')
   const [editStudent, setEditStudent] = useState<Student | null>(null)
   const [formData, setFormData] = useState({ full_name: '', parent_name: '', parent_telegram_id: '', grade: '', phone: '', email: '', new_password: '' })
   const [showNewPwd, setShowNewPwd] = useState(false)
@@ -43,10 +44,12 @@ export default function StudentsManager({ students }: { students: Student[] }) {
 
   useEffect(() => { setDataReady(true) }, [])
 
-  const filtered = studentsList.filter((s) =>
-    s.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-    s.email?.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = studentsList.filter((s) => {
+    const matchesSearch = s.full_name?.toLowerCase().includes(search.toLowerCase()) || 
+                          s.email?.toLowerCase().includes(search.toLowerCase())
+    const matchesGrade = gradeFilter ? s.grade === gradeFilter : true
+    return matchesSearch && matchesGrade
+  })
 
   const openEdit = (student: Student) => {
     setEditStudent(student)
@@ -152,11 +155,23 @@ export default function StudentsManager({ students }: { students: Student[] }) {
         </div>
       </div>
 
-      <div className="relative">
-        <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input type="text" placeholder="Ism yoki email bo'yicha qidirish..." value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input type="text" placeholder="Ism yoki email bo'yicha qidirish..." value={search}
+             onChange={(e) => setSearch(e.target.value)}
+             className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
+        </div>
+        <select 
+          value={gradeFilter} 
+          onChange={e => setGradeFilter(e.target.value)}
+          className="w-full sm:w-48 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 bg-white"
+        >
+          <option value="">Barcha sinflar</option>
+          {GRADES.map(g => (
+            <option key={g} value={g}>{g}-sinf</option>
+          ))}
+        </select>
       </div>
 
       {filtered.length === 0 ? (
@@ -186,7 +201,7 @@ export default function StudentsManager({ students }: { students: Student[] }) {
             </thead>
             <tbody>
               {filtered.map((student) => {
-                const points = student.student_points?.[0]?.total_points || 0
+                const points = (student.student_points as any)?.total_points ?? 0
                 const level = getStudentLevel(points)
                 const initials = (student.full_name || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
 
