@@ -2,6 +2,7 @@
 
 import { applyToClub } from '@/app/actions/enrollment'
 import { Search } from 'lucide-react'
+import Link from 'next/link'
 import { useState, useTransition } from 'react'
 
 const categories = [
@@ -61,20 +62,7 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
     return matchesCategory && matchesSearch && matchesPrice
   })
 
-  const handleApply = async (clubId: string) => {
-    setApplyingId(clubId)
-    startTransition(async () => {
-      const result = await applyToClub(clubId)
-      if (result.success) {
-        setLocalEnrollments([...localEnrollments, { club_id: clubId, status: 'pending' }])
-        setToast({ message: "Ariza muvaffaqiyatli yuborildi! Admin tasdiqlashini kuting.", type: 'success' })
-      } else {
-        setToast({ message: result.error || 'Xatolik yuz berdi', type: 'error' })
-      }
-      setApplyingId(null)
-      setTimeout(() => setToast(null), 4000)
-    })
-  }
+  // Removing handleApply from catalog, moved entirely to detail page
 
   return (
     <>
@@ -282,71 +270,43 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
                   </div>
 
                   {/* Action Button */}
-                  {!status && (
-                    <>
-                      {club.is_paid && (club.price as number) > 0 ? (
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => {
-                              const teacherPhone = (teacher?.phone as string) || ''
-                              const teacherTelegram = teacherPhone.replace(/\D/g, '')
-
-                              setToast(null)
-                              setPaidToast({
-                                clubName: club.name as string,
-                                price: club.price as number,
-                                teacherName: (teacher?.full_name as string) || 'Noma\'lum',
-                                teacherPhone,
-                                teacherTelegram,
-                              })
-                              setTimeout(() => setPaidToast(null), 8000)
-                            }}
-                            className="flex-1 flex items-center justify-center px-4 py-2.5 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-all"
-                          >
-                            💳 To&apos;lov
-                          </button>
-                          <button
-                            onClick={() => handleApply(club.id as string)}
-                            disabled={isPending && applyingId === (club.id as string)}
-                            className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-                          >
-                            {isPending && applyingId === (club.id as string) ? '⏳' : '📝 Ariza'}
-                          </button>
+                  <div className="flex flex-col gap-2">
+                    {!status ? (
+                      <Link
+                        href={`/clubs/${club.id}`}
+                        className="w-full text-center py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors"
+                      >
+                        Batafsil
+                      </Link>
+                    ) : status === 'pending' ? (
+                      <>
+                        <div className="w-full py-2.5 bg-amber-50 text-amber-700 rounded-xl text-sm font-semibold text-center">
+                          ⏳ Ko&apos;rib chiqilmoqda
                         </div>
-                      ) : (
-                        <button
-                          onClick={() => handleApply(club.id as string)}
-                          disabled={isPending && applyingId === (club.id as string)}
-                          className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-                        >
-                          {isPending && applyingId === (club.id as string)
-                            ? 'Yuborilmoqda...'
-                            : 'Ariza yuborish'}
-                        </button>
-                      )}
-                    </>
-                  )}
-                  {status === 'pending' && (
-                    <div className="w-full py-2.5 bg-amber-50 text-amber-700 rounded-xl text-sm font-semibold text-center">
-                      ⏳ Ko&apos;rib chiqilmoqda
-                    </div>
-                  )}
-                  {status === 'approved' && (
-                    <div className="w-full py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-semibold text-center">
-                      ✅ A&apos;zosiz
-                    </div>
-                  )}
-                  {status === 'rejected' && (
-                    <button
-                      onClick={() => handleApply(club.id as string)}
-                      disabled={isPending && applyingId === (club.id as string)}
-                      className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50"
-                    >
-                      {isPending && applyingId === (club.id as string)
-                        ? 'Yuborilmoqda...'
-                        : 'Qayta ariza yuborish'}
-                    </button>
-                  )}
+                        <Link href={`/clubs/${club.id}`} className="text-center text-xs text-indigo-600 font-semibold hover:underline">
+                          Batafsil ko&apos;rish
+                        </Link>
+                      </>
+                    ) : status === 'approved' ? (
+                      <>
+                        <div className="w-full py-2.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-semibold text-center">
+                          ✅ A&apos;zosiz
+                        </div>
+                        <Link href={`/clubs/${club.id}`} className="text-center text-xs text-indigo-600 font-semibold hover:underline">
+                          To&apos;garak sahifasi
+                        </Link>
+                      </>
+                    ) : status === 'rejected' ? (
+                      <>
+                        <div className="w-full py-2.5 bg-red-50 text-red-700 rounded-xl text-sm font-semibold text-center">
+                          ❌ Rad etildi
+                        </div>
+                        <Link href={`/clubs/${club.id}`} className="w-full text-center py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold transition-colors">
+                          Batafsil / Qayta ariza
+                        </Link>
+                      </>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             )
