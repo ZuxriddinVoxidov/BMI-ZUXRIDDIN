@@ -188,13 +188,21 @@ export default function AdminProfileClient({ profile, email }: Props) {
                   className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
               </div>
               <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
+                <input value={email} disabled
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none text-gray-500 cursor-not-allowed" />
+              </div>
+              <div>
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Telefon</label>
-                <input value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                  placeholder="+998 90 123 45 67" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                  placeholder="+998 90 123 45 67"
+                  autoComplete="tel"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Yangi parol</label>
                 <input type="password" value={form.new_password} onChange={e => setForm(p => ({ ...p, new_password: e.target.value }))}
+                  autoComplete="new-password"
                   placeholder="O'zgartirmasangiz bo'sh qoldiring" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400" />
               </div>
               {form.new_password && (
