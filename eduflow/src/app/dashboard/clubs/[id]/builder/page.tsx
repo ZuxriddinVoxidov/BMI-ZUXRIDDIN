@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @next/next/no-img-element */
 export default function ClubBuilderPage() {
   const params = useParams()
   const clubId = params.id as string
@@ -156,6 +157,7 @@ export default function ClubBuilderPage() {
               <div className="relative h-36 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                 {formData.cover_image_url ? (
                   <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={formData.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/30" />
                   </>
@@ -183,6 +185,7 @@ export default function ClubBuilderPage() {
               <div className="relative h-48 rounded-2xl overflow-hidden flex items-center justify-center">
                 {formData.cover_image_url ? (
                   <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={formData.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40" />
                   </>
@@ -215,6 +218,7 @@ export default function ClubBuilderPage() {
                 <h3 className="font-bold text-sm mb-2">👨‍🏫 O&apos;qituvchi</h3>
                 <div className="flex items-center gap-3">
                   {formData.teacher_image_url ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img src={formData.teacher_image_url} alt="" className="w-10 h-10 rounded-full object-cover" />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
@@ -230,6 +234,7 @@ export default function ClubBuilderPage() {
               {/* Room */}
               {formData.room_image_url && (
                 <div className="bg-white rounded-xl overflow-hidden border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={formData.room_image_url} alt="" className="w-full h-32 object-cover" />
                   <p className="text-center text-xs text-gray-500 py-2">📍 Dars xonasi</p>
                 </div>
@@ -366,6 +371,7 @@ function ImageUploader({ label, hint, currentUrl, onUpload, onRemove }: {
       <p className="text-xs text-gray-400">{hint}</p>
       {currentUrl ? (
         <div className="relative">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={currentUrl} alt={label} className="w-full h-32 object-cover rounded-xl" />
           <button onClick={onRemove} className="absolute top-2 right-2 bg-red-500 text-white rounded-lg px-2 py-1 text-xs hover:bg-red-600">
             O&apos;chirish
