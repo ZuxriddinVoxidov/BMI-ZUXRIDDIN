@@ -57,6 +57,7 @@ export async function updateStudentGrade(grade: string) {
 
 export async function updateAdminProfile(data: {
   full_name: string
+  email?: string
   phone?: string
   new_password?: string
 }) {
@@ -75,8 +76,16 @@ export async function updateAdminProfile(data: {
     })
     .eq('user_id', user.id)
 
-  if (data.new_password) {
-    await admin.auth.admin.updateUserById(user.id, { password: data.new_password })
+  const authUpdates: Record<string, unknown> = {}
+  if (data.new_password) authUpdates.password = data.new_password
+  if (data.email && data.email !== user.email) {
+    authUpdates.email = data.email
+    authUpdates.email_confirm = true
+  }
+
+  if (Object.keys(authUpdates).length > 0) {
+    const { error: authError } = await admin.auth.admin.updateUserById(user.id, authUpdates)
+    if (authError) return { success: false, error: authError.message }
   }
 
   revalidatePath('/dashboard/settings')
