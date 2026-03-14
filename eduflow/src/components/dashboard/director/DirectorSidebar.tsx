@@ -2,7 +2,7 @@
 
 import { logout } from '@/app/actions/auth'
 import { cn } from '@/lib/utils'
-import { BarChart3, BookOpen, ChevronLeft, GraduationCap, Home, LogOut, Menu, School, User, Users, X } from 'lucide-react'
+import { BarChart3, BookOpen, ChevronLeft, GraduationCap, Home, LogOut, Menu, School, Sparkles, User, Users, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: '/director/students', icon: Users, label: "O'quvchilar" },
   { href: '/director/clubs', icon: BookOpen, label: "To'garaklar" },
   { href: '/director/statistics', icon: BarChart3, label: "Statistika" },
+  { href: '/director/ai', icon: Sparkles, label: "AI Tahlilchi" },
   { href: '/director/profile', icon: User, label: "Profil" },
 ]
 

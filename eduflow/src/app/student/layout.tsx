@@ -1,4 +1,3 @@
-import AIChatWidget from '@/components/ai/AIChatWidget'
 import StudentHeader from '@/components/dashboard/student/StudentHeader'
 import StudentSidebar from '@/components/dashboard/student/StudentSidebar'
 import { createClient } from '@/lib/supabase/server'
@@ -58,13 +57,6 @@ export default async function StudentLayout({
         />
         <main className="p-4 md:p-6">{children}</main>
       </div>
-      <AIChatWidget
-        apiRoute="/api/ai/student"
-        title="EduFlow AI"
-        subtitle="To'garak bo'yicha maslahat"
-        placeholder="To'garak haqida so'rang..."
-        color="from-indigo-500 to-blue-600"
-      />
     </div>
   )
 }

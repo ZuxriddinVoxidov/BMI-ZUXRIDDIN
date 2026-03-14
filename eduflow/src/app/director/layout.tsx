@@ -1,4 +1,3 @@
-import AIChatWidget from '@/components/ai/AIChatWidget'
 import DirectorSidebar from '@/components/dashboard/director/DirectorSidebar'
 import NotificationBell from '@/components/shared/NotificationBell'
 import { createClient } from '@/lib/supabase/server'
@@ -36,7 +35,6 @@ export default async function DirectorLayout({ children }: { children: React.Rea
         </div>
         <main className="p-4 md:p-6">{children}</main>
       </div>
-      <AIChatWidget apiRoute="/api/ai/director" title="EduFlow AI" subtitle="Maktab tahlili" placeholder="Statistika haqida so'rang..." color="from-purple-500 to-indigo-600" />
     </div>
   )
 }

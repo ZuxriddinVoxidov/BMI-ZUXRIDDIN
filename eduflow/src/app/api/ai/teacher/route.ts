@@ -1,35 +1,43 @@
 import { askClaude } from '@/lib/ai/claude'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: Request) {
   try {
-    const { question } = await request.json()
+    const body = await request.json()
+    const messages = body.messages || [{ role: 'user', content: body.question || body.message || 'Salom' }]
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user) return NextResponse.json({ reply: 'Tizimga kiring' }, { status: 401 })
 
-    const { data: profile } = await supabase
+    const admin = createAdminClient()
+
+    const { data: profile } = await admin
       .from('profiles')
       .select('id, full_name')
       .eq('user_id', user.id)
       .single()
 
-    const { data: clubs } = await supabase
+    if (!profile) return NextResponse.json({ reply: 'Profil topilmadi' }, { status: 404 })
+
+    const { data: clubs } = await admin
       .from('clubs')
       .select('id, name')
-      .eq('teacher_id', profile!.id)
+      .eq('teacher_id', profile.id)
 
     const clubIds = clubs?.map(c => c.id) || []
 
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-    const { data: attendance } = await supabase
+    const { data: attendance } = await admin
       .from('attendance')
       .select('status, date, student_id')
-      .in('club_id', clubIds)
+      .in('club_id', clubIds.length > 0 ? clubIds : ['none'])
       .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
 
     const total = attendance?.length || 0
@@ -44,8 +52,8 @@ O'zbek tilida javob ber. Aniq va amaliy maslahat ber.
 Faqat o'qituvchilik, davomat va o'quvchilar haqida gapir.
 
 O'qituvchi ma'lumotlari:
-- Ism: ${profile?.full_name}
-- To'garaklar: ${clubs?.map(c => c.name).join(', ')}
+- Ism: ${profile.full_name}
+- To'garaklar: ${clubs?.map(c => c.name).join(', ') || 'yo\'q'}
 
 Oxirgi 30 kunlik davomat statistikasi:
 - Jami yozuvlar: ${total}
@@ -58,10 +66,10 @@ motivatsiya qilish va dars samaradorligini
 oshirish bo'yicha maslahat ber.
     `.trim()
 
-    const response = await askClaude(systemPrompt, question)
-    return NextResponse.json({ response })
+    const response = await askClaude(systemPrompt, messages)
+    return NextResponse.json({ reply: response })
   } catch (error) {
-    console.error('AI error:', error)
-    return NextResponse.json({ error: 'AI xatolik yuz berdi' }, { status: 500 })
+    console.error('Teacher AI error:', error)
+    return NextResponse.json({ reply: 'Kechirasiz, hozir javob bera olmayapman. Qayta urinib ko\'ring.' }, { status: 500 })
   }
 }

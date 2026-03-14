@@ -13,6 +13,7 @@ import {
     LogOut,
     Menu,
     Monitor,
+    Sparkles,
     User,
     X,
 } from 'lucide-react'
@@ -27,6 +28,7 @@ const navItems = [
   { label: 'Haftalik Jadval', href: '/student/schedule', icon: Calendar },
   { label: 'Davomat Hisoboti', href: '/student/attendance', icon: BarChart3 },
   { label: 'Mening Ishlarim', href: '/student/works', icon: FolderOpen },
+  { label: 'AI Yordamchi', href: '/student/ai', icon: Sparkles },
   { label: 'Profil', href: '/student/profile', icon: User },
 ]
 

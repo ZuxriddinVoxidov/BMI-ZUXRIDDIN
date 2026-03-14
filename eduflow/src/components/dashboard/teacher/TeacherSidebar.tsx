@@ -10,6 +10,7 @@ import {
     LogOut,
     Menu,
     Monitor,
+    Sparkles,
     User,
     Users,
     X,
@@ -24,6 +25,7 @@ const navItems = [
   { label: 'Davomat Olish', href: '/teacher/attendance', icon: ClipboardCheck },
   { label: 'Hisobotlar', href: '/teacher/reports', icon: BarChart3 },
   { label: "O'quvchilar", href: '/teacher/students', icon: Users },
+  { label: 'AI Tahlilchi', href: '/teacher/ai', icon: Sparkles },
   { label: 'Profil', href: '/teacher/profile', icon: User },
 ]
 

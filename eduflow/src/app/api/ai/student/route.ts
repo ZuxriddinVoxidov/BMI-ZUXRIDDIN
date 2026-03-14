@@ -1,34 +1,42 @@
 import { askClaude } from '@/lib/ai/claude'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: Request) {
   try {
-    const { question } = await request.json()
+    const body = await request.json()
+    const messages = body.messages || [{ role: 'user', content: body.question || body.message || 'Salom' }]
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user) return NextResponse.json({ reply: 'Tizimga kiring' }, { status: 401 })
 
-    const { data: profile } = await supabase
+    const admin = createAdminClient()
+
+    const { data: profile } = await admin
       .from('profiles')
       .select('id, full_name')
       .eq('user_id', user.id)
       .single()
 
-    const { data: enrollments } = await supabase
+    if (!profile) return NextResponse.json({ reply: 'Profil topilmadi' }, { status: 404 })
+
+    const { data: enrollments } = await admin
       .from('enrollments')
       .select('club:clubs(name, category, description)')
-      .eq('student_id', profile!.id)
+      .eq('student_id', profile.id)
       .eq('status', 'approved')
 
-    const { data: pointsData } = await supabase
+    const { data: pointsData } = await admin
       .from('student_points')
       .select('total_points')
-      .eq('student_id', profile!.id)
+      .eq('student_id', profile.id)
       .maybeSingle()
 
-    const { data: availableClubs } = await supabase
+    const { data: availableClubs } = await admin
       .from('clubs')
       .select('name, category, description, schedule')
       .limit(20)
@@ -52,7 +60,7 @@ O'zbek tilida javob ber. Qisqa va aniq javob ber.
 Faqat to'garaklar va o'qish haqida maslahat ber.
 
 O'quvchi ma'lumotlari:
-- Ism: ${profile?.full_name}
+- Ism: ${profile.full_name}
 - Jami ball: ${pointsData?.total_points ?? 0}
 - Hozirgi to'garaklar: ${enrolledClubNames}
 
@@ -63,10 +71,10 @@ O'quvchiga uning qiziqishlari va maqsadlariga qarab
 to'garaklar tavsiya et. Motivatsiya ber.
     `.trim()
 
-    const response = await askClaude(systemPrompt, question)
-    return NextResponse.json({ response })
+    const response = await askClaude(systemPrompt, messages)
+    return NextResponse.json({ reply: response })
   } catch (error) {
-    console.error('AI error:', error)
-    return NextResponse.json({ error: 'AI xatolik yuz berdi' }, { status: 500 })
+    console.error('Student AI error:', error)
+    return NextResponse.json({ reply: 'Kechirasiz, hozir javob bera olmayapman. Qayta urinib ko\'ring.' }, { status: 500 })
   }
 }

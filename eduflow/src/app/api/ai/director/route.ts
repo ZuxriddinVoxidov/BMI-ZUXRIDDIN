@@ -1,20 +1,28 @@
 import { askGemini } from '@/lib/ai/gemini'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: Request) {
   try {
-    const { question } = await request.json()
+    const body = await request.json()
+    const messages = body.messages || [{ role: 'user', content: body.question || body.message || 'Salom' }]
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user) return NextResponse.json({ reply: 'Tizimga kiring' }, { status: 401 })
 
-    const { data: profile } = await supabase
+    const admin = createAdminClient()
+
+    const { data: profile } = await admin
       .from('profiles')
       .select('id, full_name, school_id, school:schools(name)')
       .eq('user_id', user.id)
       .single()
+
+    if (!profile) return NextResponse.json({ reply: 'Profil topilmadi' }, { status: 404 })
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const schoolName = (profile as any)?.school?.name || ''
@@ -25,18 +33,18 @@ export async function POST(request: Request) {
       { count: clubsCount },
       { data: attendance },
     ] = await Promise.all([
-      supabase.from('profiles')
+      admin.from('profiles')
         .select('*', { count: 'exact', head: true })
-        .eq('school_id', profile!.school_id)
+        .eq('school_id', profile.school_id)
         .eq('role', 'student'),
-      supabase.from('profiles')
+      admin.from('profiles')
         .select('*', { count: 'exact', head: true })
-        .eq('school_id', profile!.school_id)
+        .eq('school_id', profile.school_id)
         .eq('role', 'teacher'),
-      supabase.from('clubs')
+      admin.from('clubs')
         .select('*', { count: 'exact', head: true })
-        .eq('school_id', profile!.school_id),
-      supabase.from('attendance')
+        .eq('school_id', profile.school_id),
+      admin.from('attendance')
         .select('status')
         .gte('date', new Date(
           new Date().setDate(new Date().getDate() - 30)
@@ -52,7 +60,7 @@ Sen EduFlow platformasining AI yordamchisisan.
 O'zbek tilida professional va aniq javob ber.
 Maktab boshqaruvi, statistika tahlili haqida gapir.
 
-Direktor: ${profile?.full_name}
+Direktor: ${profile.full_name}
 Maktab: ${schoolName}
 
 Maktab statistikasi:
@@ -66,10 +74,10 @@ to'garaklar samaradorligi va rivojlantirish
 strategiyalari haqida professional maslahat ber.
     `.trim()
 
-    const response = await askGemini(systemPrompt, question)
-    return NextResponse.json({ response })
+    const response = await askGemini(systemPrompt, messages)
+    return NextResponse.json({ reply: response })
   } catch (error) {
-    console.error('AI error:', error)
-    return NextResponse.json({ error: 'AI xatolik yuz berdi' }, { status: 500 })
+    console.error('Director AI error:', error)
+    return NextResponse.json({ reply: 'Kechirasiz, hozir javob bera olmayapman. Qayta urinib ko\'ring.' }, { status: 500 })
   }
 }

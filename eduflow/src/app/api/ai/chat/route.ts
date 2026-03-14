@@ -1,13 +1,15 @@
 import { askGemini } from '@/lib/ai/gemini'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
-    const { messages } = await request.json()
-    // Use last message content for context
+    const body = await request.json()
+    const messages = body.messages || [{ role: 'user', content: body.question || body.message || 'Salom' }]
 
-    const supabase = createClient()
+    const supabase = createAdminClient()
     const { data: clubs } = await supabase
       .from('clubs')
       .select('name, category, description, schedule, max_students')
@@ -21,12 +23,9 @@ export async function POST(request: Request) {
       .join('\n') || 'To\'garaklar haqida ma\'lumot yo\'q'
 
     const systemPrompt = `
-Sen EduFlow — maktab to'garaklar platformasining
-yordamchisisisan. Saytga yangi kelgan
-foydalanuvchilarga yordam ber.
-
-O'zbek tilida samimiy va qisqa javob ber.
-Faqat EduFlow va to'garaklar haqida gapir.
+Sen EduFlow maktab platformasining AI yordamchisisisan.
+46-maktab to'garaklari haqida yordam berasan.
+Faqat o'zbek tilida javob ber. Qisqa va aniq javob ber.
 
 EduFlow haqida:
 - Maktab to'garaklarini boshqarish platformasi
@@ -36,24 +35,14 @@ EduFlow haqida:
 - O'quvchilar ball yig'ib daraja oshiradi
 - Daraja tizimi: Nihol → Daraxtcha → Navqiron → Yetuk
 
-Demo kirish:
-- Admin: admin@eduflow.uz / Admin@123
-- O'quvchi: student@eduflow.uz / Student@123
-- O'qituvchi: teacher@eduflow.uz / Teacher@123
-- Direktor: director@eduflow.uz / Director@123
-
 Mavjud to'garaklar:
 ${clubsInfo}
     `.trim()
 
-    const conversationText = messages
-      .map((m: { role: string; content: string }) => `${m.role === 'user' ? 'Foydalanuvchi' : 'AI'}: ${m.content}`)
-      .join('\n')
-
-    const response = await askGemini(systemPrompt, conversationText)
-    return NextResponse.json({ response })
+    const response = await askGemini(systemPrompt, messages)
+    return NextResponse.json({ reply: response })
   } catch (error) {
     console.error('Chat AI error:', error)
-    return NextResponse.json({ error: 'Xatolik yuz berdi' }, { status: 500 })
+    return NextResponse.json({ reply: 'Kechirasiz, hozir javob bera olmayapman. Qayta urinib ko\'ring.' }, { status: 500 })
   }
 }
