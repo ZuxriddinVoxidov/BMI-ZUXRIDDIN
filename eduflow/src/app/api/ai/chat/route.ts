@@ -6,6 +6,19 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
   try {
+    const now = new Date()
+    const currentDate = now.toLocaleDateString('uz-UZ', {
+      weekday: 'long',
+      year: 'numeric', 
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'Asia/Tashkent'
+    })
+    const currentTime = now.toLocaleTimeString('uz-UZ', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Tashkent'
+    })
     const body = await request.json()
     const messages = body.messages || [{ role: 'user', content: body.question || body.message || 'Salom' }]
 
@@ -23,6 +36,8 @@ export async function POST(request: Request) {
       .join('\n') || 'To\'garaklar haqida ma\'lumot yo\'q'
 
     const systemPrompt = `
+BUGUNGI SANA VA VAQT: ${currentDate}, soat ${currentTime} (Toshkent vaqti)
+
 Sen EduFlow maktab platformasining AI yordamchisisisan.
 46-maktab to'garaklari haqida yordam berasan.
 Faqat o'zbek tilida javob ber. Qisqa va aniq javob ber.
