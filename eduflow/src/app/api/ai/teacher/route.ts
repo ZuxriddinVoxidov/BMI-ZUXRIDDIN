@@ -1,4 +1,4 @@
-import { askClaude } from '@/lib/ai/claude'
+import { askGemini } from '@/lib/ai/gemini'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
@@ -66,7 +66,7 @@ motivatsiya qilish va dars samaradorligini
 oshirish bo'yicha maslahat ber.
     `.trim()
 
-    const response = await askClaude(systemPrompt, messages)
+    const response = await askGemini(systemPrompt, messages)
     return NextResponse.json({ reply: response })
   } catch (error) {
     console.error('Teacher AI error:', error)
