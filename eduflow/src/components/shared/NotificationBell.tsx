@@ -1,7 +1,7 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { Bell } from 'lucide-react'
+import { Bell, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -48,7 +48,6 @@ export default function NotificationBell({ userId }: { userId?: string }) {
     async function init() {
       let uid = userId || ''
       if (!uid) {
-        // Auto-resolve userId from auth
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
         const { data: profile } = await supabase
@@ -76,7 +75,56 @@ export default function NotificationBell({ userId }: { userId?: string }) {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
+  // Lock body scroll on mobile when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [isOpen])
+
   const unreadCount = notifications.filter(n => !n.is_read).length
+
+  const notificationContent = (
+    <>
+      <div className="flex items-center justify-between p-4 border-b">
+        <h3 className="font-semibold text-gray-800 text-sm">Bildirishnomalar</h3>
+        <div className="flex items-center gap-2">
+          {unreadCount > 0 && (
+            <button onClick={markAllRead} className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+              Hammasini o&apos;qilgan
+            </button>
+          )}
+          <button onClick={() => setIsOpen(false)} className="sm:hidden p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+            <X size={18} />
+          </button>
+        </div>
+      </div>
+      <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto">
+        {notifications.length === 0 ? (
+          <div className="p-8 text-center">
+            <div className="text-4xl mb-2">🔔</div>
+            <p className="text-gray-500 text-sm">Bildirishnomalar yo&apos;q</p>
+          </div>
+        ) : (
+          notifications.map(n => (
+            <div key={n.id} onClick={() => !n.is_read && markOneRead(n.id)}
+              className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${!n.is_read ? 'bg-indigo-50/50' : ''}`}>
+              <div className="flex gap-3">
+                <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${n.is_read ? 'bg-gray-300' : 'bg-indigo-500'}`} />
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm ${n.is_read ? 'text-gray-600' : 'text-gray-800 font-medium'}`}>{n.message}</p>
+                  <p className="text-xs text-gray-400 mt-1">{timeAgo(n.created_at)}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </>
+  )
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -91,37 +139,19 @@ export default function NotificationBell({ userId }: { userId?: string }) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-12 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b">
-            <h3 className="font-semibold text-gray-800 text-sm">Bildirishnomalar</h3>
-            {unreadCount > 0 && (
-              <button onClick={markAllRead} className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
-                Hammasini o&apos;qilgan
-              </button>
-            )}
+        <>
+          {/* Mobile: full-screen overlay + bottom sheet */}
+          <div className="sm:hidden fixed inset-0 z-50 bg-black/30" onClick={() => setIsOpen(false)} />
+          <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] overflow-hidden animate-in slide-in-from-bottom">
+            <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-2" />
+            {notificationContent}
           </div>
-          <div className="max-h-96 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="p-8 text-center">
-                <div className="text-4xl mb-2">🔔</div>
-                <p className="text-gray-500 text-sm">Bildirishnomalar yo&apos;q</p>
-              </div>
-            ) : (
-              notifications.map(n => (
-                <div key={n.id} onClick={() => !n.is_read && markOneRead(n.id)}
-                  className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${!n.is_read ? 'bg-indigo-50/50' : ''}`}>
-                  <div className="flex gap-3">
-                    <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${n.is_read ? 'bg-gray-300' : 'bg-indigo-500'}`} />
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm ${n.is_read ? 'text-gray-600' : 'text-gray-800 font-medium'}`}>{n.message}</p>
-                      <p className="text-xs text-gray-400 mt-1">{timeAgo(n.created_at)}</p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+
+          {/* Desktop: dropdown */}
+          <div className="hidden sm:block absolute right-0 top-12 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+            {notificationContent}
           </div>
-        </div>
+        </>
       )}
     </div>
   )

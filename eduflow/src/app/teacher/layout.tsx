@@ -29,18 +29,20 @@ export default async function TeacherLayout({ children }: { children: React.Reac
         clubCount={myClubs?.length || 0}
       />
       <div className="lg:ml-[250px] transition-all duration-300">
-        <div className="h-16 border-b border-gray-100 bg-white flex items-center justify-between px-6">
-          <p className="text-sm text-gray-500">
+        <div className="h-14 sm:h-16 border-b border-gray-100 bg-white flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
+          <p className="text-sm text-gray-500 truncate pl-10 sm:pl-0">
             Salom, {profile.full_name?.split(' ')[0] || 'O\'qituvchi'}! 👋
           </p>
           <div className="flex items-center gap-3">
             <NotificationBell userId={profile.id} />
-            <div className="w-9 h-9 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-xs">
-              {(profile.full_name || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)}
+            <div className="hidden sm:flex items-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-xs">
+                {(profile.full_name || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)}
+              </div>
+              <span className="text-sm font-medium text-gray-700">
+                {profile.full_name?.split(' ')[0]}
+              </span>
             </div>
-            <span className="text-sm font-medium text-gray-700">
-              {profile.full_name?.split(' ')[0]}
-            </span>
           </div>
         </div>
         <main className="p-4 md:p-6">{children}</main>
