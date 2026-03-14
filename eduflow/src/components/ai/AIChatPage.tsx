@@ -563,10 +563,10 @@ export default function AIChatPage({
         <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl p-5 max-w-xs w-full shadow-2xl animate-in zoom-in-95 duration-200">
             <h3 className="font-bold text-gray-900 mb-2">
-              Suhbatni o'chirish
+              Suhbatni o&apos;chirish
             </h3>
             <p className="text-sm text-gray-500 mb-5">
-              Bu suhbat va uning barcha xabarlari batamom o'chib ketadi. Davom etamizmi?
+              Bu suhbat va uning barcha xabarlari batamom o&apos;chib ketadi. Davom etamizmi?
             </p>
             <div className="flex gap-2">
               <button
@@ -587,7 +587,7 @@ export default function AIChatPage({
                 }}
                 className="flex-1 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors"
               >
-                O'chirish
+                O&apos;chirish
               </button>
             </div>
           </div>
