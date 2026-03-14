@@ -42,7 +42,11 @@ export async function POST(request: Request) {
 
     const { data: clubs } = await admin
       .from('clubs')
-      .select('name, category, max_students, schedule, teacher_id')
+      .select(`
+        id, name, category, schedule, 
+        max_students, description,
+        profiles!clubs_teacher_id_fkey (full_name)
+      `)
       .eq('school_id', profile.school_id)
 
     const { data: enrollmentStats } = await admin
@@ -50,9 +54,11 @@ export async function POST(request: Request) {
       .select('club_id, status')
       .eq('status', 'approved')
 
-    const clubInfo = clubs?.map(c => 
-      `- ${c.name} (${c.category}): jadval: ${c.schedule}, max: ${c.max_students} o'quvchi`
-    ).join('\n') || 'Mavjud emas'
+    const clubsInfo = (clubs || []).map(c => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const teacher = (c.profiles as any)?.full_name || 'Noma\'lum'
+      return `- ${c.name} (${c.category})\n  O'qituvchi: ${teacher}\n  Jadval: ${c.schedule}\n  Max o'quvchi: ${c.max_students}`
+    }).join('\n\n')
 
     const [
       { count: studentsCount },
@@ -103,7 +109,7 @@ to'garaklar samaradorligi va rivojlantirish
 strategiyalari haqida professional maslahat ber.
 
 TO'GARAKLAR (${clubs?.length || 0} ta):
-${clubInfo}
+${clubsInfo}
 
 MUHIM XAVFSIZLIK QOIDALARI:
 - Faqat senga berilgan ma'lumotlar doirasida javob ber

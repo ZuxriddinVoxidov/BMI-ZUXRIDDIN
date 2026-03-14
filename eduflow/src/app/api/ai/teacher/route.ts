@@ -37,58 +37,61 @@ export async function POST(request: Request) {
 
     if (!profile) return NextResponse.json({ reply: 'Profil topilmadi' }, { status: 404 })
 
-    const { data: clubs } = await admin
+    const { data: teacherClubs } = await admin
       .from('clubs')
-      .select('id, name')
+      .select('id, name, category, schedule, description, max_students')
       .eq('teacher_id', profile.id)
 
-    const clubIds = clubs?.map(c => c.id) || []
+    // For each club get enrolled students count
+    const clubsWithStats = await Promise.all(
+      (teacherClubs || []).map(async (club) => {
+        const { count: enrolledCount } = await admin
+          .from('enrollments')
+          .select('*', { count: 'exact', head: true })
+          .eq('club_id', club.id)
+          .eq('status', 'approved')
 
-    const thirtyDaysAgo = new Date()
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+        const { count: presentCount } = await admin
+          .from('attendance')
+          .select('*', { count: 'exact', head: true })
+          .eq('club_id', club.id)
+          .eq('status', 'present')
 
-    const { data: attendance } = await admin
-      .from('attendance')
-      .select('status, date, student_id')
-      .in('club_id', clubIds.length > 0 ? clubIds : ['none'])
-      .gte('date', thirtyDaysAgo.toISOString().split('T')[0])
+        const { count: absentCount } = await admin
+          .from('attendance')
+          .select('*', { count: 'exact', head: true })
+          .eq('club_id', club.id)
+          .eq('status', 'absent')
 
-    const total = attendance?.length || 0
-    const present = attendance?.filter(a => a.status === 'present').length || 0
-    const absent = attendance?.filter(a => a.status === 'absent').length || 0
-    const excused = attendance?.filter(a => a.status === 'excused').length || 0
-    const rate = total > 0 ? Math.round((present / total) * 100) : 0
+        return {
+          ...club,
+          enrolledCount: enrolledCount || 0,
+          presentCount: presentCount || 0,
+          absentCount: absentCount || 0
+        }
+      })
+    )
+
+    const clubsInfo = clubsWithStats.map(c =>
+      `- ${c.name} (${c.category})\n   Jadval: ${c.schedule}\n   O'quvchilar: ${c.enrolledCount}/${c.max_students}\n   Davomat: ${c.presentCount} kelgan, ${c.absentCount} kelmagan\n   Tavsif: ${c.description || 'Yo\'q'}`
+    ).join('\n\n')
 
     const systemPrompt = `
-BUGUNGI SANA VA VAQT: ${currentDate}, soat ${currentTime} (Toshkent vaqti)
+Sen ${profile.full_name} ning shaxsiy AI yordamchisisisan.
+BUGUNGI SANA: ${currentDate}, soat ${currentTime}
 
-Sen EduFlow platformasining AI yordamchisisan.
-O'zbek tilida javob ber. Aniq va amaliy maslahat ber.
-Faqat o'qituvchilik, davomat va o'quvchilar haqida gapir.
+MUHIM: Faqat quyidagi ma'lumotlar asosida javob ber.
+Boshqa o'qituvchilar yoki o'quvchilar haqida 
+maxfiy ma'lumot berma.
 
-O'qituvchi ma'lumotlari:
-- Ism: ${profile.full_name}
-- To'garaklar: ${clubs?.map(c => c.name).join(', ') || 'yo\'q'}
+MENING TO'GARAKLARIM (${clubsWithStats.length} ta):
+${clubsInfo || 'Hali to\'garak yo\'q'}
 
-Oxirgi 30 kunlik davomat statistikasi:
-- Jami yozuvlar: ${total}
-- Kelgan: ${present} (${rate}%)
-- Kelmagan: ${absent}
-- Sababli: ${excused}
-
-O'qituvchiga davomat tahlili, o'quvchilarni
-motivatsiya qilish va dars samaradorligini
-oshirish bo'yicha maslahat ber.
-
-Sen faqat o'z to'garaklaring ma'lumotlari bilan ishlaysan.
-
-MUHIM XAVFSIZLIK QOIDALARI:
-- Faqat senga berilgan ma'lumotlar doirasida javob ber
-- Hech qachon boshqa foydalanuvchilarning shaxsiy ma'lumotlarini berma
-- Parol, login, token, API key haqida hech qachon gapirma
-- Admin panel ma'lumotlarini hech kimga berma
+QOIDALAR:
 - Faqat o'zbek tilida javob ber
-- Qisqa, aniq va foydali javob ber
+- Faqat o'z to'garaklaring haqida gapir
+- Parol, login, API key haqida hech gapirma
+- Qisqa va aniq javob ber
     `.trim()
 
     const response = await askGemini(systemPrompt, messages)

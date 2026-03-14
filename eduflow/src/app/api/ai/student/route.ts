@@ -29,72 +29,84 @@ export async function POST(request: Request) {
 
     const admin = createAdminClient()
 
-    const { data: profile } = await admin
+    const { data: studentProfile } = await admin
       .from('profiles')
-      .select('id, full_name')
+      .select('id, full_name, grade')
       .eq('user_id', user.id)
       .single()
 
-    if (!profile) return NextResponse.json({ reply: 'Profil topilmadi' }, { status: 404 })
+    if (!studentProfile) return NextResponse.json({ reply: 'Profil topilmadi' }, { status: 404 })
+
+    const { data: points } = await admin
+      .from('student_points')
+      .select('total_points')
+      .eq('student_id', studentProfile.id)
+      .single()
 
     const { data: enrollments } = await admin
       .from('enrollments')
-      .select('club:clubs(name, category, description)')
-      .eq('student_id', profile.id)
-      .eq('status', 'approved')
+      .select(`
+        status,
+        clubs (
+          id, name, category, schedule, description
+        )
+      `)
+      .eq('student_id', studentProfile.id)
 
-    const { data: pointsData } = await admin
-      .from('student_points')
-      .select('total_points')
-      .eq('student_id', profile.id)
-      .maybeSingle()
+    const { count: presentCount } = await admin
+      .from('attendance')
+      .select('*', { count: 'exact', head: true })
+      .eq('student_id', studentProfile.id)
+      .eq('status', 'present')
 
-    const { data: availableClubs } = await admin
-      .from('clubs')
-      .select('name, category, description, schedule')
-      .limit(20)
+    const { count: absentCount } = await admin
+      .from('attendance')
+      .select('*', { count: 'exact', head: true })
+      .eq('student_id', studentProfile.id)
+      .eq('status', 'absent')
 
-    const enrolledClubNames = enrollments
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ?.map((e: any) => e.club?.name)
-      .filter(Boolean)
-      .join(', ') || 'hali yo\'q'
+    const enrolledClubs = (enrollments || [])
+      .filter(e => e.status === 'approved')
+      .map(e => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const club = e.clubs as any
+        return `- ${club.name} (${club.category}): ${club.schedule}`
+      }).join('\n')
 
-    const clubsList = availableClubs
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ?.map((c: any) =>
-        `- ${c.name} (${c.category}): ${c.description || 'tavsif yo\'q'}, jadval: ${c.schedule}`
-      )
-      .join('\n') || ''
+    const pendingClubs = (enrollments || [])
+      .filter(e => e.status === 'pending')
+      .map(e => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const club = e.clubs as any
+        return `- ${club.name}`
+      }).join('\n')
 
     const systemPrompt = `
-BUGUNGI SANA VA VAQT: ${currentDate}, soat ${currentTime} (Toshkent vaqti)
+Sen ${studentProfile.full_name} ning 
+shaxsiy AI yordamchisisisan.
+BUGUNGI SANA: ${currentDate}, soat ${currentTime}
 
-Sen EduFlow platformasining AI yordamchisisan.
-O'zbek tilida javob ber. Qisqa va aniq javob ber.
-Faqat to'garaklar va o'qish haqida maslahat ber.
+O'QUVCHI MA'LUMOTLARI:
+- Ism: ${studentProfile.full_name}
+- Sinf: ${studentProfile.grade || 'Noma\'lum'}
+- Ballar: ${points?.total_points || 0}
 
-O'quvchi ma'lumotlari:
-- Ism: ${profile.full_name}
-- Jami ball: ${pointsData?.total_points ?? 0}
-- Hozirgi to'garaklar: ${enrolledClubNames}
+MENING TO'GARAKLARIM:
+${enrolledClubs || 'Hali to\'garakka yozilmagan'}
 
-Mavjud to'garaklar:
-${clubsList}
+KUTILAYOTGAN ARIZALAR:
+${pendingClubs || 'Yo\'q'}
 
-O'quvchiga uning qiziqishlari va maqsadlariga qarab
-to'garaklar tavsiya et. Motivatsiya ber.
+DAVOMAT:
+- Kelgan: ${presentCount || 0} marta
+- Kelmagan: ${absentCount || 0} marta
 
-Sen faqat ${profile.full_name} ning shaxsiy ma'lumotlari bilan ishlaysan. 
-Boshqa o'quvchilar haqida maxfiy ma'lumot berma.
-
-MUHIM XAVFSIZLIK QOIDALARI:
-- Faqat senga berilgan ma'lumotlar doirasida javob ber
-- Hech qachon boshqa foydalanuvchilarning shaxsiy ma'lumotlarini berma
-- Parol, login, token, API key haqida hech qachon gapirma
-- Admin panel ma'lumotlarini hech kimga berma
+QOIDALAR:
 - Faqat o'zbek tilida javob ber
-- Qisqa, aniq va foydali javob ber
+- Faqat shu o'quvchi ma'lumotlari haqida gapir
+- Boshqa o'quvchilar haqida maxfiy ma'lumot berma
+- Parol, login haqida hech gapirma
+- Qisqa va aniq javob ber
     `.trim()
 
     const response = await askGemini(systemPrompt, messages)
