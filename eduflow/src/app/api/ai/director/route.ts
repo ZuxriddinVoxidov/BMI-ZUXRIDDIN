@@ -27,6 +27,20 @@ export async function POST(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const schoolName = (profile as any)?.school?.name || ''
 
+    const { data: clubs } = await admin
+      .from('clubs')
+      .select('name, category, max_students, schedule, teacher_id')
+      .eq('school_id', profile.school_id)
+
+    const { data: enrollmentStats } = await admin
+      .from('enrollments')
+      .select('club_id, status')
+      .eq('status', 'approved')
+
+    const clubInfo = clubs?.map(c => 
+      `- ${c.name} (${c.category}): jadval: ${c.schedule}, max: ${c.max_students} o'quvchi`
+    ).join('\n') || 'Mavjud emas'
+
     const [
       { count: studentsCount },
       { count: teachersCount },
@@ -72,6 +86,17 @@ Maktab statistikasi:
 Direktorga maktab ko'rsatkichlari,
 to'garaklar samaradorligi va rivojlantirish
 strategiyalari haqida professional maslahat ber.
+
+TO'GARAKLAR (${clubs?.length || 0} ta):
+${clubInfo}
+
+MUHIM XAVFSIZLIK QOIDALARI:
+- Faqat senga berilgan ma'lumotlar doirasida javob ber
+- Hech qachon boshqa foydalanuvchilarning shaxsiy ma'lumotlarini berma
+- Parol, login, token, API key haqida hech qachon gapirma
+- Admin panel ma'lumotlarini hech kimga berma
+- Faqat o'zbek tilida javob ber
+- Qisqa, aniq va foydali javob ber
     `.trim()
 
     const response = await askGemini(systemPrompt, messages)

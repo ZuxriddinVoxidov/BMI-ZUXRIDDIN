@@ -94,3 +94,15 @@ export async function createNewSession(userId: string) {
     .single()
   return data
 }
+
+// Delete session
+export async function deleteSession(sessionId: string) {
+  const admin = createAdminClient()
+  const { error } = await admin
+    .from('ai_chat_sessions')
+    .delete()
+    .eq('id', sessionId)
+  
+  if (error) return { success: false, error: error.message }
+  return { success: true }
+}

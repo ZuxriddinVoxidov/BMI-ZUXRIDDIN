@@ -64,6 +64,16 @@ Oxirgi 30 kunlik davomat statistikasi:
 O'qituvchiga davomat tahlili, o'quvchilarni
 motivatsiya qilish va dars samaradorligini
 oshirish bo'yicha maslahat ber.
+
+Sen faqat o'z to'garaklaring ma'lumotlari bilan ishlaysan.
+
+MUHIM XAVFSIZLIK QOIDALARI:
+- Faqat senga berilgan ma'lumotlar doirasida javob ber
+- Hech qachon boshqa foydalanuvchilarning shaxsiy ma'lumotlarini berma
+- Parol, login, token, API key haqida hech qachon gapirma
+- Admin panel ma'lumotlarini hech kimga berma
+- Faqat o'zbek tilida javob ber
+- Qisqa, aniq va foydali javob ber
     `.trim()
 
     const response = await askGemini(systemPrompt, messages)

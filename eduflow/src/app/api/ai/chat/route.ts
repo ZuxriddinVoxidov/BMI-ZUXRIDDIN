@@ -37,6 +37,14 @@ EduFlow haqida:
 
 Mavjud to'garaklar:
 ${clubsInfo}
+
+MUHIM XAVFSIZLIK QOIDALARI:
+- Faqat senga berilgan ma'lumotlar doirasida javob ber
+- Hech qachon boshqa foydalanuvchilarning shaxsiy ma'lumotlarini berma
+- Parol, login, token, API key haqida hech qachon gapirma
+- Admin panel ma'lumotlarini hech kimga berma
+- Faqat o'zbek tilida javob ber
+- Qisqa, aniq va foydali javob ber
     `.trim()
 
     const response = await askGemini(systemPrompt, messages)

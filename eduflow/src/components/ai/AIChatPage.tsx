@@ -6,6 +6,7 @@ import {
   getSessionMessages,
   getUserSessions,
   saveMessage,
+  deleteSession,
 } from '@/app/actions/ai-chat'
 import {
   ArrowLeft,
@@ -15,6 +16,7 @@ import {
   Plus,
   Send,
   Sparkles,
+  Trash2,
   X,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -161,6 +163,7 @@ export default function AIChatPage({
   const [isLoading, setIsLoading] = useState(false)
   const [showSidebar, setShowSidebar] = useState(false)
   const [initializing, setInitializing] = useState(true)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -354,17 +357,27 @@ export default function AIChatPage({
               </p>
               <div className="space-y-0.5">
                 {group.sessions.map(s => (
-                  <button
-                    key={s.id}
-                    onClick={() => loadSession(s)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all truncate ${
-                      currentSession?.id === s.id
-                        ? 'bg-indigo-50 text-indigo-700 font-medium'
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    {s.title}
-                  </button>
+                  <div key={s.id} className="group relative flex items-center">
+                    <button
+                      onClick={() => loadSession(s)}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all truncate pr-8 ${
+                        currentSession?.id === s.id
+                          ? 'bg-indigo-50 text-indigo-700 font-medium'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      {s.title}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setDeletingId(s.id)
+                      }}
+                      className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red-100 text-gray-400 hover:text-red-500"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>
@@ -544,6 +557,42 @@ export default function AIChatPage({
           </p>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deletingId && (
+        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-5 max-w-xs w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="font-bold text-gray-900 mb-2">
+              Suhbatni o'chirish
+            </h3>
+            <p className="text-sm text-gray-500 mb-5">
+              Bu suhbat va uning barcha xabarlari batamom o'chib ketadi. Davom etamizmi?
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeletingId(null)}
+                className="flex-1 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Bekor qilish
+              </button>
+              <button
+                onClick={async () => {
+                  await deleteSession(deletingId)
+                  setSessions(prev => prev.filter(s => s.id !== deletingId))
+                  if (currentSession?.id === deletingId) {
+                    setCurrentSession(null)
+                    setMessages([{ role: 'assistant', content: config.greeting }])
+                  }
+                  setDeletingId(null)
+                }}
+                className="flex-1 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors"
+              >
+                O'chirish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
