@@ -39,6 +39,9 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
   const [filterClub, setFilterClub] = useState('all')
   const [filterStatus, setFilterStatus] = useState('all')
 
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   const filteredQuizzes = quizzes.filter(q => {
     const clubMatch = filterClub === 'all' || q.club_id === filterClub
     const statusMatch = filterStatus === 'all' || q.status === filterStatus
@@ -163,10 +166,6 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
         if (!confirm('Testni yakunlab bali hisoblansinmi?')) return
         res = await finishQuiz(q.id)
       }
-      if (action === 'delete') {
-        if (!confirm('Ushbu testni butunlay o\'chirib tashlashni tasdiqlaysizmi?')) return
-        res = await deleteQuiz(q.id)
-      }
       
       if (res?.success) {
         toast({ title: 'Muvaffaqiyatli' })
@@ -259,7 +258,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                >
                 📊 Natijalar
               </button>
-              <button disabled={isPending} onClick={() => handleActionClick(q, 'delete')} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+              <button disabled={isPending || isDeleting} onClick={() => setDeleteConfirmId(q.id)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                 <Trash2 size={16}/>
               </button>
             </div>
@@ -578,6 +577,45 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
         )}
 
       </AnimatePresence>
+
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
+            <h3 className="font-bold text-lg text-gray-900 mb-2">Testni o&apos;chirish</h3>
+            <p className="text-sm text-gray-500 mb-6">
+              Bu testni o&apos;chirsangiz, barcha savollar va natijalar ham o&apos;chib ketadi. 
+              Tasdiqlaysizmi?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50"
+              >
+                Bekor qilish
+              </button>
+              <button
+                onClick={async () => {
+                  if (!deleteConfirmId) return
+                  setIsDeleting(true)
+                  const result = await deleteQuiz(deleteConfirmId)
+                  if (result.success) {
+                    setQuizzes(prev => prev.filter(q => q.id !== deleteConfirmId))
+                    setDeleteConfirmId(null)
+                    window.location.reload()
+                  } else {
+                    alert(result.error || 'Xatolik')
+                  }
+                  setIsDeleting(false)
+                }}
+                disabled={isDeleting}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-xl text-sm font-medium text-white"
+              >
+                {isDeleting ? 'O\'chirilmoqda...' : 'Ha, o\'chirish'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { getStudentLevel } from '@/lib/levels'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { PointsHistory } from '@/components/dashboard/student/PointsHistory'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,7 +26,7 @@ export default async function StudentHomePage() {
     { count: pendingClubsCount },
     { data: attendanceData },
     { data: thisMonthAttendance },
-    { data: recentRewards },
+    { data: transactions },
   ] = await Promise.all([
     supabase.from('student_points')
       .select('total_points').eq('student_id', profile.id).maybeSingle(),
@@ -40,10 +41,10 @@ export default async function StudentHomePage() {
     supabase.from('attendance')
       .select('status').eq('student_id', profile.id)
       .gte('date', thisMonthStr),
-    supabase.from('teacher_rewards')
-      .select('*, teacher:profiles!teacher_id(full_name), club:clubs(name)')
+    supabase.from('point_transactions')
+      .select('id, points, reason, source, created_at')
       .eq('student_id', profile.id)
-      .order('created_at', { ascending: false }).limit(5),
+      .order('created_at', { ascending: false }).limit(50),
   ])
 
   const points = pointsData?.total_points ?? 0
@@ -114,34 +115,7 @@ export default async function StudentHomePage() {
         <div className="lg:col-span-2 space-y-4">
           {/* Recent Rewards */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-3">So&apos;nggi rag&apos;batlar</h3>
-            {recentRewards && recentRewards.length > 0 ? (
-              <div className="space-y-3">
-                {recentRewards.map((reward: Record<string, unknown>) => {
-                  const teacher = reward.teacher as Record<string, unknown> | null
-                  const club = reward.club as Record<string, unknown> | null
-                  return (
-                    <div key={reward.id as string} className="flex items-start gap-3 p-3 bg-amber-50 rounded-xl">
-                      <span className="text-lg">⭐</span>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">
-                          {(teacher?.full_name as string) || "O'qituvchi"} sizga{' '}
-                          <span className="font-bold text-amber-600">{reward.points_given as number} ball</span>{' '}berdi
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {(club?.name as string) || "To'garak"} — {reward.lesson_date as string}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-6">
-                <p className="text-sm text-gray-500">Hali rag&apos;bat olmagansiz.</p>
-                <p className="text-xs text-gray-400 mt-1">Darsga faol qatnashing! 💪</p>
-              </div>
-            )}
+            <PointsHistory transactions={transactions || []} />
           </div>
 
           {/* Quick Link to Explore */}

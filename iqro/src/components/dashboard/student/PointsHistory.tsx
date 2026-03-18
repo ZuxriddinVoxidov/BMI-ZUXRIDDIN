@@ -5,12 +5,12 @@ import { PointTransaction } from '@/app/actions/points'
 
 type FilterPeriod = 'all' | 'today' | 'week' | 'month'
 
-const SOURCE_LABELS: Record<string, string> = {
-  attendance: '📅 Davomat',
-  quiz: '🏆 Test',
-  review: '⭐ Sharh',
-  work: '📎 Ish',
-  other: '🎯 Boshqa'
+const SOURCE_ICONS: Record<string, string> = {
+  attendance: '📅',
+  quiz: '🏆',
+  review: '⭐',
+  work: '📎',
+  other: '🎯'
 }
 
 export function PointsHistory({ transactions }: { transactions: PointTransaction[] }) {
@@ -91,13 +91,13 @@ export function PointsHistory({ transactions }: { transactions: PointTransaction
             <div key={t.id} 
               className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm">
               <div className="flex items-center gap-3">
-                <span className="text-lg">{SOURCE_LABELS[t.source]?.split(' ')[0]}</span>
+                <span className="text-xl">{SOURCE_ICONS[t.source] || '🎯'}</span>
                 <div>
                   <p className="text-sm font-medium text-gray-800">{t.reason}</p>
                   <p className="text-xs text-gray-400">{formatDate(t.created_at)}</p>
                 </div>
               </div>
-              <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">
+              <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap">
                 +{t.points} ball
               </span>
             </div>
