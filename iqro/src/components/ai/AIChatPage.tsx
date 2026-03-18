@@ -244,7 +244,6 @@ export default function AIChatPage({
 
   async function executeFetch(history: {role: string, content: string}[], currentSessionId: string) {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 sec timeout
     
     const aiMessageId = Date.now().toString()
     setMessages(prev => [...prev.filter(m => !m.isError), {
@@ -262,7 +261,6 @@ export default function AIChatPage({
         signal: controller.signal
       })
 
-      clearTimeout(timeoutId)
       if (!response.ok) throw new Error('API xatosi')
       if (!response.body) throw new Error("Stream yo'q")
 
@@ -309,7 +307,6 @@ export default function AIChatPage({
       const updatedSessions = await getUserSessions(userId)
       setSessions(updatedSessions as Session[])
     } catch (err) {
-      clearTimeout(timeoutId)
       if (err instanceof Error && err.name === 'AbortError') {
         setMessages(prev => prev.map(msg => 
           msg.id === aiMessageId

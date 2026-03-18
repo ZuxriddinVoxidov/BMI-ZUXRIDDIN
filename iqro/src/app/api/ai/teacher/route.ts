@@ -1,4 +1,4 @@
-import { askGeminiStream } from '@/lib/ai/gemini'
+import { getGeminiModel } from '@/lib/ai/gemini'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
@@ -182,42 +182,64 @@ QOBILIYATLAR VA QOIDALAR:
 9. Professional, aniq va dalilga asoslangan uslubda gapir
 10. Bugungi sana: ${new Date().toLocaleDateString('uz-UZ', { timeZone: 'Asia/Tashkent' })}`
 
-    const result = await askGeminiStream(systemPrompt, messages)
+    const model = getGeminiModel()
+    const encoder = new TextEncoder()
+    const stream = new TransformStream()
+    const writer = stream.writable.getWriter()
 
-    let fullText = ''
-    const stream = new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder()
-        try {
-          for await (const chunk of result.stream) {
-            const text = chunk.text()
-            if (text) {
-              fullText += text
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: text })}\n\n`))
-            }
+    // Start streaming in background
+    ;(async () => {
+      let fullText = ''
+      try {
+        const result = await model.generateContentStream({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          contents: messages.map((m: any) => ({
+             role: m.role === 'assistant' ? 'model' : 'user',
+             parts: [{ text: m.content }]
+          })),
+          systemInstruction: systemPrompt,
+          generationConfig: {
+             temperature: 0.1,
+             maxOutputTokens: 1000,
           }
-          if (sessionId) {
-            await admin.from('ai_chat_messages').insert({
-              session_id: sessionId,
-              role: 'assistant',
-              content: fullText
-            })
+        })
+        
+        for await (const chunk of result.stream) {
+          const text = chunk.text()
+          if (text) {
+            fullText += text
+            await writer.write(
+              encoder.encode(`data: ${JSON.stringify({ chunk: text })}\n\n`)
+            )
           }
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
-        } catch (error) {
-          console.error('Stream error:', error)
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'Xatolik yuz berdi' })}\n\n`))
-        } finally {
-          controller.close()
         }
+        
+        // Save to DB after stream completes
+        if (sessionId) {
+          await admin.from('ai_chat_messages').insert({
+            session_id: sessionId,
+            role: 'assistant',
+            content: fullText
+          })
+        }
+        
+        await writer.write(encoder.encode('data: [DONE]\n\n'))
+      } catch (error) {
+        console.error('Stream error:', error)
+        await writer.write(
+          encoder.encode(`data: ${JSON.stringify({ error: 'Xatolik yuz berdi' })}\n\n`)
+        )
+      } finally {
+        await writer.close()
       }
-    })
+    })()
 
-    return new Response(stream, {
+    return new Response(stream.readable, {
       headers: {
         'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache', 
+        'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no',
       }
     })
   } catch (error) {

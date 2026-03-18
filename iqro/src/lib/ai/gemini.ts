@@ -115,3 +115,11 @@ export async function askGeminiStream(
 
   throw lastError || new Error('All Gemini API keys failed')
 }
+
+export function getGeminiModel() {
+  const apiKey = GEMINI_KEYS[0]
+  if (!apiKey) throw new Error("API kalit topilmadi")
+  const genAI = new GoogleGenerativeAI(apiKey)
+  // Hardcoded to gemini-2.5-flash-preview-04-17 as the user requested
+  return genAI.getGenerativeModel({ model: 'gemini-2.5-flash-preview-04-17' })
+}
