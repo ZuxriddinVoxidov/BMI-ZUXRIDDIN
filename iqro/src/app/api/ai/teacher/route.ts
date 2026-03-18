@@ -37,62 +37,148 @@ export async function POST(request: Request) {
 
     if (!profile) return NextResponse.json({ reply: 'Profil topilmadi' }, { status: 404 })
 
-    const { data: teacherClubs } = await admin
+    const { data: clubs } = await admin
       .from('clubs')
-      .select('id, name, category, schedule, description, max_students')
+      .select(`
+        id, name, description, category, schedule,
+        teacher_resources(id, title, file_name),
+        enrollments(
+          id, status, created_at,
+          profiles!student_id(id, full_name, grade)
+        )
+      `)
       .eq('teacher_id', profile.id)
 
-    // For each club get enrolled students count
-    const clubsWithStats = await Promise.all(
-      (teacherClubs || []).map(async (club) => {
-        const { count: enrolledCount } = await admin
-          .from('enrollments')
-          .select('*', { count: 'exact', head: true })
-          .eq('club_id', club.id)
-          .eq('status', 'approved')
+    const clubIds = (clubs || []).map(c => c.id)
 
-        const { count: presentCount } = await admin
-          .from('attendance')
-          .select('*', { count: 'exact', head: true })
-          .eq('club_id', club.id)
-          .eq('status', 'present')
+    const { data: attendanceStats } = await admin
+      .from('attendance')
+      .select('club_id, student_id, status, date')
+      .in('club_id', clubIds.length > 0 ? clubIds : ['none'])
 
-        const { count: absentCount } = await admin
-          .from('attendance')
-          .select('*', { count: 'exact', head: true })
-          .eq('club_id', club.id)
-          .eq('status', 'absent')
+    const studentIds = (clubs || [])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .flatMap((c: any) => c.enrollments || [])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .filter((e: any) => e.status === 'approved')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((e: any) => e.profiles?.id)
+      .filter(Boolean)
 
+    const { data: studentPoints } = await admin
+      .from('student_points')
+      .select('student_id, total_points')
+      .in('student_id', studentIds.length > 0 ? studentIds : ['none'])
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const clubsContext = (clubs || []).map((club: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const approved = (club.enrollments || []).filter((e: any) => e.status === 'approved')
+      const resources = club.teacher_resources || []
+      
+      // attendance for this club
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const clubAttendance = (attendanceStats || []).filter((a: any) => a.club_id === club.id)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const presentCount = clubAttendance.filter((a: any) => a.status === 'present').length
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const absentCount = clubAttendance.filter((a: any) => a.status === 'absent').length
+      const totalAttendance = clubAttendance.length
+      const attendanceRate = totalAttendance > 0 
+        ? Math.round((presentCount / totalAttendance) * 100) 
+        : 0
+
+      // top students by points
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const studentsWithPoints = approved.map((e: any) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const pts = (studentPoints || []).find((p: any) => p.student_id === e.profiles?.id)
         return {
-          ...club,
-          enrolledCount: enrolledCount || 0,
-          presentCount: presentCount || 0,
-          absentCount: absentCount || 0
+          name: e.profiles?.full_name || 'Noma\'lum',
+          grade: e.profiles?.grade || '',
+          points: pts?.total_points || 0,
+          // attendance for this student in this club
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          present: clubAttendance.filter((a: any) => a.student_id === e.profiles?.id && a.status === 'present').length,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          absent: clubAttendance.filter((a: any) => a.student_id === e.profiles?.id && a.status === 'absent').length,
         }
-      })
-    )
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      }).sort((a: any, b: any) => b.points - a.points)
 
-    const clubsInfo = clubsWithStats.map(c =>
-      `- ${c.name} (${c.category})\n   Jadval: ${c.schedule}\n   O'quvchilar: ${c.enrolledCount}/${c.max_students}\n   Davomat: ${c.presentCount} kelgan, ${c.absentCount} kelmagan\n   Tavsif: ${c.description || 'Yo\'q'}`
-    ).join('\n\n')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const top3 = studentsWithPoints.slice(0, 3).map((s: any, i: number) => 
+        `    ${i+1}. ${s.name} (${s.grade}) — ${s.points} ball`
+      ).join('\n')
 
-    const systemPrompt = `
-Sen ${profile.full_name} ning shaxsiy AI yordamchisisisan.
-BUGUNGI SANA: ${currentDate}, soat ${currentTime}
+      const passive = studentsWithPoints
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .filter((s: any) => s.absent > s.present)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((s: any) => `    - ${s.name}: ${s.absent} dars qoldirgan`)
+        .join('\n')
 
-MUHIM: Faqat quyidagi ma'lumotlar asosida javob ber.
-Boshqa o'qituvchilar yoki o'quvchilar haqida 
-maxfiy ma'lumot berma.
+      const resourceList = resources.length > 0
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ? resources.map((r: any) => `    - ${r.title}`).join('\n')
+        : '    - (hali material yuklanmagan)'
 
-MENING TO'GARAKLARIM (${clubsWithStats.length} ta):
-${clubsInfo || 'Hali to\'garak yo\'q'}
+      return `📚 TO'GARAK: ${club.name} (${club.category || ''})
+  Jadval: ${club.schedule || 'belgilanmagan'}
+  O'quvchilar: ${approved.length} nafar
+  Davomat: ${attendanceRate}% (${presentCount} keldi / ${absentCount} kelmadi)
+  
+  Top 3 o'quvchi (ball bo'yicha):
+${top3 || '    - ma\'lumot yo\'q'}
+  
+  Passiv o'quvchilar (ko'p qoldirgan):
+${passive || '    - hammasi faol'}
+  
+  Yuklangan materiallar:
+${resourceList}`
+    }).join('\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n')
 
-QOIDALAR:
-- Faqat o'zbek tilida javob ber
-- Faqat o'z to'garaklaring haqida gapir
-- Parol, login, API key haqida hech gapirma
-- Qisqa va aniq javob ber
-    `.trim()
+    const teacherContext = `
+O'qituvchi: ${profile.full_name}
+Jami to'garaklar: ${(clubs || []).length} ta
+Jami o'quvchilar: ${studentIds.length} nafar
+`
+
+    const systemPrompt = `Sen IQRO maktab platformasidagi o'qituvchiga yordam beruvchi 
+professional AI assistentsan.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+O'QITUVCHI MA'LUMOTLARI:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${teacherContext}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TO'GARAKLAR VA STATISTIKA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${clubsContext || "Hali to'garak biriktirilmagan."}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QOBILIYATLAR VA QOIDALAR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. O'qituvchining to'garaklari va fanlari bo'yicha istalgan savolga javob ber
+2. Dars rejasi, mavzu tavsifi, tushuntirish tayyorlashda yordam ber
+3. TEST yaratish so'ralganda: 4 variantli (A,B,C,D) test tuz, to'g'ri javoblar oxirida
+   - Bir so'rovda maksimal 20 ta savol
+   - Mavzu, bob yoki butun kurs bo'yicha tuzish mumkin
+4. FLASHCARD so'ralganda: "Savol → Javob" juftliklari tuz
+5. O'QUVCHILAR TAHLILI so'ralganda: yuqoridagi statistikadan aniq javob ber
+   - "Eng faol o'quvchi kim?" → ball va davomatga qarab ayt
+   - "Passiv o'quvchilar?" → ko'p qoldirganlarni ayt
+   - "Top 3/5?" → ballar bo'yicha ro'yxat
+   - "Davomat holati?" → foiz va raqamlar bilan ayt
+6. FAOLIYAT TAHLILI: O'qituvchining ishlash samaradorligi haqida tavsiyalar ber
+   - Qaysi mavzularni qo'shimcha tushuntirish kerak
+   - O'quvchilarni qanday motivatsiya qilish mumkin
+   - Darslarni qiziqarliroq qilish uchun usullar
+7. HISOBOT so'ralganda: to'liq statistika hisobotini matn ko'rinishida tayyorla
+8. Har doim o'zbek tilida javob ber
+9. Professional, aniq va dalilga asoslangan uslubda gapir
+10. Bugungi sana: ${new Date().toLocaleDateString('uz-UZ', { timeZone: 'Asia/Tashkent' })}`
 
     const response = await askGemini(systemPrompt, messages)
     return NextResponse.json({ reply: response })
