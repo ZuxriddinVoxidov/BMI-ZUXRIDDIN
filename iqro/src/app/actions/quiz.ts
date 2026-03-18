@@ -140,20 +140,30 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
 
   for (let i = 0; i < Math.min(5, (participants || []).length); i++) {
     const p = participants![i]
+    if (!p.student_id || p.score === 0) continue
     const pointsToAdd = pointsMap[i]
+    
     const { data: existing } = await admin
       .from('student_points')
-      .select('total_points')
+      .select('id, total_points')
       .eq('student_id', p.student_id)
       .single()
 
     if (existing) {
-      await admin.from('student_points')
-        .update({ total_points: existing.total_points + pointsToAdd, updated_at: new Date().toISOString() })
+      await admin
+        .from('student_points')
+        .update({ 
+          total_points: (existing.total_points || 0) + pointsToAdd,
+          updated_at: new Date().toISOString()
+        })
         .eq('student_id', p.student_id)
     } else {
-      await admin.from('student_points')
-        .insert({ student_id: p.student_id, total_points: pointsToAdd })
+      await admin
+        .from('student_points')
+        .insert({ 
+          student_id: p.student_id, 
+          total_points: pointsToAdd 
+        })
     }
   }
 

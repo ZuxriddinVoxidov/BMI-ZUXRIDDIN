@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Users, Play, Square, Loader2, CheckCircle, Clock } from 'lucide-react'
 import { startQuiz, finishQuiz } from '@/app/actions/quiz'
 import { useToast } from '@/hooks/use-toast'
-import QuizResults from '@/components/dashboard/teacher/QuizResults'
+import QuizResults from './QuizResults'
 
 interface Participant {
   id: string
@@ -36,6 +36,7 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
   const [timeLeft, setTimeLeft] = useState(quiz.duration_seconds)
   const [isPending, setIsPending] = useState(false)
   const [isFinishing, setIsFinishing] = useState(false)
+  const [finalParticipants, setFinalParticipants] = useState<any[]>([])
   const { toast } = useToast()
   const supabase = createClient()
 
@@ -112,15 +113,25 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
   }
 
   async function handleFinish() {
+    if (isFinishing) return
     setIsFinishing(true)
     try {
       const res = await finishQuiz(quiz.id)
       if (res.success) {
+        // Fetch final results from API
+        const fetchRes = await fetch(`/api/quiz/${quiz.id}/participants`)
+        if (fetchRes.ok) {
+          const data = await fetchRes.json()
+          setFinalParticipants(data.participants || [])
+        }
         setStatus('finished')
         toast({ title: 'Test yakunlandi va ballar taqsimlandi!' })
       } else {
         toast({ title: res.error || 'Xatolik', variant: 'destructive' })
       }
+    } catch (err) {
+      console.error('Finish error:', err)
+      toast({ title: 'Xatolik yuz berdi', variant: 'destructive' })
     } finally {
       setIsFinishing(false)
     }
@@ -214,9 +225,8 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
                 </div>
               </div>
               
-              <button disabled={isFinishing} onClick={() => { if(confirm('Testni yakunlab, barchaga ballar taqsimlansinmi?')) handleFinish() }} className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-all">
-                {isFinishing ? <Loader2 className="animate-spin" size={16} /> : <Square fill="currentColor" size={16} />}
-                {isFinishing ? 'Yakunlanmoqda...' : 'Yakunlash'}
+              <button disabled={isFinishing} onClick={handleFinish} className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-all">
+                {isFinishing ? '⏳ Yakunlanmoqda...' : '⏹ Yakunlash'}
               </button>
             </div>
 
@@ -261,14 +271,7 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
         {/* ================= FINISHED RESULTS ================= */}
         {status === 'finished' && (
           <motion.div key="results" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
-            <QuizResults 
-              participants={participants.map(p => ({
-                student_id: p.student_id,
-                full_name: p.profiles?.full_name,
-                score: p.score || 0,
-                total_questions: quiz.quiz_questions?.length || 0
-              }))} 
-            />
+            <QuizResults participants={finalParticipants} />
           </motion.div>
         )}
 
