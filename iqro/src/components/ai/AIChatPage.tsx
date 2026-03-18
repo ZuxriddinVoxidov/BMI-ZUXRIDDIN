@@ -9,17 +9,19 @@ import {
   deleteSession,
 } from '@/app/actions/ai-chat'
 import {
-  ArrowLeft,
   Download,
   Loader2,
   Menu,
   Plus,
   Send,
-  Sparkles,
   Trash2,
   X,
+  GraduationCap,
+  BookOpen,
+  BarChart3,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Message {
   id?: string
@@ -44,43 +46,46 @@ interface AIChatPageProps {
 
 const ROLE_CONFIG = {
   student: {
-    title: "AI O'quv Yordamchi 🎓",
-    subtitle: 'Savollaringizga javob beraman',
-    greeting:
-      "Salom! Men sizning shaxsiy AI yordamchingizman 🎓\nTo'garaklar, darslar va balllaringiz haqida bemalol so'rang!",
+    title: 'AI Yordamchi',
+    badge: "O'quvchi yordamchisi",
+    badgeColor: 'bg-green-100 text-green-700 border-green-200',
+    icon: GraduationCap,
+    subtitle: "Sizning shaxsiy ta'lim yordamchingiz",
     suggestions: [
-      "Qaysi to'garakka qo'shilishni maslahat berasan?",
-      'Ballarimni qanday oshiraman?',
-      "Bugungi dars jadvalim qanday?",
+      "📚 Bugungi darsim haqida savol beraman",
+      "✏️ Menga test tuz",
+      "📊 Mening statistikam",
+      "🎯 Qaysi mavzuni o'rganay?",
     ],
-    color: 'from-indigo-500 to-blue-600',
-    accent: '#6366F1',
+    placeholder: 'Savolingizni yozing...',
   },
   teacher: {
-    title: 'AI Dars Tahlilchisi 📚',
-    subtitle: "Davomat va o'quvchilar tahlili",
-    greeting:
-      "Salom! Dars va davomat bo'yicha tahlil qilaman 📚\nStatistika yoki maslahat kerakmi?",
+    title: 'AI Yordamchi',
+    badge: "O'qituvchi tahlilchisi",
+    badgeColor: 'bg-blue-100 text-blue-700 border-blue-200',
+    icon: BookOpen,
+    subtitle: 'Dars va davomat tahlilchisi',
     suggestions: [
-      'Bu oylik davomat hisobotini chiqar',
-      "Eng ko'p qatnashgan o'quvchilarni ko'rsat",
-      'Dars samaradorligini tahlil qil',
+      "📊 O'quvchilarim statistikasi",
+      "✏️ Test yaratishda yordam",
+      "📈 Davomat tahlili",
+      "💡 Dars rejasi tayyorla",
     ],
-    color: 'from-emerald-500 to-teal-600',
-    accent: '#10B981',
+    placeholder: "Tahlil yoki yordam so'rang...",
   },
   director: {
-    title: 'AI Maktab Tahlilchisi 📊',
-    subtitle: 'Statistika va hisobotlar',
-    greeting:
-      "Salom! Maktab statistikasi bo'yicha tahlil qilaman 📊\nHisobot yoki tahlil kerakmi?",
+    title: 'AI Yordamchi',
+    badge: 'Direktor tahlilchisi',
+    badgeColor: 'bg-purple-100 text-purple-700 border-purple-200',
+    icon: BarChart3,
+    subtitle: "Maktab boshqaruvi bo'yicha tahlilchi",
     suggestions: [
-      'Maktab umumiy statistikasini chiqar',
-      "O'qituvchilar samaradorligi hisoboti",
-      'PDF hisobot tayyorla',
+      '📊 Maktab statistikasi',
+      "🏆 Eng faol o'quvchilar",
+      '📈 Davomat tahlili',
+      "👨‍🏫 O'qituvchilar samaradorligi",
     ],
-    color: 'from-purple-500 to-indigo-600',
-    accent: '#8B5CF6',
+    placeholder: "Hisobot yoki tahlil so'rang...",
   },
 }
 
@@ -111,7 +116,6 @@ function groupSessionsByDate(sessions: Session[]) {
   return groups.filter(g => g.sessions.length > 0)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function exportToPDF(content: string, title: string) {
   const printWindow = window.open('', '_blank')
   if (!printWindow) return
@@ -121,15 +125,15 @@ function exportToPDF(content: string, title: string) {
         <title>${title}</title>
         <style>
           body { font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto; }
-          h1 { color: #6366F1; font-size: 24px; }
-          h2 { color: #4F46E5; font-size: 18px; }
+          h1 { color: #4F46E5; font-size: 24px; }
+          h2 { color: #6366F1; font-size: 18px; }
           table { width: 100%; border-collapse: collapse; margin: 20px 0; }
           th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-          th { background: #6366F1; color: white; }
+          th { background: #4F46E5; color: white; }
           tr:nth-child(even) { background: #f9f9f9; }
           p { line-height: 1.6; }
-          ul { padding-left: 20px; }
-          .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #6366F1; padding-bottom: 10px; }
+          ul, ol { padding-left: 20px; }
+          .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #4F46E5; padding-bottom: 10px; }
           .footer { margin-top: 40px; color: #666; font-size: 12px; border-top: 1px solid #ddd; padding-top: 10px; }
         </style>
       </head>
@@ -138,9 +142,9 @@ function exportToPDF(content: string, title: string) {
           <h1>IQRO — 46-maktab</h1>
           <p>${new Date().toLocaleDateString('uz-UZ')}</p>
         </div>
-        <div>${content.replace(/\n/g, '<br>')}</div>
+        <div>${content.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>')}</div>
         <div class="footer">
-          IQRO tizimi orqali yaratildi • ${new Date().toLocaleString('uz-UZ')}
+          IQRO AI tizimi orqali yaratildi • ${new Date().toLocaleString('uz-UZ')}
         </div>
       </body>
     </html>
@@ -164,10 +168,11 @@ export default function AIChatPage({
   const [showSidebar, setShowSidebar] = useState(false)
   const [initializing, setInitializing] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Initialize: load sessions and today's session
+  // Initialize
   useEffect(() => {
     async function init() {
       try {
@@ -181,21 +186,15 @@ export default function AIChatPage({
           const msgs = await getSessionMessages(todaySession.id)
           if (msgs.length > 0) {
             setMessages(msgs as Message[])
-          } else {
-            setMessages([
-              { role: 'assistant', content: config.greeting },
-            ])
           }
         }
       } catch (e) {
         console.error('Init error:', e)
-        setMessages([{ role: 'assistant', content: config.greeting }])
       } finally {
         setInitializing(false)
       }
     }
     init()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
   // Auto-scroll
@@ -207,8 +206,7 @@ export default function AIChatPage({
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height =
-        Math.min(textareaRef.current.scrollHeight, 120) + 'px'
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px'
     }
   }, [input])
 
@@ -216,16 +214,14 @@ export default function AIChatPage({
     setCurrentSession(session)
     setShowSidebar(false)
     const msgs = await getSessionMessages(session.id)
-    setMessages(
-      msgs.length > 0 ? (msgs as Message[]) : [{ role: 'assistant', content: config.greeting }]
-    )
+    setMessages(msgs as Message[])
   }
 
   async function handleNewChat() {
     const newSession = await createNewSession(userId)
     if (newSession) {
       setCurrentSession(newSession as Session)
-      setMessages([{ role: 'assistant', content: config.greeting }])
+      setMessages([])
       const allSessions = await getUserSessions(userId)
       setSessions(allSessions as Session[])
     }
@@ -242,13 +238,9 @@ export default function AIChatPage({
     const userMsg: Message = { role: 'user', content: msg }
     setMessages(prev => [...prev, userMsg])
 
-    // Save user message
     await saveMessage(currentSession.id, 'user', msg)
 
-    // Build history for API
-    const history = [...messages, userMsg]
-      .filter(m => m.content !== config.greeting)
-      .map(m => ({ role: m.role, content: m.content }))
+    const history = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }))
 
     try {
       const response = await fetch(apiRoute, {
@@ -258,20 +250,23 @@ export default function AIChatPage({
       })
 
       const data = await response.json()
-      const reply =
-        data.reply || data.response || 'Kechirasiz, javob olishda xatolik yuz berdi.'
+      const reply = data.reply || data.response || 'Kechirasiz, javob olishda xatolik yuz berdi.'
 
-      const aiMsg: Message = { role: 'assistant', content: reply }
+      const aiMsg: Message = { role: 'assistant', content: reply, created_at: new Date().toISOString() }
       setMessages(prev => [...prev, aiMsg])
 
-      // Save AI message
       await saveMessage(currentSession.id, 'assistant', reply)
+      
+      // Update session list to show new title optionally if handled in backend
+      const updatedSessions = await getUserSessions(userId)
+      setSessions(updatedSessions as Session[])
     } catch {
       setMessages(prev => [
         ...prev,
         {
           role: 'assistant',
           content: "Kechirasiz, xatolik yuz berdi. Qayta urinib ko'ring.",
+          created_at: new Date().toISOString()
         },
       ])
     } finally {
@@ -288,311 +283,390 @@ export default function AIChatPage({
 
   const isReportMessage = (content: string) => {
     const keywords = ['hisobot', 'statistika', 'jami', 'foiz', 'natija', 'jadval', 'umumiy']
-    return keywords.some(k => content.toLowerCase().includes(k)) && content.length > 200
+    return keywords.some(k => content.toLowerCase().includes(k)) && content.length > 150
+  }
+
+  const renderMessageContent = (content: string) => {
+    return content.split('\n').map((line, i) => {
+      if (line.startsWith('## ')) return <h3 key={i} className="text-base font-bold mt-4 mb-2 text-gray-800">{line.slice(3)}</h3>
+      if (line.startsWith('# ')) return <h2 key={i} className="text-lg font-bold mt-4 mb-2 text-indigo-900">{line.slice(2)}</h2>
+      
+      const formattedLine = line
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+
+      if (formattedLine.startsWith('- ') || formattedLine.startsWith('• ')) {
+        return <li key={i} className="ml-5 list-disc mb-1" dangerouslySetInnerHTML={{ __html: formattedLine.slice(2) }} />
+      }
+      if (/^\d+\.\s/.test(formattedLine)) {
+        return <li key={i} className="ml-5 list-decimal mb-1" dangerouslySetInnerHTML={{ __html: formattedLine.replace(/^\d+\.\s/, '') }} />
+      }
+      if (formattedLine.trim() === '') return <div key={i} className="h-3" />
+      return <p key={i} className="mb-1 text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: formattedLine }} />
+    })
   }
 
   if (initializing) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mx-auto mb-3" />
-          <p className="text-sm text-gray-500">AI yuklanmoqda...</p>
-        </div>
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] bg-gray-50/50">
+        <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mb-4" />
+        <p className="text-gray-500 font-medium animate-pulse">AI yordamchi yuklanmoqda...</p>
       </div>
     )
   }
 
   const sessionGroups = groupSessionsByDate(sessions)
+  const Icon = config.icon
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] -m-4 md:-m-6 overflow-hidden">
-      {/* Mobile sidebar overlay */}
-      {showSidebar && (
-        <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
-          onClick={() => setShowSidebar(false)}
-        />
-      )}
+    <div className="flex h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] -m-4 md:-m-6 overflow-hidden bg-gray-50">
+      
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {showSidebar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-gray-900/40 z-40 lg:hidden backdrop-blur-sm"
+            onClick={() => setShowSidebar(false)}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Left sidebar - sessions history */}
+      {/* LEFT SIDEBAR */}
       <aside
         className={`
           fixed lg:relative inset-y-0 left-0 z-50 lg:z-0
-          w-72 bg-white border-r border-gray-100 flex flex-col flex-shrink-0
-          transform transition-transform duration-300
+          w-72 bg-white border-r border-gray-200 flex flex-col flex-shrink-0
+          transform transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none
           ${showSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
-        <div className="p-4 border-b border-gray-100">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div
-                className={`w-8 h-8 rounded-lg bg-gradient-to-r ${config.color} flex items-center justify-center`}
-              >
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-bold text-gray-800 text-sm">AI Tahlilchi</span>
+        {/* Sidebar Header */}
+        <div className="bg-gradient-to-br from-indigo-600 to-purple-700 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2.5 text-white">
+              <Icon size={22} className="opacity-90" />
+              <h2 className="font-bold text-lg tracking-tight">{config.title}</h2>
             </div>
             <button
               onClick={() => setShowSidebar(false)}
-              className="lg:hidden p-1 rounded-lg hover:bg-gray-100"
+              className="lg:hidden p-1.5 rounded-full hover:bg-white/20 text-white/80 transition-colors"
             >
-              <X size={18} className="text-gray-400" />
+              <X size={20} />
             </button>
           </div>
+          
           <button
             onClick={handleNewChat}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r ${config.color} text-white text-sm font-medium hover:opacity-90 transition-opacity`}
+            className="w-full flex items-center justify-center gap-2 py-3 bg-white hover:bg-opacity-90 text-indigo-600 rounded-xl font-semibold shadow-sm transition-all active:scale-[0.98]"
           >
-            <Plus size={16} />
+            <Plus size={18} />
             Yangi suhbat
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3 space-y-4">
+        {/* Sidebar Sessions */}
+        <div className="flex-1 overflow-y-auto py-3 px-3 space-y-5 custom-scrollbar">
           {sessionGroups.map(group => (
             <div key={group.label}>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-1.5">
+              <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">
                 {group.label}
-              </p>
-              <div className="space-y-0.5">
-                {group.sessions.map(s => (
-                  <div key={s.id} className="group relative flex items-center">
-                    <button
-                      onClick={() => loadSession(s)}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all truncate pr-8 ${
-                        currentSession?.id === s.id
-                          ? 'bg-indigo-50 text-indigo-700 font-medium'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {s.title}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setDeletingId(s.id)
-                      }}
-                      className="absolute right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red-100 text-gray-400 hover:text-red-500"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))}
+              </h3>
+              <div className="space-y-1">
+                {group.sessions.map(s => {
+                  const isActive = currentSession?.id === s.id
+                  return (
+                    <div key={s.id} className="group relative">
+                      <button
+                         onClick={() => loadSession(s)}
+                         className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all truncate pr-8 border-l-2
+                           ${isActive
+                             ? 'bg-indigo-50 text-indigo-700 font-medium border-indigo-500'
+                             : 'border-transparent text-gray-600 hover:bg-gray-50'
+                           }`}
+                      >
+                         {s.title}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setDeletingId(s.id)
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500"
+                        title="O'chirish"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           ))}
 
           {sessions.length === 0 && (
-            <div className="text-center py-8">
-              <Sparkles className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-              <p className="text-xs text-gray-400">Hali suhbatlar yo&apos;q</p>
+            <div className="text-center py-10 px-4">
+              <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Icon size={20} className="text-gray-300" />
+              </div>
+              <p className="text-sm font-medium text-gray-500">Hali suhbatlar yo&apos;q</p>
+              <p className="text-xs text-gray-400 mt-1">Yangi suhbat boshlang</p>
             </div>
           )}
         </div>
       </aside>
 
-      {/* Main chat area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-gray-50/50">
-        {/* Chat header */}
-        <div className="h-14 sm:h-16 bg-white border-b border-gray-100 flex items-center gap-3 px-4 flex-shrink-0">
+      {/* RIGHT MAIN AREA */}
+      <div className="flex-1 flex flex-col min-w-0 bg-gray-50 relative">
+        
+        {/* HEADER */}
+        <header className="h-16 bg-white border-b border-gray-200 shadow-sm flex items-center px-4 md:px-6 flex-shrink-0 z-10 transition-all">
           <button
             onClick={() => setShowSidebar(true)}
-            className="lg:hidden p-1.5 rounded-lg hover:bg-gray-100"
+            className="lg:hidden p-2 -ml-2 mr-2 rounded-xl hover:bg-gray-50 text-gray-500"
           >
-            <Menu size={20} className="text-gray-500" />
+            <Menu size={22} />
           </button>
-          <div
-            className={`w-9 h-9 rounded-xl bg-gradient-to-r ${config.color} flex items-center justify-center flex-shrink-0`}
-          >
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <div className="min-w-0">
-            <h2 className="text-sm font-bold text-gray-800 truncate">
-              {config.title}
-            </h2>
-            <p className="text-xs text-gray-400 truncate">{config.subtitle}</p>
-          </div>
-          <div className="ml-auto hidden sm:block">
-            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-lg">
-              {userName}
-            </span>
-          </div>
-        </div>
-
-        {/* Messages area */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4">
-          {/* Show suggestions if only greeting */}
-          {messages.length <= 1 && (
-            <div className="max-w-lg mx-auto mt-4 sm:mt-8">
-              <div className="text-center mb-6">
-                <div
-                  className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${config.color} flex items-center justify-center mx-auto mb-3`}
-                >
-                  <Sparkles className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-800">
-                  {config.title}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1">{config.subtitle}</p>
+          
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md border-2 border-white ring-2 ring-indigo-50">
+              <span className="text-lg">🤖</span>
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="font-bold text-gray-900 leading-tight">IQRO AI</h1>
+                <span className={`text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-md border ${config.badgeColor} hidden sm:inline-block`}>
+                  {config.badge}
+                </span>
               </div>
-              <div className="space-y-2">
+              <p className="text-xs text-gray-500 font-medium">Gemini 2.5 Flash</p>
+            </div>
+          </div>
+          
+          <div className="ml-auto flex items-center gap-3">
+             <div className="hidden md:flex flex-col items-end">
+                <span className="text-sm font-bold text-gray-700">{userName}</span>
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider flex items-center gap-1"><Icon size={10} /> {userRole}</span>
+             </div>
+             <div className="h-8 w-px bg-gray-200 hidden md:block mx-1"></div>
+             <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full">
+               {currentSession ? 'Faol suhbat' : sessions.length + ' ta suhbat'}
+             </span>
+          </div>
+        </header>
+
+        {/* MESSAGES AREA */}
+        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 scroll-smooth">
+          
+          {/* WELCOME STATE */}
+          {messages.length === 0 && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="h-full flex flex-col items-center justify-center max-w-2xl mx-auto text-center px-4"
+            >
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-indigo-200 mb-6">
+                <span className="text-4xl">🤖</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">
+                Salom, {userName.split(' ')[0]}! 👋
+              </h2>
+              <p className="text-gray-500 mb-10 max-w-md mx-auto">
+                {config.subtitle}. Sizga qanday yordam bera olaman?
+              </p>
+              
+              <div className="grid sm:grid-cols-2 gap-3 w-full">
                 {config.suggestions.map((suggestion, i) => (
-                  <button
+                  <motion.button
                     key={i}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => sendMessage(suggestion)}
                     disabled={isLoading}
-                    className="w-full text-left px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 text-sm text-gray-700 transition-all disabled:opacity-50"
+                    className="p-4 bg-white rounded-2xl border border-gray-200 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all text-left text-sm font-medium text-gray-700 disabled:opacity-50 flex items-center gap-3 group"
                   >
-                    <span className="text-indigo-500 mr-2">→</span>
-                    {suggestion}
-                  </button>
+                    <span className="flex-1">{suggestion}</span>
+                    <span className="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                      →
+                    </span>
+                  </motion.button>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
-          {/* Messages */}
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={`flex gap-2.5 max-w-[90%] sm:max-w-[75%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                {msg.role === 'assistant' && (
-                  <div
-                    className={`w-7 h-7 rounded-lg bg-gradient-to-r ${config.color} flex items-center justify-center flex-shrink-0 mt-0.5`}
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-white" />
-                  </div>
-                )}
-                <div>
-                  <div
-                    className={`rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed ${
-                      msg.role === 'user'
-                        ? 'bg-indigo-600 text-white rounded-br-sm'
-                        : 'bg-white text-gray-800 shadow-sm rounded-bl-sm border border-gray-100'
-                    }`}
-                  >
-                    {msg.content}
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    {msg.created_at && (
-                      <p className="text-[10px] text-gray-300 px-1">
-                        {formatTime(msg.created_at)}
-                      </p>
-                    )}
-                    {msg.role === 'assistant' &&
-                      isReportMessage(msg.content) &&
-                      (userRole === 'teacher' || userRole === 'director') && (
-                        <button
-                          onClick={() =>
-                            exportToPDF(msg.content, `IQRO Hisobot - ${new Date().toLocaleDateString('uz-UZ')}`)
-                          }
-                          className="flex items-center gap-1 text-[10px] text-indigo-500 hover:text-indigo-700 transition-colors"
-                        >
-                          <Download size={10} />
-                          PDF yuklab olish
-                        </button>
-                      )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* Loading */}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="flex gap-2.5">
-                <div
-                  className={`w-7 h-7 rounded-lg bg-gradient-to-r ${config.color} flex items-center justify-center flex-shrink-0`}
+          {/* MESSAGES LIST */}
+          <div className="space-y-6 max-w-4xl mx-auto pb-4">
+            <AnimatePresence initial={false}>
+              {messages.map((msg, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-white" />
-                </div>
-                <div className="bg-white rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm border border-gray-100">
-                  <div className="flex items-center gap-1.5">
-                    <div className="flex gap-1">
-                      <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className={`flex gap-3 max-w-[85%] md:max-w-[70%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                    
+                    {/* AVATAR FOR AI */}
+                    {msg.role === 'assistant' && (
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0 mt-1">
+                        <span className="text-sm">🤖</span>
+                      </div>
+                    )}
+
+                    {/* MESSAGE BUBBLE */}
+                    <div className="flex flex-col relative group">
+                      <div
+                        className={`px-5 py-3.5 text-[15px] shadow-sm ${
+                          msg.role === 'user'
+                            ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl rounded-tr-sm'
+                            : 'bg-white text-gray-800 rounded-2xl rounded-tl-sm border-l-[3px] border-indigo-400'
+                        }`}
+                      >
+                         {msg.role === 'user' ? (
+                            <p className="whitespace-pre-wrap">{msg.content}</p>
+                         ) : (
+                            <div className="prose prose-sm prose-indigo max-w-none">
+                               {renderMessageContent(msg.content)}
+                            </div>
+                         )}
+                      </div>
+                      
+                      {/* MESSAGE META / ACTIONS */}
+                      <div className={`flex items-center gap-3 mt-1.5 px-1 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <span className="text-[11px] text-gray-400 font-medium">
+                          {formatTime(msg.created_at) || formatTime(new Date().toISOString())}
+                        </span>
+                        
+                        {msg.role === 'assistant' &&
+                          isReportMessage(msg.content) &&
+                          (userRole === 'teacher' || userRole === 'director') && (
+                            <button
+                              onClick={() =>
+                                exportToPDF(msg.content, `IQRO AI Hisobot — ${new Date().toLocaleDateString('uz-UZ')}`)
+                              }
+                              className="opacity-0 group-hover:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-md transition-all"
+                            >
+                              <Download size={12} />
+                              PDF ga saqlash
+                            </button>
+                          )}
+                      </div>
                     </div>
-                    <span className="text-xs text-gray-400 ml-1">
-                      O&apos;ylayapman...
-                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {/* TYPING INDICATOR */}
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex justify-start max-w-4xl mx-auto"
+              >
+                <div className="flex gap-3 max-w-[85%] md:max-w-[70%]">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0 mt-1">
+                    <span className="text-sm">🤖</span>
+                  </div>
+                  <div className="bg-white rounded-2xl rounded-tl-sm border-l-[3px] border-indigo-400 px-5 py-4 shadow-sm h-12 flex items-center">
+                     <div className="flex gap-1.5">
+                        <motion.div className="w-2 h-2 bg-indigo-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
+                        <motion.div className="w-2 h-2 bg-indigo-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} />
+                        <motion.div className="w-2 h-2 bg-indigo-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
+                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
+              </motion.div>
+            )}
+            
+            <div ref={messagesEndRef} className="h-4" />
+          </div>
         </div>
 
-        {/* Input area */}
-        <div className="p-3 sm:p-4 bg-white border-t border-gray-100 flex-shrink-0">
-          <div className="flex gap-2 items-end max-w-3xl mx-auto">
-            <div className="flex-1 relative">
+        {/* INPUT AREA */}
+        <div className="bg-white border-t border-gray-200 p-4 shrink-0 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)] relative z-20">
+          <div className="max-w-4xl mx-auto relative">
+            <div className="flex gap-3 items-end bg-white rounded-2xl border border-gray-200 p-2 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-50 transition-all shadow-sm">
               <textarea
                 ref={textareaRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={`${userName.split(' ')[0]}, savolingizni yozing...`}
-                className="w-full text-sm border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all resize-none overflow-hidden"
+                placeholder={config.placeholder}
+                className="flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none py-2.5 px-3 text-[15px] placeholder:text-gray-400 text-gray-800"
                 rows={1}
                 disabled={isLoading}
               />
+              <button
+                onClick={() => sendMessage()}
+                disabled={isLoading || !input.trim()}
+                className="w-11 h-11 shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+              >
+                {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} className="ml-1" />}
+              </button>
             </div>
-            <button
-              onClick={() => sendMessage()}
-              disabled={isLoading || !input.trim()}
-              className={`w-10 h-10 bg-gradient-to-r ${config.color} rounded-xl flex items-center justify-center hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0`}
-            >
-              <Send className="w-4 h-4 text-white" />
-            </button>
+            <div className="flex items-center justify-between mt-2 px-2">
+               <p className="text-[11px] text-gray-400 font-medium tracking-wide">IQRO AI · Gemini 2.5 Flash</p>
+               <p className="text-[10px] text-gray-400 hidden sm:block">
+                 <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200 mx-0.5">Enter</kbd> yuborish, <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200 mx-0.5">Shift+Enter</kbd> yangi qator
+               </p>
+            </div>
           </div>
-          <p className="text-center text-[10px] text-gray-300 mt-2 hidden sm:block">
-            Enter — yuborish · Shift+Enter — yangi qator
-          </p>
         </div>
+
       </div>
 
       {/* Delete Confirmation Modal */}
-      {deletingId && (
-        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 max-w-xs w-full shadow-2xl animate-in zoom-in-95 duration-200">
-            <h3 className="font-bold text-gray-900 mb-2">
-              Suhbatni o&apos;chirish
-            </h3>
-            <p className="text-sm text-gray-500 mb-5">
-              Bu suhbat va uning barcha xabarlari batamom o&apos;chib ketadi. Davom etamizmi?
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setDeletingId(null)}
-                className="flex-1 py-2 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-              >
-                Bekor qilish
-              </button>
-              <button
-                onClick={async () => {
-                  await deleteSession(deletingId)
-                  setSessions(prev => prev.filter(s => s.id !== deletingId))
-                  if (currentSession?.id === deletingId) {
-                    setCurrentSession(null)
-                    setMessages([{ role: 'assistant', content: config.greeting }])
-                  }
-                  setDeletingId(null)
-                }}
-                className="flex-1 py-2 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors"
-              >
-                O&apos;chirish
-              </button>
-            </div>
+      <AnimatePresence>
+        {deletingId && (
+          <div className="fixed inset-0 bg-gray-900/40 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+            >
+              <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <Trash2 size={24} />
+              </div>
+              <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">
+                Suhbatni o&apos;chirish
+              </h3>
+              <p className="text-sm text-gray-500 mb-6 text-center leading-relaxed">
+                Bu suhbat va uning barcha xabarlari batamom o&apos;chib ketadi. Buni ortga qaytarib bo&apos;lmaydi. Davom etamizmi?
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeletingId(null)}
+                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Bekor qilish
+                </button>
+                <button
+                  onClick={async () => {
+                    await deleteSession(deletingId)
+                    setSessions(prev => prev.filter(s => s.id !== deletingId))
+                    if (currentSession?.id === deletingId) {
+                      setCurrentSession(null)
+                      setMessages([])
+                    }
+                    setDeletingId(null)
+                  }}
+                  className="flex-1 py-2.5 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600 shadow-md transition-colors"
+                >
+                  O&apos;chirish
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
+      
     </div>
   )
 }
