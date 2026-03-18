@@ -14,7 +14,7 @@ const NAV_ITEMS = [
   { href: '/director/students', icon: Users, label: "O'quvchilar" },
   { href: '/director/clubs', icon: BookOpen, label: "To'garaklar" },
   { href: '/director/statistics', icon: BarChart3, label: "Statistika" },
-  { href: '/director/ai', icon: Sparkles, label: "AI Tahlilchi" },
+  { href: '/director/ai', icon: Sparkles, label: "AI tahlilchi" },
   { href: '/director/profile', icon: User, label: "Profil" },
 ]
 

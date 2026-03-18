@@ -26,7 +26,7 @@ export default function CTASection() {
               size="lg"
               className="bg-white text-indigo-600 hover:bg-gray-100 rounded-full px-10 py-6 text-base font-semibold shadow-xl"
             >
-              Bepul Boshlash →
+              Bepul boshlash →
             </Button>
           </Link>
         </motion.div>

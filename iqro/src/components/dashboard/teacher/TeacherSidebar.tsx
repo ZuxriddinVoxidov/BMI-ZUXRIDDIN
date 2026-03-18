@@ -24,12 +24,12 @@ import { Logo } from '@/components/shared/Logo'
 
 const navItems = [
   { label: 'Bosh sahifa', href: '/teacher', icon: Home },
-  { label: "Mening To'garaklarim", href: '/teacher/clubs', icon: Monitor },
-  { label: 'Davomat Olish', href: '/teacher/attendance', icon: ClipboardCheck },
+  { label: "Mening to'garaklarim", href: '/teacher/clubs', icon: Monitor },
+  { label: 'Davomat olish', href: '/teacher/attendance', icon: ClipboardCheck },
   { label: 'Hisobotlar', href: '/teacher/reports', icon: BarChart3 },
   { label: "O'quvchilar", href: '/teacher/students', icon: Users },
   { label: 'Testlar', href: '/teacher/quiz', icon: Trophy },
-  { label: 'AI Tahlilchi', href: '/teacher/ai', icon: Sparkles },
+  { label: 'AI tahlilchi', href: '/teacher/ai', icon: Sparkles },
   { label: 'Profil', href: '/teacher/profile', icon: User },
 ]
 

@@ -84,7 +84,7 @@ export default function DirectorDashboard({
     <div className="space-y-6">
       {/* Export buttons */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-extrabold text-gray-900">Direktor Paneli</h1>
+        <h1 className="text-2xl font-extrabold text-gray-900">Direktor paneli</h1>
         <div className="flex gap-2">
           <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors">📄 PDF</button>
           <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors">📊 Excel</button>

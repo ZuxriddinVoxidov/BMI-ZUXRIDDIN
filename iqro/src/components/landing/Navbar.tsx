@@ -12,7 +12,7 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Bosh sahifa', href: '#hero' },
     { label: "To'garaklar", href: '#clubs' },
-    { label: 'Haqida', href: '#features' },
+    { label: "Maktab haqida", href: '/about' },
     { label: "Bog'lanish", href: '/contact' },
   ]
 

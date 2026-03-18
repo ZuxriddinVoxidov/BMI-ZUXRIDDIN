@@ -7,7 +7,7 @@ import { BarChart3, Sprout, Target } from 'lucide-react'
 const features = [
   {
     icon: Target,
-    title: 'Aqlli Boshqaruv',
+    title: 'Aqlli boshqaruv',
     description:
       "To'garaklarni oson boshqaring. Arizalar, tasdiqlashlar, a'zolar ro'yxati — hammasi bir joyda. Avtomatik bildirishnomalar va jadvallar.",
     bg: 'bg-gradient-to-br from-pink-50 to-purple-50',
@@ -15,7 +15,7 @@ const features = [
   },
   {
     icon: BarChart3,
-    title: 'Real-vaqt Statistika',
+    title: 'Real-vaqt statistika',
     description:
       "Davomatni kuzating, hisobotlar oling. Grafik va diagrammalar orqali har bir o'quvchining holati aniq ko'rinadi. PDF va Excel eksport.",
     bg: 'bg-gradient-to-br from-blue-50 to-indigo-50',
@@ -23,7 +23,7 @@ const features = [
   },
   {
     icon: Sprout,
-    title: "O'sish Tizimi",
+    title: "O'sish tizimi",
     description:
       "Har bir o'quvchi rivojlanishini kuzating. Gamification elementlari, daraxt o'sish animatsiyasi va mukofotlar bilan o'quvchilar motivatsiyasi oshadi.",
     bg: 'bg-gradient-to-br from-green-50 to-emerald-50',

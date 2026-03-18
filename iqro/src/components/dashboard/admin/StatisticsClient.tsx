@@ -34,7 +34,7 @@ export default function StatisticsClient(props: Props) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Tizim Statistikasi</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900">Tizim statistikasi</h1>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-3 gap-4">

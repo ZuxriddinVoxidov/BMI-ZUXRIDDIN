@@ -31,7 +31,7 @@ const navItems = [
   { label: 'Direktor', href: '/dashboard/directors', icon: Building2 },
   { label: "To'garaklar", href: '/dashboard/clubs', icon: CircleDot },
   { label: 'Xabarlar', href: '/dashboard/messages', icon: MessageSquare },
-  { label: 'Tizim Statistikasi', href: '/dashboard/statistics', icon: BarChart3 },
+  { label: 'Tizim statistikasi', href: '/dashboard/statistics', icon: BarChart3 },
   { label: 'Sozlamalar', href: '/dashboard/settings', icon: Settings },
 ]
 

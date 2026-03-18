@@ -63,7 +63,7 @@ export default function TeacherReports({
 
   function handleExportPDF() {
     exportAttendancePDF({
-      title: 'Davomat Hisoboti',
+      title: 'Davomat hisoboti',
       teacherName: '',
       clubName: 'Barcha to\'garaklar',
       period: new Date().toLocaleDateString('uz-UZ'),

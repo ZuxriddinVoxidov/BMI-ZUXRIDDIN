@@ -145,7 +145,7 @@ export default function StudentWorksPage() {
       )}
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-extrabold text-gray-900">Mening Ishlarim</h1>
+        <h1 className="text-2xl font-extrabold text-gray-900">Mening ishlarim</h1>
         <button
           onClick={() => setShowDialog(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors"

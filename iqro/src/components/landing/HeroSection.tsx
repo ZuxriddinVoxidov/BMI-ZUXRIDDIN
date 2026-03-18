@@ -76,9 +76,9 @@ export default function HeroSection({ studentsCount, clubsCount, avgRating }: He
           transition={{ duration: 0.7, delay: 0.2 }}
           className="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6"
         >
-          Bilim — Kelajak Kaliti,
+          Bilim — kelajak kaliti,
           <br />
-          <span className="text-yellow-300">To&apos;garaklar</span> — Uning Eshigi
+          <span className="text-yellow-300">to&apos;garaklar</span> — uning eshigi
         </motion.h1>
 
         {/* Subtitle */}
@@ -104,7 +104,7 @@ export default function HeroSection({ studentsCount, clubsCount, avgRating }: He
               size="lg"
               className="bg-white text-indigo-600 hover:bg-gray-100 rounded-full px-8 py-6 text-base font-semibold shadow-xl"
             >
-              Bepul Boshlash
+              Bepul boshlash
             </Button>
           </Link>
           <a href="#clubs">
@@ -113,7 +113,7 @@ export default function HeroSection({ studentsCount, clubsCount, avgRating }: He
               className="border border-white/40 bg-white/10 text-white hover:bg-white/20 rounded-full px-8 py-6 text-base font-semibold backdrop-blur-sm"
             >
               <Play size={18} className="mr-2 fill-white" />
-              Demo Ko&apos;rish
+              Demo ko&apos;rish
             </Button>
           </a>
         </motion.div>

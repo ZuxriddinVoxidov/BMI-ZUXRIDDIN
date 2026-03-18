@@ -79,7 +79,7 @@ export default function ParentRequests() {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 overflow-hidden mt-6">
       <div className="flex items-center gap-2 mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Telegram Ulanish So&apos;rovlari</h2>
+        <h2 className="text-xl font-bold text-gray-900">Telegram ulanish so&apos;rovlari</h2>
         <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
           {requests.length}
         </span>

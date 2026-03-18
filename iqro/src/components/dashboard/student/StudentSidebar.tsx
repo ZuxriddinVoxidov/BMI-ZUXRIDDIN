@@ -26,13 +26,13 @@ import { Logo } from '@/components/shared/Logo'
 
 const navItems = [
   { label: 'Bosh sahifa', href: '/student', icon: Home },
-  { label: "To'garaklar Katalogi", href: '/student/explore', icon: Compass },
-  { label: "Mening To'garaklarim", href: '/student/clubs', icon: Monitor },
-  { label: 'Haftalik Jadval', href: '/student/schedule', icon: Calendar },
-  { label: 'Davomat Hisoboti', href: '/student/attendance', icon: BarChart3 },
+  { label: "To'garaklar katalogi", href: '/student/explore', icon: Compass },
+  { label: "Mening to'garaklarim", href: '/student/clubs', icon: Monitor },
+  { label: 'Haftalik jadval', href: '/student/schedule', icon: Calendar },
+  { label: 'Davomat hisoboti', href: '/student/attendance', icon: BarChart3 },
   { label: 'Testlar', href: '/student/quiz', icon: Trophy },
-  { label: 'Mening Ishlarim', href: '/student/works', icon: FolderOpen },
-  { label: 'AI Yordamchi', href: '/student/ai', icon: Sparkles },
+  { label: 'Mening ishlarim', href: '/student/works', icon: FolderOpen },
+  { label: 'AI yordamchi', href: '/student/ai', icon: Sparkles },
   { label: 'Profil', href: '/student/profile', icon: User },
 ]
 
