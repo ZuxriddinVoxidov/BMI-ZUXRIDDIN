@@ -177,6 +177,22 @@ export default function LoginPage() {
       }
 
       const role = profile?.role || 'student'
+
+      const ALLOWED_ROLES: Record<string, string[]> = {
+        student: ['student'],
+        teacher: ['teacher', 'school_admin', 'director'],
+      }
+
+      if (!ALLOWED_ROLES[loginRole]?.includes(role)) {
+        await supabase.auth.signOut()
+        setLoginLoading(false)
+        const message = loginRole === 'student'
+          ? "Bu kirish o'quvchilar uchun. O'qituvchi sifatida kiring."
+          : "Bu kirish o'qituvchilar uchun. O'quvchi sifatida kiring."
+        setLoginError(message)
+        return
+      }
+
       const routes: Record<string, string> = {
         super_admin: '/dashboard',
         school_admin: '/dashboard',
