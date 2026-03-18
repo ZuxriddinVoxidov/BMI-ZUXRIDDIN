@@ -5,7 +5,7 @@ import { submitReview } from '@/app/actions/reviews'
 import { getCategoryColor, getDefaultEmoji } from '@/lib/utils'
 import Link from 'next/link'
 import { useState, useTransition, useRef, useEffect } from 'react'
-import { FileText, Download, Star, X } from 'lucide-react'
+import { FileText, Download, Star, X, MessageSquare, Send } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -19,22 +19,32 @@ interface ClubDetailClientProps {
   isEnrolled?: boolean
   resources?: Array<{id: string, title: string, file_url: string, file_name: string, file_size?: number}>
   existingReview?: {rating: number, comment: string | null} | null
+  teacherId?: string
+  initialMessages?: any[]
+  currentUserId?: string
 }
 
 export default function ClubDetailClient({
   club, enrolledCount, avgRating, userEnrollment, userProfile, reviews,
-  isEnrolled = false, resources = [], existingReview = null
+  isEnrolled = false, resources = [], existingReview = null,
+  teacherId, initialMessages = [], currentUserId
 }: ClubDetailClientProps) {
   const [isPending, startTransition] = useTransition()
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [localStatus, setLocalStatus] = useState(userEnrollment?.status || null)
   const [showResources, setShowResources] = useState(false)
   const [showReview, setShowReview] = useState(false)
+  const [showChat, setShowChat] = useState(false)
   const [rating, setRating] = useState(existingReview?.rating || 0)
   const [comment, setComment] = useState(existingReview?.comment || '')
   
+  const [messages, setMessages] = useState<any[]>(initialMessages)
+  const [newMessage, setNewMessage] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  
   const resourcesRef = useRef<HTMLDivElement>(null)
   const reviewRef = useRef<HTMLDivElement>(null)
+  const chatRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -44,10 +54,19 @@ export default function ClubDetailClient({
       if (reviewRef.current && !reviewRef.current.contains(event.target as Node)) {
         setShowReview(false)
       }
+      if (chatRef.current && !chatRef.current.contains(event.target as Node)) {
+        setShowChat(false)
+      }
     }
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (showChat) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [showChat, messages])
 
   const handleSubmitReview = async () => {
     if (!rating) {
@@ -67,6 +86,37 @@ export default function ClubDetailClient({
       }
       setTimeout(() => setToast(null), 4000)
     })
+  }
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newMessage.trim() || !teacherId) return
+
+    // Optimistik Update
+    const tempId = Date.now().toString()
+    const newMsg = {
+      id: tempId,
+      message: newMessage.trim(),
+      sender_id: currentUserId,
+      created_at: new Date().toISOString(),
+      sender: { full_name: userProfile?.full_name || 'Siz' }
+    }
+    
+    setMessages(prev => [...prev, newMsg])
+    const sentMessage = newMessage.trim()
+    setNewMessage('')
+
+    // Import action dynamically to avoid top-level issues
+    const { sendMessage } = await import('@/app/actions/messages')
+    const result = await sendMessage(club.id, teacherId, sentMessage)
+    
+    if (!result.success) {
+      setToast({ message: result.error || 'Xabar yuborishda xatolik', type: 'error' })
+      setMessages(prev => prev.filter(m => m.id !== tempId))
+      setTimeout(() => setToast(null), 4000)
+    } else {
+      window.location.reload()
+    }
   }
 
   const emoji = club.emoji || getDefaultEmoji(club.category || '')
@@ -229,6 +279,89 @@ export default function ClubDetailClient({
                   )}
                 </AnimatePresence>
               </div>
+
+              {/* Chat Dropdown */}
+              {teacherId && currentUserId && (
+                <div className="relative" ref={chatRef}>
+                  <button 
+                    onClick={() => setShowChat(!showChat)}
+                    className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
+                      showChat ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <MessageSquare size={16} /> 
+                    <span className="hidden sm:inline">Ustozga xabar</span>
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showChat && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                        className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 flex flex-col h-[400px]"
+                      >
+                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-indigo-50/50">
+                          <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                            <MessageSquare size={16} className="text-indigo-600" /> 
+                            {club.teacher?.full_name || 'Ustoz'}
+                          </h4>
+                          <button onClick={() => setShowChat(false)} className="text-gray-400 hover:bg-white hover:text-gray-600 rounded-lg p-1 transition-colors">
+                            <X size={16} />
+                          </button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50/30">
+                          {messages.length === 0 ? (
+                            <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                              <MessageSquare size={32} className="mb-2 opacity-50" />
+                              <p className="text-sm">Xabarlar yo&apos;q.</p>
+                              <p className="text-xs">Birinchi bo&apos;lib xabar yozing!</p>
+                            </div>
+                          ) : (
+                            messages.map((msg) => {
+                              const isMe = msg.sender_id === currentUserId
+                              const time = new Date(msg.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })
+                              return (
+                                <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                                  <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] ${
+                                    isMe 
+                                      ? 'bg-indigo-600 text-white rounded-br-sm shadow-sm' 
+                                      : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-sm'
+                                  }`}>
+                                    <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                                  </div>
+                                  <span className="text-[10px] text-gray-400 mt-1 px-1">
+                                    {isMe ? 'Siz' : msg.sender?.full_name} • {time}
+                                  </span>
+                                </div>
+                              )
+                            })
+                          )}
+                          <div ref={messagesEndRef} />
+                        </div>
+                        
+                        <div className="p-3 border-t border-gray-100 bg-white">
+                          <form onSubmit={handleSendMessage} className="flex gap-2">
+                            <input
+                              type="text"
+                              value={newMessage}
+                              onChange={e => setNewMessage(e.target.value)}
+                              placeholder="Xabar yozing..."
+                              className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400"
+                            />
+                            <button
+                              type="submit"
+                              disabled={!newMessage.trim()}
+                              className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 disabled:opacity-50 transition-colors flex-shrink-0"
+                            >
+                              <Send size={16} />
+                            </button>
+                          </form>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
             </>
           )}
 

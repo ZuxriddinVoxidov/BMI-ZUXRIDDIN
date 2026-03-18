@@ -3,7 +3,7 @@
 import { uploadResource, deleteResource, TeacherResource } from '@/app/actions/resources'
 import { getStudentLevel } from '@/lib/levels'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Calendar, ChevronDown, MapPin, Users, Upload, Trash2, Download, FileText, Plus, X } from 'lucide-react'
+import { Calendar, ChevronDown, MapPin, Users, Upload, Trash2, Download, FileText, Plus, X, MessageSquare, Send } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { useToast } from '@/hooks/use-toast'
 
@@ -11,6 +11,8 @@ interface Club extends Record<string, unknown> {
   id: string
   name: string
   resources?: TeacherResource[]
+  club_messages?: any[]
+  enrollments?: Record<string, unknown>[]
 }
 
 function formatBytes(bytes: number | null): string {
@@ -22,9 +24,12 @@ function formatBytes(bytes: number | null): string {
 export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>[] }) {
   const [openClub, setOpenClub] = useState<string | null>(null)
   const [openResourcesClub, setOpenResourcesClub] = useState<string | null>(null)
+  const [openMessagesClub, setOpenMessagesClub] = useState<string | null>(null)
+  const [activeStudentId, setActiveStudentId] = useState<string | null>(null)
   
   const [file, setFile] = useState<File | null>(null)
   const [title, setTitle] = useState('')
+  const [replyMessage, setReplyMessage] = useState('')
   const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
 
@@ -61,6 +66,27 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
     })
   }
 
+  function handleReply(e: React.FormEvent, clubId: string, studentId: string) {
+    e.preventDefault()
+    if (!replyMessage.trim() || !studentId) return
+    startTransition(async () => {
+      const { sendMessage } = await import('@/app/actions/messages')
+      const result = await sendMessage(clubId, studentId, replyMessage.trim())
+      if (result.success) {
+        setReplyMessage('')
+        window.location.reload()
+      } else {
+        toast({ title: result.error || 'Xabar yuborishda xato', variant: 'destructive' })
+      }
+    })
+  }
+
+  async function handleMarkAsRead(clubId: string, studentId: string) {
+    const { markMessagesRead } = await import('@/app/actions/messages')
+    await markMessagesRead(clubId, studentId)
+    // Silently mark as read, no need to reload unless wanted
+  }
+
   if (clubs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
@@ -84,6 +110,32 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
           const isOpen = openClub === club.id
           const isResOpen = openResourcesClub === club.id
           const resources = club.resources || []
+          const clubMessages = club.club_messages || []
+          
+          // Group messages by student
+          const studentMessages: Record<string, any[]> = {}
+          let unreadTotalCount = 0
+          
+          clubMessages.forEach(msg => {
+            // Find the other person in the conversation (the student)
+            // Assuming the teacher is looking at their own clubs, the other person is the student
+            const studentId = msg.sender_id === (club as any).teacher_id ? msg.receiver_id : msg.sender_id
+            
+            if (!studentMessages[studentId]) {
+              studentMessages[studentId] = []
+            }
+            studentMessages[studentId].push(msg)
+            
+            // Count unread messages (received by teacher)
+            if (!msg.is_read && msg.receiver_id === (club as any).teacher_id) {
+              unreadTotalCount++
+            }
+          })
+          
+          // Sort messages inside groups
+          Object.values(studentMessages).forEach(msgs => {
+            msgs.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+          })
 
           return (
             <motion.div key={club.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -107,7 +159,30 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                   <button 
                     onClick={(e) => {
                       e.stopPropagation()
+                      setOpenMessagesClub(openMessagesClub === club.id ? null : club.id)
+                      setOpenResourcesClub(null)
+                      setActiveStudentId(null)
+                    }}
+                    className={`relative text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 transition-colors border ${
+                      openMessagesClub === club.id 
+                        ? 'bg-amber-500 text-white border-amber-500' 
+                        : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                    }`}
+                  >
+                    <MessageSquare size={14} className={openMessagesClub === club.id ? "text-white" : "text-gray-400"} /> 
+                    <span className="hidden sm:inline">Xabarlar</span>
+                    {unreadTotalCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+                        {unreadTotalCount}
+                      </span>
+                    )}
+                  </button>
+                  
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation()
                       setOpenResourcesClub(isResOpen ? null : club.id)
+                      setOpenMessagesClub(null)
                     }}
                     className={`text-xs px-3 py-1.5 rounded-full font-medium flex items-center gap-1.5 transition-colors border ${
                       isResOpen 
@@ -206,6 +281,139 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                           ))}
                         </div>
                       )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Messages Panel (Inline, below header) */}
+              <AnimatePresence>
+                {openMessagesClub === club.id && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden border-t border-gray-100 bg-amber-50/30">
+                    <div className="p-5 flex flex-col md:flex-row gap-4 h-[500px]">
+                      
+                      {/* Left Sidebar: Students List */}
+                      <div className="md:w-1/3 border border-gray-200 rounded-xl bg-white flex flex-col overflow-hidden">
+                        <div className="p-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                          <h4 className="text-xs font-bold text-gray-600 uppercase">Suhbatlar</h4>
+                          <button onClick={() => setOpenMessagesClub(null)} className="p-1 text-gray-400 hover:bg-gray-200 rounded-lg transition-colors md:hidden">
+                            <X size={14} />
+                          </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto">
+                          {Object.keys(studentMessages).length === 0 ? (
+                            <div className="p-6 text-center text-gray-400 text-sm">
+                              Hali xabarlar yo&apos;q
+                            </div>
+                          ) : (
+                            Object.entries(studentMessages).map(([studId, msgs]) => {
+                              // Find student name from first message
+                              const studentName = msgs.find(m => m.sender_id === studId)?.sender?.full_name 
+                                || msgs.find(m => m.receiver_id === studId)?.receiver?.full_name 
+                                || 'O\&apos;quvchi';
+                              
+                              const unreadCount = msgs.filter(m => !m.is_read && m.receiver_id === (club as any).teacher_id).length;
+                              const lastMsg = msgs[msgs.length - 1];
+                              const isActive = activeStudentId === studId;
+
+                              return (
+                                <button 
+                                  key={studId}
+                                  onClick={() => {
+                                    setActiveStudentId(studId);
+                                    if (unreadCount > 0) handleMarkAsRead(club.id, studId);
+                                  }}
+                                  className={`w-full text-left p-3 border-b border-gray-50 transition-colors flex items-center justify-between ${
+                                    isActive ? 'bg-amber-50 border-amber-100' : 'hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <div className="min-w-0 pr-2">
+                                    <p className={`text-sm truncate ${isActive || unreadCount > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700'}`}>
+                                      {studentName}
+                                    </p>
+                                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                                      {lastMsg.sender_id === (club as any).teacher_id ? 'Siz: ' : ''}{lastMsg.message}
+                                    </p>
+                                  </div>
+                                  {unreadCount > 0 && (
+                                    <span className="flex-shrink-0 h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                                      {unreadCount}
+                                    </span>
+                                  )}
+                                </button>
+                              )
+                            })
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Right Panel: Chat Thread */}
+                      <div className="md:w-2/3 border border-gray-200 rounded-xl bg-white flex flex-col overflow-hidden">
+                        {!activeStudentId ? (
+                          <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
+                            <MessageSquare size={32} className="mb-3 opacity-30" />
+                            <p className="text-sm font-medium">Suhbatni tanlang</p>
+                          </div>
+                        ) : (
+                          <>
+                            {/* Chat Header */}
+                            <div className="p-3 border-b border-gray-100 bg-white flex justify-between items-center shadow-sm z-10">
+                              <h4 className="text-sm font-bold text-gray-800">
+                                {studentMessages[activeStudentId]?.find(m => m.sender_id === activeStudentId)?.sender?.full_name 
+                                  || studentMessages[activeStudentId]?.find(m => m.receiver_id === activeStudentId)?.receiver?.full_name 
+                                  || 'O\&apos;quvchi'}
+                              </h4>
+                              <button onClick={() => setOpenMessagesClub(null)} className="p-1 text-gray-400 hover:bg-gray-200 rounded-lg hidden md:block transition-colors">
+                                <X size={14} />
+                              </button>
+                            </div>
+                            
+                            {/* Messages Overflow */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
+                              {studentMessages[activeStudentId]?.map((msg) => {
+                                const isTeacher = msg.sender_id === (club as any).teacher_id
+                                const time = new Date(msg.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })
+                                return (
+                                  <div key={msg.id} className={`flex flex-col ${isTeacher ? 'items-end' : 'items-start'}`}>
+                                    <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] ${
+                                      isTeacher 
+                                        ? 'bg-amber-500 text-white rounded-br-sm shadow-sm' 
+                                        : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm shadow-sm'
+                                    }`}>
+                                      <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                                    </div>
+                                    <span className="text-[10px] text-gray-400 mt-1 px-1">
+                                      {isTeacher ? 'Siz' : msg.sender?.full_name} • {time}
+                                    </span>
+                                  </div>
+                                )
+                              })}
+                            </div>
+
+                            {/* Reply Input */}
+                            <div className="p-3 border-t border-gray-100 bg-white">
+                              <form onSubmit={(e) => handleReply(e, club.id, activeStudentId)} className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={replyMessage}
+                                  onChange={e => setReplyMessage(e.target.value)}
+                                  placeholder="Javob yozish..."
+                                  className="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all bg-gray-50 focus:bg-white"
+                                />
+                                <button
+                                  type="submit"
+                                  disabled={!replyMessage.trim() || isPending}
+                                  className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center hover:bg-amber-600 disabled:opacity-50 transition-colors flex-shrink-0"
+                                >
+                                  <Send size={16} />
+                                </button>
+                              </form>
+                            </div>
+                          </>
+                        )}
+                      </div>
+
                     </div>
                   </motion.div>
                 )}

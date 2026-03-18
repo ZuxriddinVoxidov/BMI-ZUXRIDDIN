@@ -60,6 +60,13 @@ export default async function ClubDetailPage({ params }: { params: any }) {
     }
   }
 
+  // Get messages if enrolled
+  let initialMessages: any[] = []
+  if (userEnrollment?.status === 'approved' && userProfile && club.teacher_id) {
+    const { getClubMessages } = await import('@/app/actions/messages')
+    initialMessages = await getClubMessages(club.id)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const enrolledCount = club.enrollments?.filter((e: any) => e.status === 'approved').length || 0
   const isEnrolled = userEnrollment?.status === 'approved'
@@ -94,6 +101,9 @@ export default async function ClubDetailPage({ params }: { params: any }) {
       isEnrolled={isEnrolled}
       resources={club.teacher_resources || []}
       existingReview={existingReview}
+      teacherId={club.teacher_id}
+      initialMessages={initialMessages}
+      currentUserId={userProfile?.id}
     />
   )
 }
