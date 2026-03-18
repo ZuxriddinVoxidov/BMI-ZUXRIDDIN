@@ -19,6 +19,7 @@ import {
   GraduationCap,
   BookOpen,
   BarChart3,
+  RefreshCw,
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -28,6 +29,7 @@ interface Message {
   role: 'user' | 'assistant'
   content: string
   created_at?: string
+  isError?: boolean
 }
 
 interface Session {
@@ -168,6 +170,7 @@ export default function AIChatPage({
   const [showSidebar, setShowSidebar] = useState(false)
   const [initializing, setInitializing] = useState(true)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [slowResponse, setSlowResponse] = useState(false)
   
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -210,6 +213,17 @@ export default function AIChatPage({
     }
   }, [input])
 
+  useEffect(() => {
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setSlowResponse(true)
+      }, 10000)
+      return () => clearTimeout(timer)
+    } else {
+      setSlowResponse(false)
+    }
+  }, [isLoading])
+
   async function loadSession(session: Session) {
     setCurrentSession(session)
     setShowSidebar(false)
@@ -228,50 +242,87 @@ export default function AIChatPage({
     setShowSidebar(false)
   }
 
-  async function sendMessage(text?: string) {
-    const msg = (text || input).trim()
-    if (!msg || isLoading || !currentSession) return
-
-    setInput('')
-    setIsLoading(true)
-
-    const userMsg: Message = { role: 'user', content: msg }
-    setMessages(prev => [...prev, userMsg])
-
-    await saveMessage(currentSession.id, 'user', msg)
-
-    const history = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }))
+  async function executeFetch(history: {role: string, content: string}[], currentSessionId: string) {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 sec timeout
 
     try {
       const response = await fetch(apiRoute, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: history }),
+        signal: controller.signal
       })
 
+      clearTimeout(timeoutId)
       const data = await response.json()
       const reply = data.reply || data.response || 'Kechirasiz, javob olishda xatolik yuz berdi.'
 
       const aiMsg: Message = { role: 'assistant', content: reply, created_at: new Date().toISOString() }
-      setMessages(prev => [...prev, aiMsg])
+      setMessages(prev => [...prev.filter(m => !m.isError), aiMsg])
 
-      await saveMessage(currentSession.id, 'assistant', reply)
+      await saveMessage(currentSessionId, 'assistant', reply)
       
-      // Update session list to show new title optionally if handled in backend
       const updatedSessions = await getUserSessions(userId)
       setSessions(updatedSessions as Session[])
-    } catch {
-      setMessages(prev => [
-        ...prev,
-        {
+    } catch (err) {
+      clearTimeout(timeoutId)
+      if (err instanceof Error && err.name === 'AbortError') {
+        setMessages(prev => [...prev.filter(m => !m.isError), {
+          id: Date.now().toString(),
           role: 'assistant',
-          content: "Kechirasiz, xatolik yuz berdi. Qayta urinib ko'ring.",
-          created_at: new Date().toISOString()
-        },
-      ])
+          content: "Kechirasiz, javob berish vaqti tugadi. Qayta urinib ko'ring.",
+          created_at: new Date().toISOString(),
+          isError: true
+        }])
+      } else {
+        setMessages(prev => [...prev.filter(m => !m.isError), {
+          id: Date.now().toString(),
+          role: 'assistant', 
+          content: "Xatolik yuz berdi. Internet aloqasini tekshiring va qayta urinib ko'ring.",
+          created_at: new Date().toISOString(),
+          isError: true
+        }])
+      }
     } finally {
       setIsLoading(false)
+      setSlowResponse(false)
     }
+  }
+
+  async function sendMessage(text?: string) {
+    const msg = (text || input).trim()
+    if (!msg || isLoading || !currentSession) return
+
+    setInput('')
+    setIsLoading(true)
+    setSlowResponse(false)
+
+    setMessages(prev => prev.filter(m => !m.isError))
+
+    const userMsg: Message = { role: 'user', content: msg }
+    setMessages(prev => [...prev, userMsg])
+
+    await saveMessage(currentSession.id, 'user', msg)
+
+    const history = [...messages.filter(m => !m.isError), userMsg]
+      .map(m => ({ role: m.role, content: m.content }))
+
+    await executeFetch(history, currentSession.id)
+  }
+
+  async function handleRetry() {
+    if (isLoading || !currentSession) return
+    setIsLoading(true)
+    setSlowResponse(false)
+    
+    setMessages(prev => prev.filter(m => !m.isError))
+    
+    const history = messages
+      .filter(m => !m.isError)
+      .map(m => ({ role: m.role, content: m.content }))
+
+    await executeFetch(history, currentSession.id)
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -542,7 +593,17 @@ export default function AIChatPage({
                           {formatTime(msg.created_at) || formatTime(new Date().toISOString())}
                         </span>
                         
-                        {msg.role === 'assistant' &&
+                        {msg.isError && (
+                          <button
+                            onClick={handleRetry}
+                            className="flex items-center gap-1.5 text-[11px] font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-md transition-all"
+                          >
+                            <RefreshCw size={12} />
+                            Qayta urinish
+                          </button>
+                        )}
+                        
+                        {msg.role === 'assistant' && !msg.isError &&
                           isReportMessage(msg.content) &&
                           (userRole === 'teacher' || userRole === 'director') && (
                             <button
@@ -567,7 +628,7 @@ export default function AIChatPage({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex justify-start max-w-4xl mx-auto"
+                className="flex flex-col justify-start max-w-4xl mx-auto"
               >
                 <div className="flex gap-3 max-w-[85%] md:max-w-[70%]">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0 mt-1">
@@ -581,6 +642,11 @@ export default function AIChatPage({
                      </div>
                   </div>
                 </div>
+                {slowResponse && (
+                  <p className="text-xs text-gray-400 animate-pulse mt-2 ml-11">
+                    AI javob tayyorlamoqda... Bu biroz vaqt olishi mumkin
+                  </p>
+                )}
               </motion.div>
             )}
             
