@@ -240,7 +240,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
               const firstClub = clubs[0] as Record<string, any> | undefined
               if (firstClub) {
                 setSelClubId(firstClub.id)
-                setTopic(`${firstClub.name} — ${firstClub.category || 'mos'} fani bo'yicha test`)
+                setTopic('')
               }
             }}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors"
@@ -298,6 +298,28 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
         {/* ================= STATE 2: GENERATE ================= */}
         {currentState === 'generate' && (() => {
           const selectedClubObj = clubs.find(c => c.id === selClubId) as Record<string, any> | undefined
+
+          const getPlaceholder = (category: string | null) => {
+            const cat = (category || '').toLowerCase()
+            if (cat.includes('biologiya') || cat.includes('bio')) 
+              return 'Masalan: Hujayraning tuzilishi, Fotosintez, Odam anatomiyasi'
+            if (cat.includes('matematika') || cat.includes('mat')) 
+              return 'Masalan: Kasrlar, Uchburchaklar, Algebraik ifodalar'
+            if (cat.includes('fizika')) 
+              return 'Masalan: Mexanika, Elektr, Optika'
+            if (cat.includes('kimyo')) 
+              return 'Masalan: Davriy jadval, Kimyoviy reaksiyalar'
+            if (cat.includes('tarix')) 
+              return 'Masalan: Mustaqillik davri, Buyuk ipak yoli'
+            if (cat.includes('ingliz') || cat.includes('til') || cat.includes('english')) 
+              return 'Masalan: Past tense, Vocabulary, Grammar'
+            if (cat.includes('adabiyot')) 
+              return 'Masalan: Navoiy asarlari, She\'riy janrlar'
+            if (cat.includes('informatika') || cat.includes('it') || cat.includes('texno')) 
+              return 'Masalan: Algoritm, Dasturlash asoslari'
+            return 'Masalan: Mavzu nomi, Bob yoki bo\'lim nomi'
+          }
+
           return (
           <motion.div key="gen" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="bg-white rounded-2xl border p-6 max-w-2xl mx-auto shadow-sm">
             <div className="flex justify-between items-center mb-6 pb-4 border-b">
@@ -313,23 +335,18 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
                   setSelClubId(newId)
                   const targetClub = clubs.find(c => c.id === newId) as Record<string, any> | undefined
                   if (targetClub) {
-                    setTopic(`${targetClub.name} — ${targetClub.category || 'mos'} fani bo'yicha test`)
+                    setTopic('')
                   }
                 }} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm">
                   {clubs.map(c => (
                     <option key={c.id as string} value={c.id as string}>{c.name as string}</option>
                   ))}
                 </select>
-                {selectedClubObj && (
-                  <p className="mt-2 text-xs text-indigo-600 bg-indigo-50 p-2 rounded-lg flex items-center gap-2">
-                    💡 Bu to&apos;garak {(selectedClubObj.target_grades as string[])?.join(', ') || 'barcha'}-sinf o&apos;quvchilari uchun. AI {selectedClubObj.category || 'mos'} fani bo&apos;yicha mos savollar tuzadi.
-                  </p>
-                )}
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Mavzu (AI shu bo&apos;yicha test tuzadi)</label>
-                <input value={topic} onChange={e => setTopic(e.target.value)} placeholder="Masalan: O'zbekiston tarixi (Temuriylar davri)" required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm"/>
+                <input value={topic} onChange={e => setTopic(e.target.value)} placeholder={getPlaceholder(selectedClubObj?.category as string | null)} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm"/>
               </div>
 
               <div className="flex gap-4">
