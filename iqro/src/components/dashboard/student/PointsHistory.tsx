@@ -13,7 +13,12 @@ const SOURCE_ICONS: Record<string, string> = {
   other: '🎯'
 }
 
-export function PointsHistory({ transactions }: { transactions: PointTransaction[] }) {
+interface Props {
+  transactions: PointTransaction[]
+  totalPoints: number
+}
+
+export function PointsHistory({ transactions, totalPoints }: Props) {
   const [filter, setFilter] = useState<FilterPeriod>('all')
 
   const now = new Date()
@@ -58,12 +63,12 @@ export function PointsHistory({ transactions }: { transactions: PointTransaction
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">Ballar tarixi</h3>
         <span className="text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
-          Jami: +{totalFiltered} ball
+          Jami: {totalPoints} ball
         </span>
       </div>
 
       {/* Period filters */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap items-center">
         {periods.map(p => (
           <button
             key={p.key}
@@ -77,6 +82,11 @@ export function PointsHistory({ transactions }: { transactions: PointTransaction
             {p.label}
           </button>
         ))}
+        {filter !== 'all' && (
+          <p className="text-xs font-semibold text-indigo-500 ml-auto whitespace-nowrap">
+            Bu davrda: +{totalFiltered} ball
+          </p>
+        )}
       </div>
 
       {/* Transactions list */}

@@ -163,7 +163,7 @@ export default async function StudentProfilePage() {
 
       {/* SECTION 3 — Rag'batlar (Ballar tarixi) */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
-        <PointsHistory transactions={transactions} />
+        <PointsHistory transactions={transactions} totalPoints={points} />
       </div>
 
       {/* SECTION 4 — Info + Password */}

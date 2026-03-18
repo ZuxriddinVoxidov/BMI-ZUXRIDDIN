@@ -115,7 +115,7 @@ export default async function StudentHomePage() {
         <div className="lg:col-span-2 space-y-4">
           {/* Recent Rewards */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100">
-            <PointsHistory transactions={transactions || []} />
+            <PointsHistory transactions={transactions || []} totalPoints={points} />
           </div>
 
           {/* Quick Link to Explore */}
