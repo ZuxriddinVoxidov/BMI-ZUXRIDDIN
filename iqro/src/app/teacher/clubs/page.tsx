@@ -29,5 +29,22 @@ export default async function TeacherClubsPage() {
     `)
     .eq('teacher_id', profile.id)
 
-  return <TeacherClubs clubs={(clubs || []) as unknown as Record<string, unknown>[]} />
+  const { data: messages } = await supabase
+    .from('club_messages')
+    .select(`
+      *,
+      sender:profiles!sender_id(id, full_name, role),
+      receiver:profiles!receiver_id(id, full_name, role)
+    `)
+    .or(`receiver_id.eq.${profile.id},sender_id.eq.${profile.id}`)
+    .order('created_at', { ascending: true })
+
+  const clubsWithMessages = clubs?.map(club => {
+    return {
+      ...club,
+      club_messages: messages?.filter(m => m.club_id === club.id) || []
+    }
+  }) || []
+
+  return <TeacherClubs clubs={clubsWithMessages as unknown as Record<string, unknown>[]} />
 }
