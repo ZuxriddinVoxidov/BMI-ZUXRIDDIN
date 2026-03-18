@@ -2,6 +2,7 @@ import { askGemini } from '@/lib/ai/gemini'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { getStudentLevel } from '@/lib/levels'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,77 +38,74 @@ export async function POST(request: Request) {
 
     if (!studentProfile) return NextResponse.json({ reply: 'Profil topilmadi' }, { status: 404 })
 
-    const { data: points } = await admin
+    const { data: enrollments } = await admin
+      .from('enrollments')
+      .select(`
+        clubs(
+          id, name, description, category, schedule,
+          teacher_resources(id, title, file_name)
+        )
+      `)
+      .eq('student_id', studentProfile.id)
+      .eq('status', 'approved')
+
+    const { data: pointsData } = await admin
       .from('student_points')
       .select('total_points')
       .eq('student_id', studentProfile.id)
       .single()
 
-    const { data: enrollments } = await admin
-      .from('enrollments')
-      .select(`
-        status,
-        clubs (
-          id, name, category, schedule, description
-        )
-      `)
-      .eq('student_id', studentProfile.id)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const clubsContext = (enrollments || []).map((e: any) => {
+      const club = e.clubs
+      if (!club) return ''
+      const resources = club.teacher_resources || []
+      const resourceList = resources.length > 0
+        ? resources.map((r: {title: string}) => `    - ${r.title}`).join('\n')
+        : '    - (hali material yuklanmagan)'
+      return `📚 ${club.name} (${club.category || ''})
+  Jadval: ${club.schedule || 'belgilanmagan'}
+  Tavsif: ${club.description || 'mavjud emas'}
+  O'qituvchi yuklagan materiallar:
+${resourceList}`
+    }).filter(Boolean).join('\n\n')
 
-    const { count: presentCount } = await admin
-      .from('attendance')
-      .select('*', { count: 'exact', head: true })
-      .eq('student_id', studentProfile.id)
-      .eq('status', 'present')
+    const totalPoints = pointsData?.total_points || 0
+    const level = getStudentLevel(totalPoints)
 
-    const { count: absentCount } = await admin
-      .from('attendance')
-      .select('*', { count: 'exact', head: true })
-      .eq('student_id', studentProfile.id)
-      .eq('status', 'absent')
+    const profileContext = `
+O'quvchi: ${studentProfile.full_name}
+Sinf: ${studentProfile.grade || 'belgilanmagan'}
+Daraja: ${level.name} ${level.emoji}
+Jami ball: ${totalPoints}
+A'zo to'garaklar soni: ${(enrollments || []).length}
+`
 
-    const enrolledClubs = (enrollments || [])
-      .filter(e => e.status === 'approved')
-      .map(e => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const club = e.clubs as any
-        return `- ${club.name} (${club.category}): ${club.schedule}`
-      }).join('\n')
+    const systemPrompt = `Sen IQRO maktab platformasidagi o'quvchiga yordam beruvchi aqlli AI assistentsan.
 
-    const pendingClubs = (enrollments || [])
-      .filter(e => e.status === 'pending')
-      .map(e => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const club = e.clubs as any
-        return `- ${club.name}`
-      }).join('\n')
-
-    const systemPrompt = `
-Sen ${studentProfile.full_name} ning 
-shaxsiy AI yordamchisisisan.
-BUGUNGI SANA: ${currentDate}, soat ${currentTime}
-
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 O'QUVCHI MA'LUMOTLARI:
-- Ism: ${studentProfile.full_name}
-- Sinf: ${studentProfile.grade || 'Noma\'lum'}
-- Ballar: ${points?.total_points || 0}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${profileContext}
 
-MENING TO'GARAKLARIM:
-${enrolledClubs || 'Hali to\'garakka yozilmagan'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+O'QUVCHINING TO'GARAKLARI VA MATERIALLARI:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${clubsContext || "Hali hech qaysi to'garakka a'zo emas."}
 
-KUTILAYOTGAN ARIZALAR:
-${pendingClubs || 'Yo\'q'}
-
-DAVOMAT:
-- Kelgan: ${presentCount || 0} marta
-- Kelmagan: ${absentCount || 0} marta
-
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 QOIDALAR:
-- Faqat o'zbek tilida javob ber
-- Faqat shu o'quvchi ma'lumotlari haqida gapir
-- Boshqa o'quvchilar haqida maxfiy ma'lumot berma
-- Parol, login haqida hech gapirma
-- Qisqa va aniq javob ber
-    `.trim()
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. FAQAT yuqoridagi to'garaklar va ularning fanlari doirasida javob ber
+2. Agar o'quvchi biror mavzu yoki bob haqida so'rasa — batafsil, misolllar bilan tushuntir
+3. Agar tashqi manbadan ma'lumot kerak bo'lsa — FAQAT o'sha sinfning davlat darsligi doirasida ma'lumot ol
+4. Agar o'quvchi test so'rasa — test tuz. Bir so'rovda MAKSIMAL 20 ta savol. Agar ko'proq kerak bo'lsa, keyingi so'rovda davom ettir
+5. Test formati: har bir savol 4 ta variant (A, B, C, D) bilan, javoblar eng oxirida
+6. Agar o'quvchi o'z profili, daraja yoki ballari haqida so'rasa — yuqoridagi ma'lumotlardan javob ber
+7. Agar savol to'garaklar doirasidan tashqarida bo'lsa — muloyimlik bilan rad et va o'z faniga yo'naldir
+8. Har doim o'zbek tilida javob ber
+9. Do'stona, qiziqarli va rag'batlantiruvchi uslubda gapir
+10. Bugungi sana: ${new Date().toLocaleDateString('uz-UZ', { timeZone: 'Asia/Tashkent' })}`
 
     const response = await askGemini(systemPrompt, messages)
     return NextResponse.json({ reply: response })
