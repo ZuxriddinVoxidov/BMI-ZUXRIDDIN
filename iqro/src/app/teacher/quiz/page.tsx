@@ -44,12 +44,18 @@ export default async function TeacherQuizPage() {
     participants = data || []
   }
 
+  const { data: sessions } = await supabase
+    .from('quiz_sessions')
+    .select('quiz_id, started_at, finished_at')
+    .in('quiz_id', (quizzes || []).map((q: any) => q.id))
+
   return (
     <div className="max-w-7xl mx-auto py-8">
       <TeacherQuizManager 
         clubs={(clubs || []) as Record<string, unknown>[]} 
         quizzes={quizzes} 
         participants={participants}
+        sessions={sessions || []}
       />
     </div>
   )

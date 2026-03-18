@@ -11,11 +11,12 @@ interface TeacherQuizManagerProps {
   clubs: Record<string, unknown>[]
   quizzes: Quiz[]
   participants?: any[]
+  sessions?: { quiz_id: string, started_at: string, finished_at: string | null }[]
 }
 
 type QuizState = 'list' | 'generate' | 'edit'
 
-export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, participants }: TeacherQuizManagerProps) {
+export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, participants, sessions }: TeacherQuizManagerProps) {
   const [quizzes, setQuizzes] = useState<Quiz[]>(initialQuizzes)
   const [currentState, setCurrentState] = useState<QuizState>('list')
   const [isPending, startTransition] = useTransition()
@@ -34,11 +35,15 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
   const [editDurationSecs, setEditDurationSecs] = useState<number>(900)
   const [editQuestions, setEditQuestions] = useState<QuizQuestion[]>([])
 
-  // Helper groupings
-  const drafts = quizzes.filter(q => q.status === 'draft')
-  const waiting = quizzes.filter(q => q.status === 'waiting')
-  const active = quizzes.filter(q => q.status === 'active')
-  const finished = quizzes.filter(q => q.status === 'finished')
+  // Filter State Variables
+  const [filterClub, setFilterClub] = useState('all')
+  const [filterStatus, setFilterStatus] = useState('all')
+
+  const filteredQuizzes = quizzes.filter(q => {
+    const clubMatch = filterClub === 'all' || q.club_id === filterClub
+    const statusMatch = filterStatus === 'all' || q.status === filterStatus
+    return clubMatch && statusMatch
+  })
 
   const [expandedQuizId, setExpandedQuizId] = useState<string | null>(null)
 
@@ -184,9 +189,26 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
 
   // ----- Renders -----
 
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleString('uz-UZ', { 
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Asia/Tashkent'
+    })
+  }
+
   const renderQuizCard = (q: Quiz) => {
     const clubName = (clubs.find(c => c.id === q.club_id) as any)?.name || 'To\'garak'
     const qCount = q.quiz_questions?.length || 0
+
+    const session = sessions?.find(s => s.quiz_id === q.id)
+    const displayDate = (q.status === 'finished' && session?.started_at) 
+      ? session.started_at 
+      : q.created_at
 
     return (
       <div key={q.id}>
@@ -210,6 +232,9 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
             <span>{clubName}</span>
             <span className="flex items-center gap-1"><HelpCircle size={12}/>{qCount} ta savol</span>
             <span className="flex items-center gap-1"><Clock size={12}/>{Math.round(q.duration_seconds/60)} daq</span>
+            <span className="flex items-center gap-1 text-xs text-gray-400">
+              🗓 {formatDate(displayDate)}
+            </span>
           </div>
         </div>
         
@@ -341,42 +366,47 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
         {/* ================= STATE 1: LIST ================= */}
         {currentState === 'list' && (
           <motion.div key="list" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="space-y-8">
-            {quizzes.length === 0 ? (
+            <div className="bg-white p-4 rounded-2xl border shadow-sm flex flex-col md:flex-row gap-4 mb-2">
+              <select 
+                value={filterClub} 
+                onChange={e => setFilterClub(e.target.value)}
+                className="px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm font-medium"
+              >
+                <option value="all">Barcha to&apos;garaklar</option>
+                {clubs.map(c => (
+                  <option key={c.id as string} value={c.id as string}>{c.name as string}</option>
+                ))}
+              </select>
+
+              <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
+                 {[
+                   { id: 'all', label: 'Barchasi' },
+                   { id: 'draft', label: 'Qoralama' },
+                   { id: 'waiting', label: 'Kutilmoqda' },
+                   { id: 'active', label: 'Faol' },
+                   { id: 'finished', label: 'Yakunlangan' }
+                 ].map(tab => (
+                   <button
+                     key={tab.id}
+                     onClick={() => setFilterStatus(tab.id)}
+                     className={`px-4 py-1.5 text-sm font-bold rounded-lg whitespace-nowrap transition-colors ${filterStatus === tab.id ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                   >
+                     {tab.label}
+                   </button>
+                 ))}
+              </div>
+            </div>
+
+            {filteredQuizzes.length === 0 ? (
                <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
                 <HelpCircle size={48} className="text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-900">Hozircha testlar yo&apos;q</h3>
-                <p className="text-sm text-gray-500 mt-1 mb-4">Tepa o&apos;ngdagi tugma orqali test yarating</p>
+                <h3 className="text-lg font-bold text-gray-900">Testlar topilmadi</h3>
+                <p className="text-sm text-gray-500 mt-1 mb-4">Filtrga mos test mavjud emas yoki yangi test yarating</p>
               </div>
             ) : (
-              <>
-                {active.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-amber-600 uppercase tracking-wider flex items-center gap-2">Jarayondagi testlar</h3>
-                    {active.map(renderQuizCard)}
-                  </div>
-                )}
-                
-                {waiting.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-blue-600 uppercase tracking-wider flex items-center gap-2">Kutmoqda (Boshlash mumkin)</h3>
-                    {waiting.map(renderQuizCard)}
-                  </div>
-                )}
-
-                {drafts.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">Qoralamalar</h3>
-                    {drafts.map(renderQuizCard)}
-                  </div>
-                )}
-
-                {finished.length > 0 && (
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wider flex items-center gap-2">Yakunlangan</h3>
-                    {finished.map(renderQuizCard)}
-                  </div>
-                )}
-              </>
+              <div className="space-y-3">
+                {filteredQuizzes.map(renderQuizCard)}
+              </div>
             )}
           </motion.div>
         )}
