@@ -24,6 +24,8 @@ export async function POST(request: Request) {
     })
     const body = await request.json()
     const messages = body.messages || [{ role: 'user', content: body.question || body.message || 'Salom' }]
+    // Limit to last 6 messages
+    const conversationMessages = messages.slice(-6)
     const sessionId = body.sessionId
 
     const supabase = createClient()
@@ -100,92 +102,50 @@ ${transactionsContext || '  - hali ball yig\'ilmagan'}
 
     const systemPrompt = `Sen IQRO maktab platformasidagi o'quvchiga yordam beruvchi aqlli AI assistentsan.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 O'QUVCHI MA'LUMOTLARI:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ${profileContext}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-O'QUVCHINING TO'GARAKLARI VA MATERIALLARI:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TO'GARAKLAR:
 ${clubsContext || "Hali hech qaysi to'garakka a'zo emas."}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 QOIDALAR:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 1. FAQAT yuqoridagi to'garaklar va ularning fanlari doirasida javob ber
-2. Agar o'quvchi biror mavzu yoki bob haqida so'rasa — batafsil, misolllar bilan tushuntir
-3. Agar tashqi manbadan ma'lumot kerak bo'lsa — FAQAT o'sha sinfning davlat darsligi doirasida ma'lumot ol
-4. Agar o'quvchi test so'rasa — test tuz. Bir so'rovda MAKSIMAL 20 ta savol. Agar ko'proq kerak bo'lsa, keyingi so'rovda davom ettir
-5. Test formati: har bir savol 4 ta variant (A, B, C, D) bilan, javoblar eng oxirida
-6. Agar o'quvchi o'z profili, daraja yoki ballari haqida so'rasa — yuqoridagi ma'lumotlardan javob ber
-7. Agar savol to'garaklar doirasidan tashqarida bo'lsa — muloyimlik bilan rad et va o'z faniga yo'naldir
-8. Har doim o'zbek tilida javob ber
-9. Do'stona, qiziqarli va rag'batlantiruvchi uslubda gapir
-10. Bugungi sana: ${new Date().toLocaleDateString('uz-UZ', { timeZone: 'Asia/Tashkent' })}`
+2. Agar test so'ralsa tuz, maksimal 10 ta savol.
+3. Har doim o'zbek tilida, aniq va tushunarli javob ber
+4. Bugungi sana: ${currentDate}`
 
     const model = getGeminiModel()
-    const encoder = new TextEncoder()
-    const stream = new TransformStream()
-    const writer = stream.writable.getWriter()
-
-    // Start streaming in background
-    ;(async () => {
-      let fullText = ''
-      try {
-        const result = await model.generateContentStream({
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          contents: messages.map((m: any) => ({
-             role: m.role === 'assistant' ? 'model' : 'user',
-             parts: [{ text: m.content }]
-          })),
-          systemInstruction: systemPrompt,
-          generationConfig: {
-             temperature: 0.1,
-             maxOutputTokens: 1000,
-          }
-        })
-        
-        for await (const chunk of result.stream) {
-          const text = chunk.text()
-          if (text) {
-            fullText += text
-            await writer.write(
-              encoder.encode(`data: ${JSON.stringify({ chunk: text })}\n\n`)
-            )
-          }
-        }
-        
-        // Save to DB after stream completes
-        if (sessionId) {
-          await admin.from('ai_chat_messages').insert({
-            session_id: sessionId,
-            role: 'assistant',
-            content: fullText
-          })
-        }
-        
-        await writer.write(encoder.encode('data: [DONE]\n\n'))
-      } catch (error) {
-        console.error('Stream error:', error)
-        await writer.write(
-          encoder.encode(`data: ${JSON.stringify({ error: 'Xatolik yuz berdi' })}\n\n`)
-        )
-      } finally {
-        await writer.close()
-      }
-    })()
-
-    return new Response(stream.readable, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no',
+    
+    // Simple non-streaming call:
+    const result = await model.generateContent({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      contents: conversationMessages.map((m: any) => ({
+         role: m.role === 'assistant' ? 'model' : 'user',
+         parts: [{ text: m.content }]
+      })),
+      systemInstruction: systemPrompt,
+      generationConfig: {
+        maxOutputTokens: 1500,  // Limit output to prevent timeout
+        temperature: 0.7,
       }
     })
+
+    const responseText = result.response.text()
+
+    if (sessionId) {
+      await admin.from('ai_chat_messages').insert({
+        session_id: sessionId,
+        role: 'assistant',
+        content: responseText
+      })
+    }
+
+    return NextResponse.json({ reply: responseText })
   } catch (error) {
-    console.error('Student AI error:', error)
-    return NextResponse.json({ reply: 'Kechirasiz, hozir javob bera olmayapman. Qayta urinib ko\'ring.' }, { status: 500 })
+    console.error('AI route error:', error)
+    return NextResponse.json(
+      { error: "AI javob bermadi. Qayta urinib ko'ring." },
+      { status: 500 }
+    )
   }
 }

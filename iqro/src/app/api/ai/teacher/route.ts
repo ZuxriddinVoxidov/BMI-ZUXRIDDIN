@@ -23,6 +23,7 @@ export async function POST(request: Request) {
     })
     const body = await request.json()
     const messages = body.messages || [{ role: 'user', content: body.question || body.message || 'Salom' }]
+    const conversationMessages = messages.slice(-6)
     const sessionId = body.sessionId
 
     const supabase = createClient()
@@ -109,13 +110,14 @@ export async function POST(request: Request) {
       }).sort((a: any, b: any) => b.points - a.points)
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const top3 = studentsWithPoints.slice(0, 3).map((s: any, i: number) => 
+      const top3 = studentsWithPoints.slice(0, 1).map((s: any, i: number) => 
         `    ${i+1}. ${s.name} (${s.grade}) — ${s.points} ball`
       ).join('\n')
 
       const passive = studentsWithPoints
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .filter((s: any) => s.absent > s.present)
+        .slice(0, 1)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .map((s: any) => `    - ${s.name}: ${s.absent} dars qoldirgan`)
         .join('\n')
@@ -183,67 +185,37 @@ QOBILIYATLAR VA QOIDALAR:
 10. Bugungi sana: ${new Date().toLocaleDateString('uz-UZ', { timeZone: 'Asia/Tashkent' })}`
 
     const model = getGeminiModel()
-    const encoder = new TextEncoder()
-    const stream = new TransformStream()
-    const writer = stream.writable.getWriter()
-
-    // Start streaming in background
-    ;(async () => {
-      let fullText = ''
-      try {
-        const result = await model.generateContentStream({
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          contents: messages.map((m: any) => ({
-             role: m.role === 'assistant' ? 'model' : 'user',
-             parts: [{ text: m.content }]
-          })),
-          systemInstruction: systemPrompt,
-          generationConfig: {
-             temperature: 0.1,
-             maxOutputTokens: 1000,
-          }
-        })
-        
-        for await (const chunk of result.stream) {
-          const text = chunk.text()
-          if (text) {
-            fullText += text
-            await writer.write(
-              encoder.encode(`data: ${JSON.stringify({ chunk: text })}\n\n`)
-            )
-          }
-        }
-        
-        // Save to DB after stream completes
-        if (sessionId) {
-          await admin.from('ai_chat_messages').insert({
-            session_id: sessionId,
-            role: 'assistant',
-            content: fullText
-          })
-        }
-        
-        await writer.write(encoder.encode('data: [DONE]\n\n'))
-      } catch (error) {
-        console.error('Stream error:', error)
-        await writer.write(
-          encoder.encode(`data: ${JSON.stringify({ error: 'Xatolik yuz berdi' })}\n\n`)
-        )
-      } finally {
-        await writer.close()
-      }
-    })()
-
-    return new Response(stream.readable, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no',
+    
+    // Simple non-streaming call:
+    const result = await model.generateContent({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      contents: conversationMessages.map((m: any) => ({
+         role: m.role === 'assistant' ? 'model' : 'user',
+         parts: [{ text: m.content }]
+      })),
+      systemInstruction: systemPrompt,
+      generationConfig: {
+        maxOutputTokens: 1500,  // Limit output to prevent timeout
+        temperature: 0.7,
       }
     })
+
+    const responseText = result.response.text()
+
+    if (sessionId) {
+      await admin.from('ai_chat_messages').insert({
+        session_id: sessionId,
+        role: 'assistant',
+        content: responseText
+      })
+    }
+
+    return NextResponse.json({ reply: responseText })
   } catch (error) {
     console.error('Teacher AI error:', error)
-    return NextResponse.json({ reply: 'Kechirasiz, hozir javob bera olmayapman. Qayta urinib ko\'ring.' }, { status: 500 })
+    return NextResponse.json(
+      { error: "AI javob bermadi. Qayta urinib ko'ring." },
+      { status: 500 }
+    )
   }
 }
