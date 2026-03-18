@@ -92,76 +92,49 @@ export default function QuizResults({ participants }: QuizResultsProps) {
         <p className="text-gray-500 font-medium">Barcha o&apos;quvchilar natijalari hisoblandi va ballar taqsimlandi.</p>
       </div>
 
-      {/* TOP 5 Leaderboard */}
-      <div className="bg-gradient-to-br from-indigo-50 via-white to-blue-50 p-6 sm:p-8 rounded-3xl border border-indigo-100 shadow-sm relative overflow-hidden">
-        <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-          <Trophy size={200} />
-        </div>
-        
-        <h3 className="text-lg font-bold text-indigo-900 uppercase tracking-widest mb-6 flex items-center gap-2 relative z-10">
-          <Medal size={20}/> Top 5 O&apos;quvchilar
-        </h3>
-
-        <div className="space-y-4 relative z-10">
-          {top5.map((p, i) => (
-            <motion.div 
-              key={p.student_id}
-              initial={{ x: -50, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: i * 0.15 + 0.5, type: "spring" }}
-              className={`flex items-center justify-between p-4 rounded-2xl border ${getMedalColor(i)} ${i === 0 ? 'scale-105 my-6' : ''}`}
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-lg ${i < 3 ? 'bg-white/50' : 'bg-gray-100'}`}>
-                  {i + 1}
-                </div>
-                <div>
-                  <p className="font-bold sm:text-lg">{p.full_name}</p>
-                  <p className="text-sm opacity-80 font-medium">
-                    {p.score} ta to&apos;g&apos;ri (jami: {p.total_questions})
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-black text-xl sm:text-2xl">{Math.round((p.score / p.total_questions) * 100)}%</p>
-                <p className="text-sm font-bold opacity-80">{getPointsInfo(i)}</p>
-              </div>
-            </motion.div>
-          ))}
-
-          {top5.length === 0 && (
-            <div className="text-center py-8 text-gray-500 italic">
-              Hech kim testda ishtirok etmadi.
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Rest of students */}
-      {rest.length > 0 && (
-        <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
-          <table className="w-full text-left">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;rin</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;quvchi</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Natija</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {rest.map((p, i) => (
-                <tr key={p.student_id} className="hover:bg-gray-50/50">
-                  <td className="px-6 py-4 font-bold text-gray-400">#{i + 6}</td>
+      {/* Unified Leaderboard Table */}
+      <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
+        <table className="w-full text-left text-sm md:text-base">
+          <thead className="bg-gray-50 border-b">
+            <tr>
+              <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase w-20 text-center">O&apos;rin</th>
+              <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;quvchi</th>
+              <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Natija</th>
+              <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase w-24 text-right">Ball</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {sorted.map((p, i) => {
+              const points = i === 0 ? 15 : i === 1 ? 12 : i === 2 ? 9 : i === 3 ? 6 : i === 4 ? 3 : 0;
+              return (
+                <tr key={p.student_id} className={`transition-colors hover:bg-gray-50/50 ${i < 3 ? 'bg-amber-50/30' : ''}`}>
+                  <td className="px-6 py-4 text-center text-lg">
+                    {i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : <span className="text-sm font-bold text-gray-500">{i + 1}</span>}
+                  </td>
                   <td className="px-6 py-4 font-bold text-gray-800">{p.full_name}</td>
                   <td className="px-6 py-4 font-bold text-gray-600 text-right">
-                    {p.score}/{p.total_questions} ({Math.round((p.score / p.total_questions) * 100)}%)
+                    <span className="text-indigo-600">{p.score}</span>
+                    <span className="text-gray-400 text-xs ml-1">/{p.total_questions}</span>
+                    <span className="text-xs text-gray-400 ml-1">({Math.round((p.score / p.total_questions) * 100) || 0}%)</span>
+                  </td>
+                  <td className="px-6 py-4 font-black text-right">
+                    <span className={points > 0 ? "text-emerald-600" : "text-gray-400"}>
+                      {points > 0 ? `+${points}` : '-'}
+                    </span>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              )
+            })}
+            {sorted.length === 0 && (
+              <tr>
+                <td colSpan={4} className="px-6 py-8 text-center text-gray-500 italic">
+                  Hech kim testda ishtirok etmadi.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div className="pt-4 pb-8 flex justify-center">
         <button 

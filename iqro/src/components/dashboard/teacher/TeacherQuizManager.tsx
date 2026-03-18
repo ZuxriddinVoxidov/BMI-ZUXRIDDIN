@@ -249,27 +249,36 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
             <table className="w-full text-left text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-4 py-2 font-semibold text-gray-600">O&apos;quvchi</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600 text-right">To&apos;g&apos;ri / Umumiy</th>
                   <th className="px-4 py-2 font-semibold text-gray-600 w-16 text-center">O&apos;rin</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600">O&apos;quvchi</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600 text-right">Natija</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600 w-20 text-right">Ball</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {participants?.filter(p => p.quiz_id === q.id).sort((a,b) => (b.score || 0) - (a.score || 0)).map((p, i) => (
+                {participants?.filter(p => p.quiz_id === q.id).sort((a,b) => (b.score || 0) - (a.score || 0)).map((p, i) => {
+                  const points = i === 0 ? 15 : i === 1 ? 12 : i === 2 ? 9 : i === 3 ? 6 : i === 4 ? 3 : 0;
+                  return (
                   <tr key={p.student_id} className={i < 3 ? 'bg-amber-50/30' : ''}>
+                    <td className="px-4 py-3 text-center text-lg">
+                      {i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : <span className="text-sm font-bold text-gray-500">{i + 1}</span>}
+                    </td>
                     <td className="px-4 py-3 font-medium text-gray-800">{p.profiles?.full_name}</td>
                     <td className="px-4 py-3 text-right">
                       <span className="font-bold text-indigo-600">{p.score || 0}</span>
                       <span className="text-gray-400 text-xs ml-1">/{qCount}</span>
+                      <span className="text-xs text-gray-400 ml-1">({Math.round(((p.score || 0)/qCount)*100) || 0}%)</span>
                     </td>
-                    <td className="px-4 py-3 text-center text-lg">
-                      {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : <span className="text-xs text-gray-400 font-bold">{i + 1}</span>}
+                    <td className="px-4 py-3 text-right">
+                      <span className={`font-black ${points > 0 ? "text-emerald-600" : "text-gray-400"}`}>
+                        {points > 0 ? `+${points}` : '-'}
+                      </span>
                     </td>
                   </tr>
-                ))}
+                )})}
                 {(!participants || participants.filter(p => p.quiz_id === q.id).length === 0) && (
                   <tr>
-                    <td colSpan={3} className="px-4 py-6 text-center text-gray-400 text-sm">Ishtirokchilar topilmadi</td>
+                    <td colSpan={4} className="px-4 py-6 text-center text-gray-400 text-sm">Ishtirokchilar topilmadi</td>
                   </tr>
                 )}
               </tbody>

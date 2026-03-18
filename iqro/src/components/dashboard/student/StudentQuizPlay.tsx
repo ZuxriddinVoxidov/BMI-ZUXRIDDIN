@@ -28,6 +28,7 @@ interface QuizPlayProps {
   }
   participation: {
     id: string
+    student_id: string
     score: number | null
     finished_at: string | null
   } | null
@@ -39,7 +40,10 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
   const supabase = createClient()
   const [isPending, startTransition] = useTransition()
 
-  const [status, setStatus] = useState(participation?.finished_at ? 'finished' : quiz.status)
+  const [studentRank, setStudentRank] = useState<number | null>(null)
+  const [leaderboard, setLeaderboard] = useState<any[]>([])
+
+  const [status, setStatus] = useState(quiz.status)
   const [timeLeft, setTimeLeft] = useState(quiz.duration_seconds)
   
   const [currQIdx, setCurrQIdx] = useState(0)
@@ -72,6 +76,25 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
     return () => { supabase.removeChannel(channel) }
   }, [quiz.id, status, supabase, toast])
 
+  const fetchLeaderboard = async () => {
+    try {
+      const res = await fetch(`/api/quiz/${quiz.id}/participants`)
+      if (res.ok) {
+        const data = await res.json()
+        setLeaderboard(data.participants || [])
+        const pId = participation?.student_id || (await supabase.auth.getUser()).data.user?.id
+        const rankIndex = data.participants.findIndex((p: any) => p.student_id === pId)
+        if (rankIndex !== -1) setStudentRank(rankIndex + 1)
+      }
+    } catch(e) {}
+  }
+
+  useEffect(() => {
+    if (finalScore !== null || status === 'finished') {
+      fetchLeaderboard()
+    }
+  }, [finalScore, status, quiz.id])
+
   // Timer logic for active test
   useEffect(() => {
     let timer: NodeJS.Timeout
@@ -102,7 +125,10 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
       if (res.success) {
         setFinalScore(res.score || 0)
         toast({ title: 'Javoblar qabul qilindi' })
-        // Now we wait for teacher to finish the quiz to see full results.
+        fetchLeaderboard()
+        // status remains submitting or we change it depending on our UI flow...
+        // actually we can change it back to active, finalScore !== null will handle the view.
+        setStatus('active')
       } else {
         toast({ title: res.error || 'Tarmoq xatosi', variant: 'destructive' })
         setStatus('active') // let them try again
@@ -140,7 +166,7 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
         )}
 
         {/* ================= ACTIVE PLAY ================= */}
-        {status === 'active' && quiz.quiz_questions.length > 0 && (
+        {status === 'active' && finalScore === null && quiz.quiz_questions.length > 0 && (
           <motion.div key="active" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full max-w-4xl space-y-6">
             
             {/* Header / Timer & Nav */}
@@ -238,23 +264,44 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
         )}
 
         {/* ================= SUBMITTING / WAITING RESULTS ================= */}
-        {status === 'submitting' && (
+        {((status === 'submitting') || (status === 'active' && finalScore !== null)) && (
            <motion.div key="submitting" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:1.05}} className="text-center space-y-8 max-w-lg w-full bg-white p-10 rounded-3xl border shadow-sm">
              <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle size={48} className="animate-bounce" />
+              <CheckCircle size={48} className={finalScore !== null ? "" : "animate-bounce"} />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-gray-900 mb-2">Javoblar qabul qilindi!</h2>
+              <h2 className="text-2xl font-black text-gray-900 mb-2">✅ Test yakunlandi!</h2>
               {finalScore !== null && (
-                <p className="text-xl font-bold text-indigo-600 mt-4">
-                  Siz {finalScore} ta savolga to&apos;g&apos;ri javob berdingiz.
-                </p>
+                <div className="my-6">
+                  <p className="text-2xl font-bold text-indigo-600">
+                    Siz {finalScore}/{totalQ} to&apos;g&apos;ri javob berdingiz
+                  </p>
+                  <p className="text-xl font-bold text-indigo-400 mt-2">
+                    {Math.round((finalScore/totalQ)*100)}%
+                  </p>
+                </div>
               )}
+
+              {studentRank !== null && (
+                <div className="my-6 p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
+                  {studentRank <= 5 ? (
+                    <div className="text-indigo-700 font-bold text-lg leading-relaxed">
+                      🎉 Tabriklaymiz! Siz <span className="font-black text-2xl">{studentRank}</span>-o&apos;rinni egalladingiz! <br/>
+                      <span className="text-xl font-black bg-indigo-200 px-3 py-1 rounded-full mt-2 inline-block">+{studentRank === 1 ? 15 : studentRank === 2 ? 12 : studentRank === 3 ? 9 : studentRank === 4 ? 6 : studentRank === 5 ? 3 : 0} ball</span> olasiz!
+                    </div>
+                  ) : (
+                    <div className="text-indigo-700 font-bold text-lg">
+                      Yaxshi harakat! <span className="font-black text-2xl">{studentRank}</span>-o&apos;rin
+                    </div>
+                  )}
+                </div>
+              )}
+
             </div>
             <div className="bg-gray-50 border rounded-2xl p-6 mt-6">
               <Loader2 size={24} className="animate-spin text-gray-400 mx-auto mb-3" />
               <p className="text-sm font-bold text-gray-600">
-                O&apos;qituvchi testni yakunlashini va yakuniy natijalarni kutmoqdamiz...
+                O&apos;qituvchi testni yakunlagandan keyin umumiy natijalar e&apos;lon qilinadi
               </p>
             </div>
            </motion.div>
@@ -262,22 +309,50 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
 
         {/* ================= FINAL RESULTS ================= */}
         {status === 'finished' && (
-          <motion.div key="finished" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} className="text-center space-y-8 max-w-lg w-full bg-white p-10 rounded-3xl border shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
-            <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-blue-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-              <Trophy size={48} />
-            </div>
-            
-            <div>
-               <h2 className="text-3xl font-black text-gray-900 mb-2">Yashavoring!</h2>
-               <p className="text-gray-500 font-medium">Test to&apos;liq yakunlandi.</p>
+          <motion.div key="finished" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} className="space-y-8 w-full max-w-2xl bg-white p-10 rounded-3xl border shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
+            <div className="text-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-blue-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
+                <Trophy size={48} />
+              </div>
+              <h2 className="text-3xl font-black text-gray-900 mb-2">Test To&apos;liq Yakunlandi!</h2>
+              <p className="text-gray-500 font-medium">Barcha o&apos;quvchilar natijalari va ballar ro&apos;yxati</p>
             </div>
 
-            <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6">
-              <p className="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-2">Sizning Natijangiz</p>
-              <div className="flex items-end justify-center gap-2">
-                <span className="text-6xl font-black text-indigo-600">{finalScore !== null ? finalScore : participation?.score || 0}</span>
-                <span className="text-2xl font-black text-indigo-300 mb-1">/ {totalQ}</span>
-              </div>
+            <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
+              <table className="w-full text-left">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;rin</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;quvchi</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Natija</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Ball</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {leaderboard.map((p, i) => {
+                    const isMe = p.student_id === (participation?.student_id || '')
+                    const points = i === 0 ? 15 : i === 1 ? 12 : i === 2 ? 9 : i === 3 ? 6 : i === 4 ? 3 : 0
+                    return (
+                      <tr key={p.student_id} className={`transition-colors ${isMe ? 'bg-indigo-50/80 hover:bg-indigo-50' : 'hover:bg-gray-50/50'}`}>
+                        <td className="px-6 py-4 font-bold text-gray-800 text-lg">
+                           {i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : (i + 1)}
+                        </td>
+                        <td className={`px-6 py-4 font-bold ${isMe ? 'text-indigo-700' : 'text-gray-800'}`}>
+                          {p.full_name} {isMe && <span className="ml-2 text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-full uppercase tracking-wider">Siz</span>}
+                        </td>
+                        <td className="px-6 py-4 font-bold text-gray-600">
+                          {p.score}/{totalQ} <span className="text-xs text-gray-400">({Math.round((p.score/totalQ)*100)}%)</span>
+                        </td>
+                        <td className="px-6 py-4 font-black text-right">
+                          <span className={points > 0 ? 'text-emerald-600' : 'text-gray-400'}>
+                             {points > 0 ? `+${points}` : '-'}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
 
             <button onClick={() => router.push('/student/quiz')} className="w-full px-6 py-4 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl shadow-md transition-all">

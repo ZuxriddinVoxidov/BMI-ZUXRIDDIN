@@ -34,6 +34,11 @@ export default function StudentQuizList({ quizzes, participations }: StudentQuiz
   const { toast } = useToast()
   const [isPending, startTransition] = useTransition()
 
+  const [selectedClub, setSelectedClub] = useState<string>('all')
+  const [selectedStatus, setSelectedStatus] = useState<string>('all')
+
+  const uniqueClubs = Array.from(new Map(quizzes.map(q => [q.club_id, q.clubs?.name])).entries()).map(([id, name]) => ({ id, name }))
+
   async function handleJoin(quizId: string) {
     startTransition(async () => {
       const res = await joinQuiz(quizId)
@@ -74,7 +79,10 @@ export default function StudentQuizList({ quizzes, participations }: StudentQuiz
           </div>
           
           <h3 className="text-xl font-bold text-gray-900 mb-1">{q.title}</h3>
-          <p className="text-sm font-medium text-gray-500">{q.clubs?.name} • O&apos;qituvchi: {q.profiles?.full_name}</p>
+          <p className="text-sm font-medium text-gray-500 flex items-center gap-2">
+            <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{q.clubs?.name}</span>
+            <span>O&apos;qituvchi: {q.profiles?.full_name}</span>
+          </p>
           
           <div className="flex gap-4 mt-4">
             <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg border">
@@ -127,13 +135,54 @@ export default function StudentQuizList({ quizzes, participations }: StudentQuiz
     )
   }
 
-  const waiting = quizzes.filter(q => q.status === 'waiting')
-  const active = quizzes.filter(q => q.status === 'active')
-  const finished = quizzes.filter(q => q.status === 'finished')
+  const filtered = quizzes.filter(q => {
+    const clubMatch = selectedClub === 'all' || q.club_id === selectedClub
+    const statusMatch = selectedStatus === 'all' || 
+      (selectedStatus === 'finished' 
+        ? participations.some(p => p.quiz_id === q.id && p.finished_at)
+        : q.status === selectedStatus)
+    return clubMatch && statusMatch
+  })
+
+  // Group filtered results
+  const waiting = filtered.filter(q => q.status === 'waiting')
+  const active = filtered.filter(q => q.status === 'active')
+  const finished = filtered.filter(q => q.status === 'finished')
 
   return (
-    <div className="space-y-12">
-      {quizzes.length === 0 && (
+    <div className="space-y-8">
+      {/* FILTERS */}
+      <div className="bg-white p-4 rounded-2xl border shadow-sm flex flex-col md:flex-row gap-4">
+        <select 
+          value={selectedClub} 
+          onChange={e => setSelectedClub(e.target.value)}
+          className="px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm font-medium"
+        >
+          <option value="all">Barcha to&apos;garaklar</option>
+          {uniqueClubs.map(c => (
+            <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+
+        <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
+           {[
+             { id: 'all', label: 'Barchasi' },
+             { id: 'waiting', label: 'Kutilmoqda' },
+             { id: 'active', label: 'Jarayonda' },
+             { id: 'finished', label: 'Bajarilgan' }
+           ].map(tab => (
+             <button
+               key={tab.id}
+               onClick={() => setSelectedStatus(tab.id)}
+               className={`px-4 py-1.5 text-sm font-bold rounded-lg whitespace-nowrap transition-colors ${selectedStatus === tab.id ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+             >
+               {tab.label}
+             </button>
+           ))}
+        </div>
+      </div>
+
+      {filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
           <AlertCircle size={48} className="text-gray-300 mb-4" />
           <h3 className="text-lg font-bold text-gray-900">Hozircha faol testlar yo&apos;q</h3>
