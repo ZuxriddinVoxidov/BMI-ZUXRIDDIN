@@ -17,78 +17,92 @@ export default function Navbar() {
   ]
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Logo href="/" />
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Logo href="/" />
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-
-          {/* Desktop Buttons */}
-          <div className="hidden md:flex items-center gap-3">
-            <Button
-              variant="outline"
-              className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 rounded-full px-6"
-              asChild
-            >
-              <Link href="/login">Kirish</Link>
-            </Button>
-            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6" asChild>
-              <Link href="/login">Ro&apos;yxatdan o&apos;tish</Link>
-            </Button>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileOpen && (
-          <div className="md:hidden pb-4 border-t border-gray-100 mt-2">
-            <nav className="flex flex-col gap-3 pt-4">
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
-                  className="text-sm font-medium text-gray-600 hover:text-indigo-600 px-2 py-1"
+                  className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+
+            {/* Desktop Buttons */}
+            <div className="hidden md:flex items-center gap-3">
+              <Button
+                variant="outline"
+                className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 rounded-full px-6"
+                asChild
+              >
+                <Link href="/login">Kirish</Link>
+              </Button>
+              <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full px-6" asChild>
+                <Link href="/login">Ro&apos;yxatdan o&apos;tish</Link>
+              </Button>
+            </div>
+
+            {/* Mobile Hamburger — bigger touch target */}
+            <button
+              className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Menu"
+            >
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Dropdown — rendered OUTSIDE the header to avoid clipping */}
+      {mobileOpen && (
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="fixed inset-0 z-40 bg-black/20 md:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+          {/* Dropdown panel positioned exactly below the 64px header */}
+          <div className="fixed top-16 left-0 right-0 z-50 md:hidden bg-white shadow-2xl border-b border-gray-100">
+            <nav className="flex flex-col px-4 py-4 gap-1">
+              {navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl px-4 py-3.5 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
                 </a>
               ))}
-              <div className="flex flex-col gap-2 mt-2">
+              <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-100">
                 <Button
                   variant="outline"
-                  className="w-full border-indigo-500 text-indigo-600 rounded-full"
+                  className="w-full h-12 border-indigo-500 text-indigo-600 rounded-full text-base font-semibold"
                   asChild
                 >
-                  <Link href="/login">Kirish</Link>
+                  <Link href="/login" onClick={() => setMobileOpen(false)}>Kirish</Link>
                 </Button>
-                <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-full" asChild>
-                  <Link href="/login">Ro&apos;yxatdan o&apos;tish</Link>
+                <Button
+                  className="w-full h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-base font-semibold"
+                  asChild
+                >
+                  <Link href="/login" onClick={() => setMobileOpen(false)}>Ro&apos;yxatdan o&apos;tish</Link>
                 </Button>
               </div>
             </nav>
           </div>
-        )}
-      </div>
-    </header>
+        </>
+      )}
+    </>
   )
 }
