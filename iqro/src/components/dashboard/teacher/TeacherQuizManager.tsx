@@ -382,8 +382,6 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                  {[
                    { id: 'all', label: 'Barchasi' },
                    { id: 'draft', label: 'Qoralama' },
-                   { id: 'waiting', label: 'Kutilmoqda' },
-                   { id: 'active', label: 'Faol' },
                    { id: 'finished', label: 'Yakunlangan' }
                  ].map(tab => (
                    <button
