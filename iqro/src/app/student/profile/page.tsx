@@ -5,6 +5,8 @@ import PasswordChangeForm from '@/components/dashboard/student/PasswordChangeFor
 import { getPointsToNextLevel, getProgressToNextLevel, getStudentLevel, LEVELS } from '@/lib/levels'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { PointsHistory } from '@/components/dashboard/student/PointsHistory'
+import { getMyPointTransactions } from '@/app/actions/points'
 
 export default async function StudentProfilePage() {
   const supabase = createClient()
@@ -33,12 +35,7 @@ export default async function StudentProfilePage() {
     .eq('student_id', profile.id)
     .eq('status', 'approved')
 
-  const { data: recentRewards } = await supabase
-    .from('teacher_rewards')
-    .select('*, teacher:profiles!teacher_id(full_name), club:clubs(name)')
-    .eq('student_id', profile.id)
-    .order('created_at', { ascending: false })
-    .limit(10)
+  const transactions = await getMyPointTransactions()
 
   const { data: works } = await supabase
     .from('student_works')
@@ -164,44 +161,9 @@ export default async function StudentProfilePage() {
         </div>
       </div>
 
-      {/* SECTION 3 — Rag'batlar */}
+      {/* SECTION 3 — Rag'batlar (Ballar tarixi) */}
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
-        <h2 className="font-bold text-gray-800 mb-4">⭐ Mening rag&apos;batlarim</h2>
-        {recentRewards && recentRewards.length > 0 ? (
-          <div className="space-y-3">
-            {(recentRewards as Record<string, unknown>[]).map((reward) => {
-              const teacher = reward.teacher as Record<string, unknown> | null
-              const club = reward.club as Record<string, unknown> | null
-              const date = new Date(reward.created_at as string)
-              const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`
-              return (
-                <div key={reward.id as string} className="flex items-start gap-3 p-4 bg-amber-50/50 rounded-xl border border-amber-100">
-                  <span className="text-xl mt-0.5">⭐</span>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
-                      {(teacher?.full_name as string) || "O'qituvchi"} sizga rag&apos;bat berdi
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {(club?.name as string) || "To'garak"} to&apos;garagi
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="inline-block px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">
-                      +{(reward.points_given as number) || 10} ball
-                    </span>
-                    <p className="text-[10px] text-gray-400 mt-1">{dateStr}</p>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="text-center py-10">
-            <span className="text-4xl block mb-3">💪</span>
-            <p className="text-sm text-gray-500">Hali rag&apos;bat olmagansiz.</p>
-            <p className="text-xs text-gray-400 mt-1">Darsga faol qatnashing!</p>
-          </div>
-        )}
+        <PointsHistory transactions={transactions} />
       </div>
 
       {/* SECTION 4 — Info + Password */}

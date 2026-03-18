@@ -59,7 +59,7 @@ export async function giveReward(
   }
 
   // Insert reward
-  const { error: rewardError } = await admin
+  const { data: rewardData, error: rewardError } = await admin
     .from('teacher_rewards')
     .insert({
       teacher_id: teacher.id,
@@ -68,6 +68,8 @@ export async function giveReward(
       lesson_date: lessonDate,
       points_given: 3,
     })
+    .select('id')
+    .single()
 
   if (rewardError) {
     return { success: false, error: rewardError.message }
@@ -77,6 +79,17 @@ export async function giveReward(
   await admin.rpc('add_student_points', {
     p_student_id: studentId,
     p_points: 3,
+  })
+
+  const { data: clubData } = await admin.from('clubs').select('name').eq('id', clubId).single()
+  const clubName = clubData?.name
+
+  await admin.from('point_transactions').insert({
+    student_id: studentId,
+    points: 3,
+    reason: `Davomat uchun — ${clubName || "To'garak"}`,
+    source: 'attendance',
+    source_id: rewardData?.id
   })
 
   revalidatePath('/teacher/attendance')
@@ -118,6 +131,14 @@ export async function rewardStudentWork(workId: string, studentId: string) {
   await admin.rpc('add_student_points', {
     p_student_id: studentId,
     p_points: 5,
+  })
+
+  await admin.from('point_transactions').insert({
+    student_id: studentId,
+    points: 5,
+    reason: `Biriktirilgan vazifa uchun`,
+    source: 'work',
+    source_id: workId
   })
 
   // Save to teacher_rewards to show in "So'nggi rag'batlar"

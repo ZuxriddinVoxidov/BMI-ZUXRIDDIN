@@ -165,6 +165,15 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
           total_points: pointsToAdd 
         })
     }
+
+    const rankLabels = ['1-o\'rin', '2-o\'rin', '3-o\'rin', '4-o\'rin', '5-o\'rin']
+    await admin.from('point_transactions').insert({
+      student_id: p.student_id,
+      points: pointsToAdd,
+      reason: `Test natijasi — ${rankLabels[i]}: ${p.score} to\'g\'ri javob`,
+      source: 'quiz',
+      source_id: quizId
+    })
   }
 
   revalidatePath('/teacher/quiz')

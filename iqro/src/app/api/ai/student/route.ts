@@ -70,8 +70,20 @@ export async function POST(request: Request) {
 ${resourceList}`
     }).filter(Boolean).join('\n\n')
 
+    const { data: transactions } = await admin
+      .from('point_transactions')
+      .select('points, reason, source, created_at')
+      .eq('student_id', studentProfile.id)
+      .order('created_at', { ascending: false })
+      .limit(20)
+
     const totalPoints = pointsData?.total_points || 0
     const level = getStudentLevel(totalPoints)
+
+    const transactionsContext = (transactions || [])
+      .slice(0, 10)
+      .map((t: any) => `  - ${t.reason}: +${t.points} ball (${new Date(t.created_at).toLocaleDateString('uz-UZ')})`)
+      .join('\n')
 
     const profileContext = `
 O'quvchi: ${studentProfile.full_name}
@@ -79,6 +91,9 @@ Sinf: ${studentProfile.grade || 'belgilanmagan'}
 Daraja: ${level.name} ${level.emoji}
 Jami ball: ${totalPoints}
 A'zo to'garaklar soni: ${(enrollments || []).length}
+
+BALLAR TARIXI (so'nggi 10 ta):
+${transactionsContext || '  - hali ball yig\'ilmagan'}
 `
 
     const systemPrompt = `Sen IQRO maktab platformasidagi o'quvchiga yordam beruvchi aqlli AI assistentsan.
