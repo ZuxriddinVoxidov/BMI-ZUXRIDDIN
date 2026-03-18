@@ -35,6 +35,7 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
   const [status, setStatus] = useState(quiz.status)
   const [timeLeft, setTimeLeft] = useState(quiz.duration_seconds)
   const [isPending, setIsPending] = useState(false)
+  const [isFinishing, setIsFinishing] = useState(false)
   const { toast } = useToast()
   const supabase = createClient()
 
@@ -111,16 +112,18 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
   }
 
   async function handleFinish() {
-    if (!confirm('Testni yakunlab, barchaga ballar taqsimlansinmi?')) return
-    setIsPending(true)
-    const res = await finishQuiz(quiz.id)
-    if (res.success) {
-      setStatus('finished')
-      toast({ title: 'Test yakunlandi va ballar taqsimlandi!' })
-    } else {
-      toast({ title: res.error || 'Xatolik', variant: 'destructive' })
+    setIsFinishing(true)
+    try {
+      const res = await finishQuiz(quiz.id)
+      if (res.success) {
+        setStatus('finished')
+        toast({ title: 'Test yakunlandi va ballar taqsimlandi!' })
+      } else {
+        toast({ title: res.error || 'Xatolik', variant: 'destructive' })
+      }
+    } finally {
+      setIsFinishing(false)
     }
-    setIsPending(false)
   }
 
   const finishedCount = participants.filter(p => p.finished_at).length
@@ -211,8 +214,9 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
                 </div>
               </div>
               
-              <button disabled={isPending} onClick={handleFinish} className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-all">
-                <Square fill="currentColor" size={16} /> Yakunlash
+              <button disabled={isFinishing} onClick={() => { if(confirm('Testni yakunlab, barchaga ballar taqsimlansinmi?')) handleFinish() }} className="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white font-bold rounded-xl shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-all">
+                {isFinishing ? <Loader2 className="animate-spin" size={16} /> : <Square fill="currentColor" size={16} />}
+                {isFinishing ? 'Yakunlanmoqda...' : 'Yakunlash'}
               </button>
             </div>
 

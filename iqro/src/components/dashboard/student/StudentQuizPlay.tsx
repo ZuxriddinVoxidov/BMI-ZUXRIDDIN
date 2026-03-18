@@ -88,13 +88,7 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
     setAnswers(prev => ({ ...prev, [qId]: opt }))
   }
 
-  function handleNext() {
-    if (currQIdx < quiz.quiz_questions.length - 1) {
-      setCurrQIdx(prev => prev + 1)
-    } else {
-      handleSubmit()
-    }
-  }
+  // handleNext is no longer used for auto-advance as user stays on question unless they use explicit navigation
 
   async function handleSubmit() {
     if (status === 'submitting' || status === 'finished') return
@@ -147,28 +141,43 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
 
         {/* ================= ACTIVE PLAY ================= */}
         {status === 'active' && quiz.quiz_questions.length > 0 && (
-          <motion.div key="active" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full max-w-2xl space-y-6">
+          <motion.div key="active" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full max-w-4xl space-y-6">
             
-            {/* Header / Timer */}
-            <div className="flex justify-between items-center bg-white p-4 rounded-2xl border shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold">
-                  {currQIdx + 1}/{totalQ}
-                </div>
-                <div className="h-2 w-32 sm:w-48 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-500 transition-all" style={{width: `${((currQIdx+1)/totalQ)*100}%`}}/>
-                </div>
+            {/* Header / Timer & Nav */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-3xl border shadow-sm">
+              <div className="flex flex-wrap gap-2 justify-center flex-1">
+                {quiz.quiz_questions.map((q, idx) => {
+                  const isCurrent = idx === currQIdx;
+                  const isAnswered = !!answers[q.id];
+                  let btnClass = "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ";
+                  if (isCurrent) {
+                    btnClass += "bg-indigo-600 text-white ring-4 ring-indigo-200";
+                  } else if (isAnswered) {
+                    btnClass += "bg-indigo-100 text-indigo-700 border-2 border-indigo-400";
+                  } else {
+                    btnClass += "bg-gray-100 text-gray-500 hover:bg-gray-200";
+                  }
+                  
+                  return (
+                    <button key={q.id} onClick={() => setCurrQIdx(idx)} className={btnClass}>
+                      {idx + 1}
+                    </button>
+                  );
+                })}
               </div>
-              <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-600 font-bold font-mono text-xl rounded-xl border border-amber-100">
+              <div className="flex items-center justify-center gap-2 px-6 py-3 bg-amber-50 text-amber-600 font-bold font-mono text-xl rounded-2xl border border-amber-100 shrink-0">
                 <Clock size={20}/> {timeString}
               </div>
             </div>
 
             {/* Question Card */}
             <div className="bg-white p-6 sm:p-10 rounded-3xl border shadow-sm relative overflow-hidden">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-8 leading-relaxed">
-                {quiz.quiz_questions[currQIdx].question}
-              </h3>
+              <div className="flex justify-between items-start mb-8 gap-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 leading-relaxed flex-1">
+                  <span className="text-indigo-500 mr-2">{currQIdx + 1}.</span>
+                  {quiz.quiz_questions[currQIdx].question}
+                </h3>
+              </div>
               
               <div className="space-y-3">
                 {['A','B','C','D'].map(opt => {
@@ -180,12 +189,12 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                     <button 
                       key={opt}
                       onClick={() => handleSelect(opt)}
-                      className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group ${isSelected ? 'border-indigo-500 bg-indigo-50 shadow-md transform scale-[1.01]' : 'border-gray-100 bg-white hover:border-gray-300 hover:bg-gray-50'}`}
+                      className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 shadow-md transform scale-[1.01]' : 'border-gray-100 bg-white hover:border-gray-300 hover:bg-gray-50'}`}
                     >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-600'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-600'}`}>
                         {opt}
                       </div>
-                      <span className={`font-semibold text-lg ${isSelected ? 'text-indigo-900' : 'text-gray-700'}`}>
+                      <span className={`font-semibold text-lg ${isSelected ? 'text-emerald-900' : 'text-gray-700'}`}>
                         {optText}
                       </span>
                     </button>
@@ -193,14 +202,35 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                 })}
               </div>
 
-              <div className="mt-10 flex justify-end">
+              <div className="mt-10 flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t">
+                <div className="flex gap-3 w-full sm:w-auto">
+                  <button 
+                    disabled={currQIdx === 0} 
+                    onClick={() => setCurrQIdx(prev => prev - 1)}
+                    className="flex-1 sm:flex-none px-6 py-3 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                  >
+                    Oldingi
+                  </button>
+                  <button 
+                    disabled={currQIdx === totalQ - 1} 
+                    onClick={() => setCurrQIdx(prev => prev + 1)}
+                    className="flex-1 sm:flex-none px-6 py-3 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                  >
+                    Keyingi
+                  </button>
+                </div>
+
                 <button 
-                  disabled={!answers[quiz.quiz_questions[currQIdx].id]} 
-                  onClick={handleNext}
-                  className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 group"
+                  onClick={() => {
+                    const answeredCount = Object.keys(answers).length;
+                    const unansweredCount = totalQ - answeredCount;
+                    if(confirm(`Barcha savollar: ${answeredCount} ta javob berildi, ${unansweredCount} ta javob berilmadi. Yakunlashni tasdiqlaysizmi?`)) {
+                      handleSubmit();
+                    }
+                  }}
+                  className="w-full sm:w-auto px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2"
                 >
-                  {currQIdx < totalQ - 1 ? 'Keyingisi' : 'Yakunlash va Yuborish'}
-                  <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  <CheckCircle size={20} /> Testni yakunlash
                 </button>
               </div>
             </div>

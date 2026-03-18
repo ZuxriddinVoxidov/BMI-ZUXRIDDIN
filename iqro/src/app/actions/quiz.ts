@@ -161,6 +161,20 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
   return { success: true }
 }
 
+export async function deleteQuiz(quizId: string): Promise<{ success: boolean; error?: string }> {
+  const supabase = createClient()
+  const admin = createAdminClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Ruxsat yoq' }
+  const { error } = await admin
+    .from('quizzes')
+    .delete()
+    .eq('id', quizId)
+  if (error) return { success: false, error: 'Ochirish xatosi' }
+  revalidatePath('/teacher/quiz')
+  return { success: true }
+}
+
 // Get teacher's quizzes
 export async function getTeacherQuizzes(clubId?: string): Promise<Quiz[]> {
   const supabase = createClient()

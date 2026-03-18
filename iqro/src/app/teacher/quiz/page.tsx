@@ -31,12 +31,25 @@ export default async function TeacherQuizPage() {
 
   // Fetch quizzes
   const quizzes = await getTeacherQuizzes()
+  
+  // Fetch participants for finished quizzes
+  const finishedQuizIds = quizzes.filter(q => q.status === 'finished').map(q => q.id)
+  let participants: any[] = []
+  
+  if (finishedQuizIds.length > 0) {
+    const { data } = await supabase
+      .from('quiz_participants')
+      .select('quiz_id, score, student_id, profiles!student_id(full_name)')
+      .in('quiz_id', finishedQuizIds)
+    participants = data || []
+  }
 
   return (
     <div className="max-w-7xl mx-auto py-8">
       <TeacherQuizManager 
         clubs={(clubs || []) as Record<string, unknown>[]} 
         quizzes={quizzes} 
+        participants={participants}
       />
     </div>
   )

@@ -5,16 +5,17 @@ import { Plus, X, List, Calendar, HelpCircle, Save, CheckCircle, Clock, Trash2, 
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from '@/hooks/use-toast'
-import { Quiz, QuizQuestion, createQuiz, updateQuiz, publishQuiz, startQuiz, finishQuiz } from '@/app/actions/quiz'
+import { Quiz, QuizQuestion, createQuiz, updateQuiz, publishQuiz, startQuiz, finishQuiz, deleteQuiz } from '@/app/actions/quiz'
 
 interface TeacherQuizManagerProps {
   clubs: Record<string, unknown>[]
   quizzes: Quiz[]
+  participants?: any[]
 }
 
 type QuizState = 'list' | 'generate' | 'edit'
 
-export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: TeacherQuizManagerProps) {
+export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, participants }: TeacherQuizManagerProps) {
   const [quizzes, setQuizzes] = useState<Quiz[]>(initialQuizzes)
   const [currentState, setCurrentState] = useState<QuizState>('list')
   const [isPending, startTransition] = useTransition()
@@ -38,6 +39,8 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
   const waiting = quizzes.filter(q => q.status === 'waiting')
   const active = quizzes.filter(q => q.status === 'active')
   const finished = quizzes.filter(q => q.status === 'finished')
+
+  const [expandedQuizId, setExpandedQuizId] = useState<string | null>(null)
 
   // ----- Actions -----
 
@@ -146,7 +149,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
     })
   }
 
-  async function handleActionClick(q: Quiz, action: 'publish' | 'start' | 'finish') {
+  async function handleActionClick(q: Quiz, action: 'publish' | 'start' | 'finish' | 'delete') {
     startTransition(async () => {
       let res;
       if (action === 'publish') res = await publishQuiz(q.id)
@@ -154,6 +157,10 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
       if (action === 'finish') {
         if (!confirm('Testni yakunlab bali hisoblansinmi?')) return
         res = await finishQuiz(q.id)
+      }
+      if (action === 'delete') {
+        if (!confirm('Ushbu testni butunlay o\'chirib tashlashni tasdiqlaysizmi?')) return
+        res = await deleteQuiz(q.id)
       }
       
       if (res?.success) {
@@ -182,7 +189,8 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
     const qCount = q.quiz_questions?.length || 0
 
     return (
-      <div key={q.id} className="bg-white border rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-indigo-200 transition-colors">
+      <div key={q.id}>
+      <div className="bg-white border rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-indigo-200 transition-colors">
         <div>
           <h4 className="font-bold text-gray-800 flex items-center gap-2">
             {q.title}
@@ -205,7 +213,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
           </div>
         </div>
         
-        <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto mt-4 sm:mt-0">
           {q.status === 'draft' && (
             <>
               <button disabled={isPending} onClick={() => openEdit(q)} className="flex-1 sm:flex-none px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition-colors">Tahrirlash</button>
@@ -219,9 +227,56 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
             <Link href={`/teacher/quiz/${q.id}/live`} className="w-full sm:w-auto px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5">Davom etish <ArrowRight size={14}/></Link>
           )}
           {q.status === 'finished' && (
-            <span className="text-sm font-medium text-emerald-600 flex items-center gap-1"><CheckCircle size={16}/> Natijalar hisoblangan</span>
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setExpandedQuizId(expandedQuizId === q.id ? null : q.id)} 
+                className="px-4 py-1.5 text-xs font-bold bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg flex items-center gap-1.5 transition-colors"
+               >
+                📊 Natijalar
+              </button>
+              <button disabled={isPending} onClick={() => handleActionClick(q, 'delete')} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                <Trash2 size={16}/>
+              </button>
+            </div>
           )}
         </div>
+      </div>
+      
+      {q.status === 'finished' && expandedQuizId === q.id && (
+        <motion.div initial={{opacity:0, height:0}} animate={{opacity:1, height:'auto'}} className="bg-gray-50 border-x border-b rounded-b-xl p-4 -mt-2 mb-2">
+          <h4 className="text-sm font-bold text-gray-700 mb-3">Ishtirokchilar natijalari ({new Date(q.created_at).toLocaleDateString()})</h4>
+          <div className="bg-white rounded-xl border overflow-hidden">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="px-4 py-2 font-semibold text-gray-600">O&apos;quvchi</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600 text-right">To&apos;g&apos;ri / Umumiy</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600 w-16 text-center">O&apos;rin</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {participants?.filter(p => p.quiz_id === q.id).sort((a,b) => (b.score || 0) - (a.score || 0)).map((p, i) => (
+                  <tr key={p.student_id} className={i < 3 ? 'bg-amber-50/30' : ''}>
+                    <td className="px-4 py-3 font-medium text-gray-800">{p.profiles?.full_name}</td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="font-bold text-indigo-600">{p.score || 0}</span>
+                      <span className="text-gray-400 text-xs ml-1">/{qCount}</span>
+                    </td>
+                    <td className="px-4 py-3 text-center text-lg">
+                      {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : <span className="text-xs text-gray-400 font-bold">{i + 1}</span>}
+                    </td>
+                  </tr>
+                ))}
+                {(!participants || participants.filter(p => p.quiz_id === q.id).length === 0) && (
+                  <tr>
+                    <td colSpan={3} className="px-4 py-6 text-center text-gray-400 text-sm">Ishtirokchilar topilmadi</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </motion.div>
+      )}
       </div>
     )
   }
@@ -409,10 +464,6 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Test Sarlavhasi</label>
                     <input value={editTitle} onChange={e=>setEditTitle(e.target.value)} className="w-full text-lg font-bold text-gray-900 border-b-2 border-transparent focus:border-indigo-500 py-1 outline-none transition-colors" placeholder="Test nomini kiriting..."/>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Mavzu (Ixtiyoriy)</label>
-                    <textarea value={editDesc} onChange={e=>setEditDesc(e.target.value)} rows={2} className="w-full text-sm text-gray-700 bg-gray-50 border rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-indigo-100" placeholder="Ushbu test nima haqida..."/>
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1">
