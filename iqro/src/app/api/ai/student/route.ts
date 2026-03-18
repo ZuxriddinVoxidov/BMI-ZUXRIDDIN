@@ -82,7 +82,7 @@ ${resourceList}`
 
     const transactionsContext = (transactions || [])
       .slice(0, 10)
-      .map((t: any) => `  - ${t.reason}: +${t.points} ball (${new Date(t.created_at).toLocaleDateString('uz-UZ')})`)
+      .map((t: { reason: string, points: number, created_at: string }) => `  - ${t.reason}: +${t.points} ball (${new Date(t.created_at).toLocaleDateString('uz-UZ')})`)
       .join('\n')
 
     const profileContext = `
