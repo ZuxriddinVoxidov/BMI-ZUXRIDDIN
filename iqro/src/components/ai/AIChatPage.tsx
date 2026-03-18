@@ -245,44 +245,83 @@ export default function AIChatPage({
   async function executeFetch(history: {role: string, content: string}[], currentSessionId: string) {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 sec timeout
+    
+    const aiMessageId = Date.now().toString()
+    setMessages(prev => [...prev.filter(m => !m.isError), {
+      id: aiMessageId,
+      role: 'assistant',
+      content: '',
+      created_at: new Date().toISOString()
+    }])
 
     try {
       const response = await fetch(apiRoute, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify({ messages: history, sessionId: currentSessionId }),
         signal: controller.signal
       })
 
       clearTimeout(timeoutId)
-      const data = await response.json()
-      const reply = data.reply || data.response || 'Kechirasiz, javob olishda xatolik yuz berdi.'
+      if (!response.ok) throw new Error('API xatosi')
+      if (!response.body) throw new Error("Stream yo'q")
 
-      const aiMsg: Message = { role: 'assistant', content: reply, created_at: new Date().toISOString() }
-      setMessages(prev => [...prev.filter(m => !m.isError), aiMsg])
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let fullContent = ''
 
-      await saveMessage(currentSessionId, 'assistant', reply)
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        const lines = chunk.split('\n')
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6)
+            if (data === '[DONE]') break
+            
+            try {
+              const parsed = JSON.parse(data)
+              if (parsed.chunk) {
+                fullContent += parsed.chunk
+                setMessages(prev => prev.map(msg => 
+                  msg.id === aiMessageId 
+                    ? { ...msg, content: fullContent }
+                    : msg
+                ))
+              }
+              if (parsed.error) {
+                setMessages(prev => prev.map(msg =>
+                  msg.id === aiMessageId
+                    ? { ...msg, content: 'Xatolik yuz berdi. Qayta urinib ko\'ring.', isError: true }
+                    : msg
+                ))
+              }
+            } catch {
+              // Skip malformed chunks
+            }
+          }
+        }
+      }
       
       const updatedSessions = await getUserSessions(userId)
       setSessions(updatedSessions as Session[])
     } catch (err) {
       clearTimeout(timeoutId)
       if (err instanceof Error && err.name === 'AbortError') {
-        setMessages(prev => [...prev.filter(m => !m.isError), {
-          id: Date.now().toString(),
-          role: 'assistant',
-          content: "Kechirasiz, javob berish vaqti tugadi. Qayta urinib ko'ring.",
-          created_at: new Date().toISOString(),
-          isError: true
-        }])
+        setMessages(prev => prev.map(msg => 
+          msg.id === aiMessageId
+            ? { ...msg, content: "Kechirasiz, javob berish vaqti tugadi. Qayta urinib ko'ring.", isError: true }
+            : msg
+        ))
       } else {
-        setMessages(prev => [...prev.filter(m => !m.isError), {
-          id: Date.now().toString(),
-          role: 'assistant', 
-          content: "Xatolik yuz berdi. Internet aloqasini tekshiring va qayta urinib ko'ring.",
-          created_at: new Date().toISOString(),
-          isError: true
-        }])
+        setMessages(prev => prev.map(msg => 
+          msg.id === aiMessageId
+            ? { ...msg, content: "Xatolik yuz berdi. Internet aloqasini tekshiring va qayta urinib ko'ring.", isError: true }
+            : msg
+        ))
       }
     } finally {
       setIsLoading(false)

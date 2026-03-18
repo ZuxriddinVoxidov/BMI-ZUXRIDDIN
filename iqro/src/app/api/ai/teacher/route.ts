@@ -1,8 +1,9 @@
-import { askGemini } from '@/lib/ai/gemini'
+import { askGeminiStream } from '@/lib/ai/gemini'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
+export const maxDuration = 60
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: Request) {
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
     })
     const body = await request.json()
     const messages = body.messages || [{ role: 'user', content: body.question || body.message || 'Salom' }]
+    const sessionId = body.sessionId
 
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -180,8 +182,44 @@ QOBILIYATLAR VA QOIDALAR:
 9. Professional, aniq va dalilga asoslangan uslubda gapir
 10. Bugungi sana: ${new Date().toLocaleDateString('uz-UZ', { timeZone: 'Asia/Tashkent' })}`
 
-    const response = await askGemini(systemPrompt, messages)
-    return NextResponse.json({ reply: response })
+    const result = await askGeminiStream(systemPrompt, messages)
+
+    let fullText = ''
+    const stream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder()
+        try {
+          for await (const chunk of result.stream) {
+            const text = chunk.text()
+            if (text) {
+              fullText += text
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ chunk: text })}\n\n`))
+            }
+          }
+          if (sessionId) {
+            await admin.from('ai_chat_messages').insert({
+              session_id: sessionId,
+              role: 'assistant',
+              content: fullText
+            })
+          }
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+        } catch (error) {
+          console.error('Stream error:', error)
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: 'Xatolik yuz berdi' })}\n\n`))
+        } finally {
+          controller.close()
+        }
+      }
+    })
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache', 
+        'Connection': 'keep-alive',
+      }
+    })
   } catch (error) {
     console.error('Teacher AI error:', error)
     return NextResponse.json({ reply: 'Kechirasiz, hozir javob bera olmayapman. Qayta urinib ko\'ring.' }, { status: 500 })
