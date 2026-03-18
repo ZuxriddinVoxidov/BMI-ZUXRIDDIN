@@ -68,6 +68,18 @@ export default function ClubDetailClient({
     }
   }, [showChat, messages])
 
+  // Mobile scroll lock when modals are open
+  useEffect(() => {
+    if (showResources || showReview || showChat) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [showResources, showReview, showChat])
+
   const handleSubmitReview = async () => {
     if (!rating) {
       setToast({ message: 'Yulduzcha tanlang!', type: 'error' })
@@ -167,13 +179,13 @@ export default function ClubDetailClient({
       )}
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/95 border-b border-gray-100 px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm">
+      <header className="sticky top-0 z-30 bg-white border-b px-4 py-3 flex items-center justify-between relative">
         <Link href={catalog} className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition-colors font-medium">
           <span className="text-xl">←</span>
           <span className="hidden sm:inline">Katalogga qaytish</span>
           <span className="sm:hidden">Ortga</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {isEnrolled && (
             <>
               {/* Resources Dropdown / Bottom Sheet */}
@@ -187,7 +199,7 @@ export default function ClubDetailClient({
                   }`}
                   aria-label="Manbaalar"
                 >
-                  <Paperclip size={18} />
+                  <FileText size={18} />
                   {resources.length > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white border border-white">
                       {resources.length}
