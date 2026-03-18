@@ -151,6 +151,11 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                     <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
                       <span className="flex items-center gap-1"><Calendar size={12} />{(club.schedule as string) || '-'}</span>
                       {Boolean(club.room) && <span className="flex items-center gap-1"><MapPin size={12} />{String(club.room)}</span>}
+                      {Array.isArray(club.target_grades) && club.target_grades.length > 0 && (
+                        <span className="flex items-center gap-1">
+                          🎓 {(club.target_grades as string[]).join(', ')}-sinf
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -135,8 +135,8 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
     .eq('quiz_id', quizId)
     .order('score', { ascending: false })
 
-  // Award points: 1st=50, 2nd=40, 3rd=30, 4th=20, 5th=10
-  const pointsMap = [50, 40, 30, 20, 10]
+  // Award points: 1st=15, 2nd=12, 3rd=9, 4th=6, 5th=3
+  const pointsMap = [15, 12, 9, 6, 3]
 
   for (let i = 0; i < Math.min(5, (participants || []).length); i++) {
     const p = participants![i]

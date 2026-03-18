@@ -12,37 +12,41 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { topic, count, clubId } = body
+    const { topic, count, clubId, clubName, targetGrades } = body
 
     if (!topic || !count) {
       return NextResponse.json({ error: 'Mavzu va savollar soni kiritilishi shart' }, { status: 400 })
     }
 
     const prompt = `Sen o'zbek maktabidagi o'qituvchiga test savollari tuzib berayapsan.
+
+To'garak/Fan: ${clubName || topic}
+Sinf: ${targetGrades || 'belgilanmagan'}  
 Mavzu: ${topic}
 Savollar soni: ${count}
-Har bir savol uchun 4 ta variant (A, B, C, D) va to'g'ri javob ko'rsat.
 
-FAQAT quyidagi JSON formatda javob ber, boshqa hech narsa yozma:
-{
-  "questions": [
-    {
-      "question": "Savol matni?",
-      "option_a": "Variant A",
-      "option_b": "Variant B", 
-      "option_c": "Variant C",
-      "option_d": "Variant D",
-      "correct_answer": "A"
-    }
-  ]
-}`
+MUHIM: Faqat sof JSON qaytar, hech qanday izoh yoki markdown yozma.
+Javob formati:
+{"questions":[{"question":"savol?","option_a":"A variant","option_b":"B variant","option_c":"C variant","option_d":"D variant","correct_answer":"A"}]}`
 
     const textResult = await askGemini('Faqat qat\'iy kutingan JSON javob qaytar.', prompt)
     
-    // Clean up potential markdown formatting in Gemini response
-    const cleanJson = textResult.replace(/```json\n/g, '').replace(/```\n/g, '').replace(/```/g, '').trim()
+    // Strip markdown code blocks if present
+    const cleaned = textResult
+      .replace(/```json\n?/gi, '')
+      .replace(/```\n?/gi, '')
+      .trim()
+
+    // Find the JSON object in the response
+    const jsonStart = cleaned.indexOf('{')
+    const jsonEnd = cleaned.lastIndexOf('}')
     
-    const parsedResult = JSON.parse(cleanJson)
+    if (jsonStart === -1 || jsonEnd === -1) {
+      return NextResponse.json({ error: 'AI javob formati noto\'g\'ri' }, { status: 500 })
+    }
+    
+    const jsonStr = cleaned.slice(jsonStart, jsonEnd + 1)
+    const parsedResult = JSON.parse(jsonStr)
 
     return NextResponse.json(parsedResult)
 

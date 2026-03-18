@@ -66,7 +66,7 @@ export async function giveReward(
       student_id: studentId,
       club_id: clubId,
       lesson_date: lessonDate,
-      points_given: 10,
+      points_given: 3,
     })
 
   if (rewardError) {
@@ -76,7 +76,7 @@ export async function giveReward(
   // Add points to student
   await admin.rpc('add_student_points', {
     p_student_id: studentId,
-    p_points: 10,
+    p_points: 3,
   })
 
   revalidatePath('/teacher/attendance')

@@ -45,12 +45,20 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
     e.preventDefault()
     if (!selClubId || !topic.trim() || !qCount || !durationMins) return
 
+    const selectedClub = clubs.find(c => c.id === selClubId) as Record<string, any> | undefined
+
     startTransition(async () => {
       try {
         const response = await fetch('/api/ai/quiz', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ topic, count: qCount, clubId: selClubId })
+          body: JSON.stringify({ 
+            topic, 
+            count: qCount, 
+            clubId: selClubId,
+            clubName: selectedClub?.name,
+            targetGrades: (selectedClub?.target_grades as string[])?.join(', ') || ''
+          })
         })
 
         if (!response.ok) {
@@ -229,7 +237,11 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
           <button 
             onClick={() => {
               setCurrentState('generate')
-              setSelClubId(clubs[0]?.id as string || '')
+              const firstClub = clubs[0] as Record<string, any> | undefined
+              if (firstClub) {
+                setSelClubId(firstClub.id)
+                setTopic(`${firstClub.name} — ${firstClub.category || 'mos'} fani bo'yicha test`)
+              }
             }}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors"
           >
@@ -284,7 +296,9 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
         )}
 
         {/* ================= STATE 2: GENERATE ================= */}
-        {currentState === 'generate' && (
+        {currentState === 'generate' && (() => {
+          const selectedClubObj = clubs.find(c => c.id === selClubId) as Record<string, any> | undefined
+          return (
           <motion.div key="gen" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="bg-white rounded-2xl border p-6 max-w-2xl mx-auto shadow-sm">
             <div className="flex justify-between items-center mb-6 pb-4 border-b">
               <h2 className="text-lg font-bold text-gray-800">Yangi test yaratish</h2>
@@ -294,11 +308,23 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
             <form onSubmit={handleAIGenerate} className="space-y-5">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Qaysi to&apos;garak uchun?</label>
-                <select value={selClubId} onChange={e => setSelClubId(e.target.value)} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm">
+                <select value={selClubId} onChange={e => {
+                  const newId = e.target.value
+                  setSelClubId(newId)
+                  const targetClub = clubs.find(c => c.id === newId) as Record<string, any> | undefined
+                  if (targetClub) {
+                    setTopic(`${targetClub.name} — ${targetClub.category || 'mos'} fani bo'yicha test`)
+                  }
+                }} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm">
                   {clubs.map(c => (
                     <option key={c.id as string} value={c.id as string}>{c.name as string}</option>
                   ))}
                 </select>
+                {selectedClubObj && (
+                  <p className="mt-2 text-xs text-indigo-600 bg-indigo-50 p-2 rounded-lg flex items-center gap-2">
+                    💡 Bu to&apos;garak {(selectedClubObj.target_grades as string[])?.join(', ') || 'barcha'}-sinf o&apos;quvchilari uchun. AI {selectedClubObj.category || 'mos'} fani bo&apos;yicha mos savollar tuzadi.
+                  </p>
+                )}
               </div>
 
               <div>
@@ -340,7 +366,8 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
               )}
             </form>
           </motion.div>
-        )}
+          )
+        })()}
 
         {/* ================= STATE 3: EDIT ================= */}
         {currentState === 'edit' && (
