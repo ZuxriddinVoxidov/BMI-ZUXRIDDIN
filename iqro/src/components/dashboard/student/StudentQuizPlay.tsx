@@ -1,0 +1,262 @@
+'use client'
+
+import { useState, useEffect, useTransition } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Clock, Loader2, CheckCircle, ChevronRight, Trophy } from 'lucide-react'
+import { submitAnswers } from '@/app/actions/quiz'
+import { useRouter } from 'next/navigation'
+import { useToast } from '@/hooks/use-toast'
+
+interface QuizQuestion {
+  id: string
+  question: string
+  option_a: string
+  option_b: string
+  option_c: string
+  option_d: string
+}
+
+interface QuizPlayProps {
+  quiz: {
+    id: string
+    title: string
+    status: string
+    duration_seconds: number
+    clubs: { name: string }
+    quiz_questions: QuizQuestion[]
+  }
+  participation: {
+    id: string
+    score: number | null
+    finished_at: string | null
+  } | null
+}
+
+export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) {
+  const router = useRouter()
+  const { toast } = useToast()
+  const supabase = createClient()
+  const [isPending, startTransition] = useTransition()
+
+  const [status, setStatus] = useState(participation?.finished_at ? 'finished' : quiz.status)
+  const [timeLeft, setTimeLeft] = useState(quiz.duration_seconds)
+  
+  const [currQIdx, setCurrQIdx] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  
+  const [finalScore, setFinalScore] = useState<number | null>(participation?.score || null)
+
+  // Real-time status update
+  useEffect(() => {
+    if (status === 'finished') return
+
+    const channel = supabase
+      .channel('quiz-status-student-' + quiz.id)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'quizzes',
+        filter: `id=eq.${quiz.id}`
+      }, (payload: any) => {
+        if (payload.new.status === 'active' && status === 'waiting') {
+          setStatus('active')
+          toast({ title: 'Test boshlandi! Omad!' })
+        }
+        if (payload.new.status === 'finished' && status === 'submitting') {
+          setStatus('finished')
+        }
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
+  }, [quiz.id, status, supabase, toast])
+
+  // Timer logic for active test
+  useEffect(() => {
+    let timer: NodeJS.Timeout
+    if (status === 'active' && timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000)
+    } else if (status === 'active' && timeLeft === 0) {
+      handleSubmit() // Auto submit when time is up
+    }
+    return () => clearInterval(timer)
+  }, [status, timeLeft])
+
+  function handleSelect(opt: string) {
+    const qId = quiz.quiz_questions[currQIdx].id
+    setAnswers(prev => ({ ...prev, [qId]: opt }))
+  }
+
+  function handleNext() {
+    if (currQIdx < quiz.quiz_questions.length - 1) {
+      setCurrQIdx(prev => prev + 1)
+    } else {
+      handleSubmit()
+    }
+  }
+
+  async function handleSubmit() {
+    if (status === 'submitting' || status === 'finished') return
+    setStatus('submitting')
+    startTransition(async () => {
+      const formattedAnswers = Object.entries(answers).map(([qId, ans]) => ({
+        questionId: qId,
+        answer: ans as 'A' | 'B' | 'C' | 'D'
+      }))
+      const res = await submitAnswers(quiz.id, formattedAnswers)
+      if (res.success) {
+        setFinalScore(res.score || 0)
+        toast({ title: 'Javoblar qabul qilindi' })
+        // Now we wait for teacher to finish the quiz to see full results.
+      } else {
+        toast({ title: res.error || 'Tarmoq xatosi', variant: 'destructive' })
+        setStatus('active') // let them try again
+      }
+    })
+  }
+
+  const m = Math.floor(timeLeft / 60)
+  const s = timeLeft % 60
+  const timeString = `${m}:${s.toString().padStart(2, '0')}`
+  const totalQ = quiz.quiz_questions?.length || 0
+
+  return (
+    <div className="min-h-[70vh] flex flex-col items-center justify-center p-4">
+      
+      <AnimatePresence mode="wait">
+        
+        {/* ================= WAITING ROOM ================= */}
+        {status === 'waiting' && (
+          <motion.div key="waiting" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:1.05}} className="text-center space-y-8 max-w-lg w-full bg-white p-10 rounded-3xl border shadow-sm">
+            <div className="w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Loader2 size={48} className="animate-spin" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-gray-900 mb-2">{quiz.title}</h2>
+              <p className="font-medium text-gray-500">{quiz.clubs?.name}</p>
+            </div>
+            <div className="bg-gray-50 border rounded-2xl p-6">
+              <p className="text-lg font-bold text-gray-800 animate-pulse">
+                O&apos;qituvchi testni boshlashini kuting...
+              </p>
+              <p className="text-sm text-gray-500 mt-2">Barcha o&apos;quvchilar qo&apos;shilgach, test boshlanadi.</p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ================= ACTIVE PLAY ================= */}
+        {status === 'active' && quiz.quiz_questions.length > 0 && (
+          <motion.div key="active" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full max-w-2xl space-y-6">
+            
+            {/* Header / Timer */}
+            <div className="flex justify-between items-center bg-white p-4 rounded-2xl border shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center font-bold">
+                  {currQIdx + 1}/{totalQ}
+                </div>
+                <div className="h-2 w-32 sm:w-48 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-indigo-500 transition-all" style={{width: `${((currQIdx+1)/totalQ)*100}%`}}/>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-600 font-bold font-mono text-xl rounded-xl border border-amber-100">
+                <Clock size={20}/> {timeString}
+              </div>
+            </div>
+
+            {/* Question Card */}
+            <div className="bg-white p-6 sm:p-10 rounded-3xl border shadow-sm relative overflow-hidden">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-8 leading-relaxed">
+                {quiz.quiz_questions[currQIdx].question}
+              </h3>
+              
+              <div className="space-y-3">
+                {['A','B','C','D'].map(opt => {
+                  const valKey = `option_${opt.toLowerCase()}` as keyof QuizQuestion
+                  const optText = quiz.quiz_questions[currQIdx][valKey] as string
+                  const isSelected = answers[quiz.quiz_questions[currQIdx].id] === opt
+
+                  return (
+                    <button 
+                      key={opt}
+                      onClick={() => handleSelect(opt)}
+                      className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group ${isSelected ? 'border-indigo-500 bg-indigo-50 shadow-md transform scale-[1.01]' : 'border-gray-100 bg-white hover:border-gray-300 hover:bg-gray-50'}`}
+                    >
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-600'}`}>
+                        {opt}
+                      </div>
+                      <span className={`font-semibold text-lg ${isSelected ? 'text-indigo-900' : 'text-gray-700'}`}>
+                        {optText}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="mt-10 flex justify-end">
+                <button 
+                  disabled={!answers[quiz.quiz_questions[currQIdx].id]} 
+                  onClick={handleNext}
+                  className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold rounded-xl shadow-lg transition-all flex items-center gap-2 group"
+                >
+                  {currQIdx < totalQ - 1 ? 'Keyingisi' : 'Yakunlash va Yuborish'}
+                  <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ================= SUBMITTING / WAITING RESULTS ================= */}
+        {status === 'submitting' && (
+           <motion.div key="submitting" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:1.05}} className="text-center space-y-8 max-w-lg w-full bg-white p-10 rounded-3xl border shadow-sm">
+             <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle size={48} className="animate-bounce" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-gray-900 mb-2">Javoblar qabul qilindi!</h2>
+              {finalScore !== null && (
+                <p className="text-xl font-bold text-indigo-600 mt-4">
+                  Siz {finalScore} ta savolga to&apos;g&apos;ri javob berdingiz.
+                </p>
+              )}
+            </div>
+            <div className="bg-gray-50 border rounded-2xl p-6 mt-6">
+              <Loader2 size={24} className="animate-spin text-gray-400 mx-auto mb-3" />
+              <p className="text-sm font-bold text-gray-600">
+                O&apos;qituvchi testni yakunlashini va yakuniy natijalarni kutmoqdamiz...
+              </p>
+            </div>
+           </motion.div>
+        )}
+
+        {/* ================= FINAL RESULTS ================= */}
+        {status === 'finished' && (
+          <motion.div key="finished" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} className="text-center space-y-8 max-w-lg w-full bg-white p-10 rounded-3xl border shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
+            <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-blue-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
+              <Trophy size={48} />
+            </div>
+            
+            <div>
+               <h2 className="text-3xl font-black text-gray-900 mb-2">Yashavoring!</h2>
+               <p className="text-gray-500 font-medium">Test to&apos;liq yakunlandi.</p>
+            </div>
+
+            <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6">
+              <p className="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-2">Sizning Natijangiz</p>
+              <div className="flex items-end justify-center gap-2">
+                <span className="text-6xl font-black text-indigo-600">{finalScore !== null ? finalScore : participation?.score || 0}</span>
+                <span className="text-2xl font-black text-indigo-300 mb-1">/ {totalQ}</span>
+              </div>
+            </div>
+
+            <button onClick={() => router.push('/student/quiz')} className="w-full px-6 py-4 bg-gray-900 hover:bg-gray-800 text-white font-bold rounded-xl shadow-md transition-all">
+              Testlar ro&apos;yxatiga qaytish
+            </button>
+          </motion.div>
+        )}
+
+      </AnimatePresence>
+    </div>
+  )
+}

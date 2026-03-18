@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Plus, X, List, Calendar, HelpCircle, Save, CheckCircle, Clock, Trash2 } from 'lucide-react'
+import { Plus, X, List, Calendar, HelpCircle, Save, CheckCircle, Clock, Trash2, ArrowRight, Play } from 'lucide-react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from '@/hooks/use-toast'
 import { Quiz, QuizQuestion, createQuiz, updateQuiz, publishQuiz, startQuiz, finishQuiz } from '@/app/actions/quiz'
@@ -204,10 +205,10 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
             </>
           )}
           {q.status === 'waiting' && (
-            <button disabled={isPending} onClick={() => handleActionClick(q, 'start')} className="w-full sm:w-auto px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors animate-pulse">Boshlash</button>
+            <Link href={`/teacher/quiz/${q.id}/live`} className="w-full sm:w-auto px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors animate-pulse flex items-center justify-center gap-1.5"><Play size={14}/> Boshlash</Link>
           )}
           {q.status === 'active' && (
-            <button disabled={isPending} onClick={() => handleActionClick(q, 'finish')} className="w-full sm:w-auto px-4 py-1.5 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg transition-colors">Yakunlash</button>
+            <Link href={`/teacher/quiz/${q.id}/live`} className="w-full sm:w-auto px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5">Davom etish <ArrowRight size={14}/></Link>
           )}
           {q.status === 'finished' && (
             <span className="text-sm font-medium text-emerald-600 flex items-center gap-1"><CheckCircle size={16}/> Natijalar hisoblangan</span>

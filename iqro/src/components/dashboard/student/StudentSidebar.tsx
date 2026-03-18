@@ -17,6 +17,7 @@ import {
     Sparkles,
     User,
     X,
+    Trophy,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -29,6 +30,7 @@ const navItems = [
   { label: "Mening To'garaklarim", href: '/student/clubs', icon: Monitor },
   { label: 'Haftalik Jadval', href: '/student/schedule', icon: Calendar },
   { label: 'Davomat Hisoboti', href: '/student/attendance', icon: BarChart3 },
+  { label: 'Testlar', href: '/student/quiz', icon: Trophy },
   { label: 'Mening Ishlarim', href: '/student/works', icon: FolderOpen },
   { label: 'AI Yordamchi', href: '/student/ai', icon: Sparkles },
   { label: 'Profil', href: '/student/profile', icon: User },
