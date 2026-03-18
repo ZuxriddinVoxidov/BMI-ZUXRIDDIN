@@ -24,12 +24,7 @@ interface Participation {
   finished_at: string | null
 }
 
-interface StudentQuizListProps {
-  quizzes: Quiz[]
-  participations: Participation[]
-}
-
-export default function StudentQuizList({ quizzes, participations }: StudentQuizListProps) {
+export default function StudentQuizList({ quizzes, participations, studentId, allParticipants }: { quizzes: any[], participations: any[], studentId?: string, allParticipants?: any[] }) {
   const router = useRouter()
   const { toast } = useToast()
   const [isPending, startTransition] = useTransition()
@@ -116,20 +111,55 @@ export default function StudentQuizList({ quizzes, participations }: StudentQuiz
             </button>
           )}
 
-          {(q.status === 'finished' || isFinished) && (
-            <div className="w-full md:w-64 bg-gray-50 rounded-xl p-4 border flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Natijangiz</p>
-                <div className="flex items-end gap-1">
-                  <span className={`text-2xl font-black ${part?.score && part.score > 0 ? 'text-indigo-600' : 'text-gray-900'}`}>{part?.score || 0}</span>
-                  <span className="text-sm font-bold text-gray-400 mb-1">/ {qCount} to&apos;g&apos;ri</span>
+          {(q.status === 'finished' || isFinished) && (() => {
+            let rankText = '--'
+            let totalP = 0
+            let pointsText = '0'
+            let pointsColor = 'text-gray-400'
+            if (q.status === 'finished' && allParticipants && studentId) {
+              const quizParts = allParticipants.filter(p => p.quiz_id === q.id).sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+              totalP = quizParts.length
+              const rankIndex = quizParts.findIndex(p => p.student_id === studentId)
+              if (rankIndex !== -1) {
+                const r = rankIndex + 1
+                rankText = r.toString()
+                const pts = r === 1 ? 15 : r === 2 ? 12 : r === 3 ? 9 : r === 4 ? 6 : r === 5 ? 3 : 0
+                if (pts > 0) {
+                  pointsText = `+${pts}`
+                  pointsColor = 'text-emerald-600'
+                }
+              }
+            }
+
+            return (
+            <div className="w-full mt-4 flex flex-col sm:flex-row gap-3">
+              <div className="flex-1 bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5">O&apos;rningiz</p>
+                  <div className="flex items-end gap-1">
+                    <span className="text-xl font-black text-indigo-700">{rankText}</span>
+                    <span className="text-xs font-bold text-indigo-400 mb-1">/ {totalP} o&apos;quvchi</span>
+                  </div>
+                </div>
+                <Trophy size={20} className="text-indigo-300" />
+              </div>
+              
+              <div className="flex-1 bg-amber-50 border border-amber-100 rounded-xl p-3 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-0.5">Natija</p>
+                  <div className="flex items-end gap-1">
+                    <span className="text-xl font-black text-amber-700">{part?.score || 0}</span>
+                    <span className="text-xs font-bold text-amber-500 mb-1">/ {qCount}</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Ball</p>
+                   <span className={`text-lg font-black ${pointsColor}`}>{pointsText}</span>
                 </div>
               </div>
-              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
-                <Trophy size={24} className={part?.score && part.score > 0 ? "text-amber-500" : "text-gray-300"} />
-              </div>
             </div>
-          )}
+          )
+          })()}
         </div>
       </motion.div>
     )
@@ -139,7 +169,7 @@ export default function StudentQuizList({ quizzes, participations }: StudentQuiz
     const clubMatch = selectedClub === 'all' || q.club_id === selectedClub
     const statusMatch = selectedStatus === 'all' || 
       (selectedStatus === 'finished' 
-        ? participations.some(p => p.quiz_id === q.id && p.finished_at)
+        ? (q.status === 'finished' && participations.some(p => p.quiz_id === q.id && p.finished_at))
         : q.status === selectedStatus)
     return clubMatch && statusMatch
   })
@@ -168,7 +198,6 @@ export default function StudentQuizList({ quizzes, participations }: StudentQuiz
            {[
              { id: 'all', label: 'Barchasi' },
              { id: 'waiting', label: 'Kutilmoqda' },
-             { id: 'active', label: 'Jarayonda' },
              { id: 'finished', label: 'Bajarilgan' }
            ].map(tab => (
              <button

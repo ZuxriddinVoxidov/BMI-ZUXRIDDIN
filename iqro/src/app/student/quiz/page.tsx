@@ -32,7 +32,7 @@ export default async function StudentQuizPage() {
     .from('quizzes')
     .select(`
       id, title, status, club_id, duration_seconds, 
-       клубы:clubs!club_id(name),
+      clubs!club_id(name),
       profiles!teacher_id(full_name),
       quiz_questions(id)
     `)
@@ -46,6 +46,16 @@ export default async function StudentQuizPage() {
     .select('quiz_id, score, finished_at')
     .eq('student_id', profile.id)
 
+  const finishedQuizIds = quizzes?.filter(q => q.status === 'finished').map(q => q.id) || []
+  let allParticipants = [] as any[]
+  if (finishedQuizIds.length > 0) {
+    const { data: ap } = await supabase
+      .from('quiz_participants')
+      .select('quiz_id, student_id, score')
+      .in('quiz_id', finishedQuizIds)
+    allParticipants = ap || []
+  }
+
   return (
     <div className="max-w-7xl mx-auto py-8">
       <div className="mb-8">
@@ -53,8 +63,10 @@ export default async function StudentQuizPage() {
         <p className="text-gray-500 font-medium">To&apos;garaklaringizdagi barcha joriy va yakunlangan testlar</p>
       </div>
       <StudentQuizList 
+        studentId={profile.id}
         quizzes={quizzes as any || []} 
         participations={participations || []} 
+        allParticipants={allParticipants}
       />
     </div>
   )

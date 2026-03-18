@@ -63,8 +63,8 @@ export default function StudentSidebar({
     <>
       {/* Mobile hamburger */}
       <button
-        onClick={() => setMobileOpen(true)}
-        className="fixed top-4 left-4 z-50 md:hidden p-2 rounded-xl bg-white shadow-md border border-gray-100 touch-manipulation"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        className={`fixed top-4 left-4 z-50 md:hidden p-2 rounded-xl bg-white shadow-md border border-gray-100 touch-manipulation transition-opacity ${mobileOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
       >
         <Menu size={20} />
       </button>
