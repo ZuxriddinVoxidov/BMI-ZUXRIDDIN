@@ -5,7 +5,7 @@ import { submitReview } from '@/app/actions/reviews'
 import { getCategoryColor, getDefaultEmoji } from '@/lib/utils'
 import Link from 'next/link'
 import { useState, useTransition, useRef, useEffect } from 'react'
-import { FileText, Download, Star, X, MessageSquare, Send } from 'lucide-react'
+import { FileText, Download, Star, X, MessageSquare, Send, Paperclip } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -167,209 +167,225 @@ export default function ClubDetailClient({
       )}
 
       {/* Sticky Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-white/50 px-6 py-4 flex items-center justify-between">
-        <Link href={home} className="flex items-center gap-2">
-          <span className="text-2xl">🎓</span>
-          <span className="font-bold text-indigo-600 text-lg hidden sm:block">IQRO</span>
+      <header className="sticky top-0 z-50 backdrop-blur-md bg-white/95 border-b border-gray-100 px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm">
+        <Link href={catalog} className="flex items-center gap-2 text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+          <span className="text-xl">←</span>
+          <span className="hidden sm:inline">Katalogga qaytish</span>
+          <span className="sm:hidden">Ortga</span>
         </Link>
         <div className="flex items-center gap-3">
           {isEnrolled && (
             <>
-              {/* Resources Dropdown */}
+              {/* Resources Dropdown / Bottom Sheet */}
               <div className="relative" ref={resourcesRef}>
                 <button 
                   onClick={() => resources.length > 0 && setShowResources(!showResources)}
-                  className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
+                  className={`relative flex items-center justify-center w-10 h-10 rounded-full border transition-all ${
                     resources.length > 0 
                       ? showResources ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                       : 'bg-gray-50 border-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
+                  aria-label="Manbaalar"
                 >
-                  <FileText size={16} /> <span className="hidden sm:inline">Manbaalar</span> ({resources.length})
+                  <Paperclip size={18} />
+                  {resources.length > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-500 text-[10px] font-bold text-white border border-white">
+                      {resources.length}
+                    </span>
+                  )}
                 </button>
                 
                 <AnimatePresence>
                   {showResources && resources.length > 0 && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50"
-                    >
-                      <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                        <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
-                          <FileText size={16} className="text-indigo-500" /> O&apos;quv materiallari
-                        </h4>
-                        <button onClick={() => setShowResources(false)} className="text-gray-400 hover:bg-gray-200 rounded-lg p-1">
-                          <X size={16} />
-                        </button>
-                      </div>
-                      <div className="max-h-80 overflow-y-auto p-2">
-                        {resources.map(r => (
-                          <a key={r.id} href={r.file_url} target="_blank" rel="noopener noreferrer" 
-                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 transition-colors group">
-                            <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-500 flex items-center justify-center flex-shrink-0">
-                              <FileText size={14} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-indigo-700">{r.title}</p>
-                            </div>
-                            <Download size={16} className="text-gray-400 group-hover:text-indigo-600 flex-shrink-0" />
-                          </a>
-                        ))}
-                      </div>
-                    </motion.div>
+                    <>
+                      <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setShowResources(false)} />
+                      <motion.div 
+                        initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 100 }}
+                        className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] overflow-hidden md:absolute md:inset-auto md:right-0 md:bottom-auto md:mt-2 md:w-80 md:rounded-2xl md:shadow-xl md:border md:border-gray-100 flex flex-col"
+                      >
+                        <div className="md:hidden w-10 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-2 flex-shrink-0" />
+                        <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50 flex-shrink-0">
+                          <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                            <FileText size={16} className="text-indigo-500" /> O&apos;quv materiallari
+                          </h4>
+                          <button onClick={() => setShowResources(false)} className="text-gray-400 hover:bg-gray-200 rounded-lg p-1 hidden md:block">
+                            <X size={16} />
+                          </button>
+                        </div>
+                        <div className="overflow-y-auto p-2 flex-1">
+                          {resources.map(r => (
+                            <a key={r.id} href={r.file_url} target="_blank" rel="noopener noreferrer" 
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 transition-colors group">
+                              <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-500 flex items-center justify-center flex-shrink-0">
+                                <FileText size={14} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-gray-800 truncate group-hover:text-indigo-700">{r.title}</p>
+                              </div>
+                              <Download size={16} className="text-gray-400 group-hover:text-indigo-600 flex-shrink-0" />
+                            </a>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </>
                   )}
                 </AnimatePresence>
               </div>
 
-              {/* Review Dropdown */}
+              {/* Review Dropdown / Bottom Sheet */}
               <div className="relative" ref={reviewRef}>
                 <button 
                   onClick={() => setShowReview(!showReview)}
-                  className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
-                    showReview ? 'bg-amber-500 text-white border-amber-500' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                  className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all ${
+                    showReview ? 'bg-amber-500 text-white border-amber-500' : existingReview ? 'bg-amber-50 border-amber-200 text-amber-500' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                   }`}
+                  aria-label="Fikr bildirish"
                 >
-                  <Star size={16} className={existingReview ? "fill-amber-400 text-amber-400" : ""} /> 
-                  <span className="hidden sm:inline">{existingReview ? "Fikrni tahrirlash" : "Fikr bildirish"}</span>
+                  <Star size={18} className={existingReview ? "fill-amber-400 text-amber-400" : ""} />
                 </button>
                 
                 <AnimatePresence>
                   {showReview && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 p-5"
-                    >
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className="font-bold text-gray-800 text-sm">
+                    <>
+                      <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setShowReview(false)} />
+                      <motion.div 
+                        initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 100 }}
+                        className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl overflow-y-auto md:absolute md:inset-auto md:right-0 md:bottom-auto md:mt-2 md:w-80 md:rounded-2xl md:shadow-xl md:border md:border-gray-100 p-5"
+                      >
+                        <div className="md:hidden w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+                        <div className="flex justify-between items-center mb-4 hidden md:flex">
+                          <h4 className="font-bold text-gray-800 text-sm">
+                            {existingReview ? 'Fikringizni tahrirlash' : 'Yangi fikr bildirish'}
+                          </h4>
+                          <button onClick={() => setShowReview(false)} className="text-gray-400 hover:bg-gray-200 rounded-lg p-1">
+                            <X size={16} />
+                          </button>
+                        </div>
+                        <h4 className="font-bold text-gray-800 text-lg sm:text-sm mb-4 md:hidden text-center">
                           {existingReview ? 'Fikringizni tahrirlash' : 'Yangi fikr bildirish'}
                         </h4>
-                        <button onClick={() => setShowReview(false)} className="text-gray-400 hover:bg-gray-200 rounded-lg p-1">
-                          <X size={16} />
-                        </button>
-                      </div>
-                      
-                      <div className="flex gap-1 mb-4 justify-center">
-                        {[1, 2, 3, 4, 5].map(star => (
-                          <button key={star} type="button" onClick={() => setRating(star)}
-                            className="text-3xl transition-transform hover:scale-110 focus:outline-none">
-                            {star <= rating ? '⭐' : '☆'}
+                        
+                        <div className="flex gap-2 sm:gap-1 mb-6 sm:mb-4 justify-center">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <button key={star} type="button" onClick={() => setRating(star)}
+                              className="text-4xl sm:text-3xl transition-transform hover:scale-110 focus:outline-none w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center">
+                              {star <= rating ? '⭐' : '☆'}
+                            </button>
+                          ))}
+                        </div>
+                        
+                        <textarea
+                          value={comment}
+                          onChange={e => setComment(e.target.value)}
+                          placeholder="To'garak va ustoz haqida qisqacha fikringiz..."
+                          rows={3}
+                          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base sm:text-sm outline-none resize-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100 transition-all mb-4 bg-gray-50 focus:bg-white min-h-[100px]"
+                        />
+                        
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <button onClick={handleSubmitReview} disabled={isPending}
+                            className="w-full sm:flex-1 py-3 sm:py-2.5 rounded-xl bg-amber-500 text-white text-base sm:text-sm font-bold hover:bg-amber-600 disabled:opacity-50 transition-colors">
+                            {isPending ? 'Saqlanmoqda...' : '💾 Saqlash'}
                           </button>
-                        ))}
-                      </div>
-                      
-                      <textarea
-                        value={comment}
-                        onChange={e => setComment(e.target.value)}
-                        placeholder="To'garak va ustoz haqida qisqacha fikringiz..."
-                        rows={3}
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none resize-none focus:border-amber-500 focus:ring-2 focus:ring-amber-100 transition-all mb-4 bg-gray-50 focus:bg-white"
-                      />
-                      
-                      <div className="flex gap-2">
-                        <button onClick={handleSubmitReview} disabled={isPending}
-                          className="flex-1 py-2.5 rounded-xl bg-amber-500 text-white text-sm font-bold hover:bg-amber-600 disabled:opacity-50 transition-colors">
-                          {isPending ? 'Saqlanmoqda...' : '💾 Saqlash'}
-                        </button>
-                        <button onClick={() => setShowReview(false)}
-                          className="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-bold hover:bg-gray-50 transition-colors">
-                          Bekor
-                        </button>
-                      </div>
-                    </motion.div>
+                          <button onClick={() => setShowReview(false)}
+                            className="w-full sm:w-auto px-4 py-3 sm:py-2.5 rounded-xl border border-gray-200 text-gray-600 text-base sm:text-sm font-bold hover:bg-gray-50 transition-colors hidden md:block">
+                            Bekor
+                          </button>
+                        </div>
+                      </motion.div>
+                    </>
                   )}
                 </AnimatePresence>
               </div>
 
-              {/* Chat Dropdown */}
+              {/* Chat Dropdown / Bottom Sheet */}
               {teacherId && currentUserId && (
                 <div className="relative" ref={chatRef}>
                   <button 
                     onClick={() => setShowChat(!showChat)}
-                    className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
-                      showChat ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                    className={`flex items-center justify-center w-10 h-10 rounded-full border transition-all ${
+                      showChat ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white border-gray-200 text-gray-700 hover:bg-indigo-50'
                     }`}
+                    aria-label="Xabar"
                   >
-                    <MessageSquare size={16} /> 
-                    <span className="hidden sm:inline">Ustozga xabar</span>
+                    <MessageSquare size={18} />
                   </button>
                   
                   <AnimatePresence>
                     {showChat && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                        className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50 flex flex-col h-[400px]"
-                      >
-                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-indigo-50/50">
-                          <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
-                            <MessageSquare size={16} className="text-indigo-600" /> 
-                            {club.teacher?.full_name || 'Ustoz'}
-                          </h4>
-                          <button onClick={() => setShowChat(false)} className="text-gray-400 hover:bg-white hover:text-gray-600 rounded-lg p-1 transition-colors">
-                            <X size={16} />
-                          </button>
-                        </div>
-                        
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50/30">
-                          {messages.length === 0 ? (
-                            <div className="h-full flex flex-col items-center justify-center text-gray-400">
-                              <MessageSquare size={32} className="mb-2 opacity-50" />
-                              <p className="text-sm">Xabarlar yo&apos;q.</p>
-                              <p className="text-xs">Birinchi bo&apos;lib xabar yozing!</p>
-                            </div>
-                          ) : (
-                            messages.map((msg) => {
-                              const isMe = msg.sender_id === currentUserId
-                              const time = new Date(msg.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })
-                              return (
-                                <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-                                  <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] ${
-                                    isMe 
-                                      ? 'bg-indigo-600 text-white rounded-br-sm shadow-sm' 
-                                      : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-sm'
-                                  }`}>
-                                    <p className="whitespace-pre-wrap break-words">{msg.message}</p>
-                                  </div>
-                                  <span className="text-[10px] text-gray-400 mt-1 px-1">
-                                    {isMe ? 'Siz' : msg.sender?.full_name} • {time}
-                                  </span>
-                                </div>
-                              )
-                            })
-                          )}
-                          <div ref={messagesEndRef} />
-                        </div>
-                        
-                        <div className="p-3 border-t border-gray-100 bg-white">
-                          <form onSubmit={handleSendMessage} className="flex gap-2">
-                            <input
-                              type="text"
-                              value={newMessage}
-                              onChange={e => setNewMessage(e.target.value)}
-                              placeholder="Xabar yozing..."
-                              className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400"
-                            />
-                            <button
-                              type="submit"
-                              disabled={!newMessage.trim()}
-                              className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 disabled:opacity-50 transition-colors flex-shrink-0"
-                            >
-                              <Send size={16} />
+                      <>
+                        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setShowChat(false)} />
+                        <motion.div 
+                          initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 100 }}
+                          className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl h-[70vh] md:h-[400px] md:absolute md:inset-auto md:right-0 md:bottom-auto md:mt-2 md:w-96 md:rounded-2xl md:shadow-2xl md:border md:border-gray-100 flex flex-col overflow-hidden"
+                        >
+                          <div className="md:hidden w-10 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-2 flex-shrink-0" />
+                          <div className="p-3 sm:p-4 border-b border-gray-100 flex justify-between items-center bg-indigo-50/50 flex-shrink-0">
+                            <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                              <MessageSquare size={16} className="text-indigo-600" /> 
+                              {club.teacher?.full_name || 'Ustoz'}
+                            </h4>
+                            <button onClick={() => setShowChat(false)} className="text-gray-400 hover:bg-white hover:text-gray-600 rounded-lg p-1 transition-colors hidden md:block">
+                              <X size={16} />
                             </button>
-                          </form>
-                        </div>
-                      </motion.div>
+                          </div>
+                          
+                          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50/30">
+                            {messages.length === 0 ? (
+                              <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                                <MessageSquare size={32} className="mb-2 opacity-50" />
+                                <p className="text-sm">Xabarlar yo&apos;q.</p>
+                                <p className="text-xs">Birinchi bo&apos;lib xabar yozing!</p>
+                              </div>
+                            ) : (
+                              messages.map((msg) => {
+                                const isMe = msg.sender_id === currentUserId
+                                const time = new Date(msg.created_at).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })
+                                return (
+                                  <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                                    <div className={`max-w-[85%] px-4 py-2.5 rounded-2xl text-[13.5px] ${
+                                      isMe 
+                                        ? 'bg-indigo-600 text-white rounded-br-sm shadow-sm' 
+                                        : 'bg-white border border-gray-100 text-gray-800 rounded-bl-sm shadow-sm'
+                                    }`}>
+                                      <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                                    </div>
+                                    <span className="text-[10px] text-gray-400 mt-1 px-1">
+                                      {isMe ? 'Siz' : msg.sender?.full_name} • {time}
+                                    </span>
+                                  </div>
+                                )
+                              })
+                            )}
+                            <div ref={messagesEndRef} />
+                          </div>
+                          
+                          <div className="p-3 border-t border-gray-100 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
+                            <form onSubmit={handleSendMessage} className="flex gap-2 items-center">
+                              <input
+                                type="text"
+                                value={newMessage}
+                                onChange={e => setNewMessage(e.target.value)}
+                                placeholder="Xabar yozing..."
+                                className="flex-1 border border-gray-200 rounded-full px-4 py-2.5 text-[15px] outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 bg-gray-50 focus:bg-white transition-colors"
+                              />
+                              <button
+                                type="submit"
+                                disabled={!newMessage.trim()}
+                                className="w-11 h-11 rounded-full bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700 disabled:opacity-50 transition-colors flex-shrink-0 shadow-sm"
+                              >
+                                <Send size={18} className="ml-0.5" />
+                              </button>
+                            </form>
+                          </div>
+                        </motion.div>
+                      </>
                     )}
                   </AnimatePresence>
                 </div>
               )}
             </>
           )}
-
-          <Link href={catalog}
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:border-indigo-200 transition-all">
-            <span className="hidden sm:inline">Katalogga qaytish</span>
-            <span className="sm:hidden">← Ortga</span>
-          </Link>
         </div>
       </header>
 
