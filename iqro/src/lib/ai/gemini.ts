@@ -40,7 +40,7 @@ export async function askGemini(
             parts: [{ text: systemPrompt }],
           },
           generationConfig: {
-            temperature: 0.7,
+            temperature: 0.1,
             maxOutputTokens: 1000,
           },
         }),

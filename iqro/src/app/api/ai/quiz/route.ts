@@ -25,28 +25,57 @@ Sinf: ${targetGrades || 'belgilanmagan'}
 Mavzu: ${topic}
 Savollar soni: ${count}
 
-MUHIM: Faqat sof JSON qaytar, hech qanday izoh yoki markdown yozma.
+MUHIM QOIDALAR:
+1. Faqat sof JSON format, hech qanday markdown yoki izoh yozma
+2. Barcha matnlarda apostrof belgisi (') ishlatma, uning o'rniga to'liq so'zlarni yoz
+3. Masalan: 'o'simlik' o'rniga 'osimlik' yoki to'liq izohlangan so'z yoz
+4. Har bir savol aniq va to'liq bo'lsin
+
 Javob formati:
 {"questions":[{"question":"savol?","option_a":"A variant","option_b":"B variant","option_c":"C variant","option_d":"D variant","correct_answer":"A"}]}`
 
     const textResult = await askGemini('Faqat qat\'iy kutingan JSON javob qaytar.', prompt)
     
-    // Strip markdown code blocks if present
-    const cleaned = textResult
+    // Get raw text from Gemini response
+    const rawText = textResult
+
+    // Step 1: Clean markdown
+    let cleaned = rawText
       .replace(/```json\n?/gi, '')
       .replace(/```\n?/gi, '')
       .trim()
 
-    // Find the JSON object in the response
+    // Step 2: Extract JSON object
     const jsonStart = cleaned.indexOf('{')
     const jsonEnd = cleaned.lastIndexOf('}')
     
     if (jsonStart === -1 || jsonEnd === -1) {
-      return NextResponse.json({ error: 'AI javob formati noto\'g\'ri' }, { status: 500 })
+      return NextResponse.json(
+        { error: 'AI javob formati noto\'g\'ri' }, 
+        { status: 500 }
+      )
     }
     
-    const jsonStr = cleaned.slice(jsonStart, jsonEnd + 1)
-    const parsedResult = JSON.parse(jsonStr)
+    cleaned = cleaned.slice(jsonStart, jsonEnd + 1)
+
+    // Step 3: Fix common JSON issues from AI
+    // Replace curly quotes with straight quotes
+    cleaned = cleaned
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201C\u201D]/g, '"')
+
+    // Step 4: Parse safely
+    let parsedResult
+    try {
+      parsedResult = JSON.parse(cleaned)
+    } catch {
+      // Step 5: If still fails, ask Gemini again with stricter prompt
+      // For now return error with the raw text for debugging
+      return NextResponse.json(
+        { error: 'JSON parse xatosi. Qayta urinib ko\'ring.' }, 
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json(parsedResult)
 
