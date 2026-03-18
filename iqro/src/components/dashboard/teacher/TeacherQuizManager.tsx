@@ -226,6 +226,28 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
     )
   }
 
+  const selectedClubObj = clubs.find(c => c.id === selClubId) as Record<string, any> | undefined
+  const getPlaceholder = (category: string | null) => {
+    const cat = (category || '').toLowerCase()
+    if (cat.includes('biologiya') || cat.includes('bio')) 
+      return 'Masalan: Hujayraning tuzilishi, Fotosintez, Odam anatomiyasi'
+    if (cat.includes('matematika') || cat.includes('mat')) 
+      return 'Masalan: Kasrlar, Uchburchaklar, Algebraik ifodalar'
+    if (cat.includes('fizika')) 
+      return 'Masalan: Mexanika, Elektr, Optika'
+    if (cat.includes('kimyo')) 
+      return 'Masalan: Davriy jadval, Kimyoviy reaksiyalar'
+    if (cat.includes('tarix')) 
+      return 'Masalan: Mustaqillik davri, Buyuk ipak yoli'
+    if (cat.includes('ingliz') || cat.includes('til') || cat.includes('english')) 
+      return 'Masalan: Past tense, Vocabulary, Grammar'
+    if (cat.includes('adabiyot')) 
+      return 'Masalan: Navoiy asarlari, She\'riy janrlar'
+    if (cat.includes('informatika') || cat.includes('it') || cat.includes('texno')) 
+      return 'Masalan: Algoritm, Dasturlash asoslari'
+    return 'Masalan: Mavzu nomi, Bob yoki bo\'lim nomi'
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -296,31 +318,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
         )}
 
         {/* ================= STATE 2: GENERATE ================= */}
-        {currentState === 'generate' && (() => {
-          const selectedClubObj = clubs.find(c => c.id === selClubId) as Record<string, any> | undefined
-
-          const getPlaceholder = (category: string | null) => {
-            const cat = (category || '').toLowerCase()
-            if (cat.includes('biologiya') || cat.includes('bio')) 
-              return 'Masalan: Hujayraning tuzilishi, Fotosintez, Odam anatomiyasi'
-            if (cat.includes('matematika') || cat.includes('mat')) 
-              return 'Masalan: Kasrlar, Uchburchaklar, Algebraik ifodalar'
-            if (cat.includes('fizika')) 
-              return 'Masalan: Mexanika, Elektr, Optika'
-            if (cat.includes('kimyo')) 
-              return 'Masalan: Davriy jadval, Kimyoviy reaksiyalar'
-            if (cat.includes('tarix')) 
-              return 'Masalan: Mustaqillik davri, Buyuk ipak yoli'
-            if (cat.includes('ingliz') || cat.includes('til') || cat.includes('english')) 
-              return 'Masalan: Past tense, Vocabulary, Grammar'
-            if (cat.includes('adabiyot')) 
-              return 'Masalan: Navoiy asarlari, She\'riy janrlar'
-            if (cat.includes('informatika') || cat.includes('it') || cat.includes('texno')) 
-              return 'Masalan: Algoritm, Dasturlash asoslari'
-            return 'Masalan: Mavzu nomi, Bob yoki bo\'lim nomi'
-          }
-
-          return (
+        {currentState === 'generate' && (
           <motion.div key="gen" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="bg-white rounded-2xl border p-6 max-w-2xl mx-auto shadow-sm">
             <div className="flex justify-between items-center mb-6 pb-4 border-b">
               <h2 className="text-lg font-bold text-gray-800">Yangi test yaratish</h2>
@@ -383,8 +381,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes }: T
               )}
             </form>
           </motion.div>
-          )
-        })()}
+        )}
 
         {/* ================= STATE 3: EDIT ================= */}
         {currentState === 'edit' && (
