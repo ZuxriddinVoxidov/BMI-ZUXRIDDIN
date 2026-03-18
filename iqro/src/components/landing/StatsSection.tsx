@@ -18,7 +18,7 @@ export default function StatsSection({ studentsCount, clubsCount, avgRating }: S
   return (
     <section className="py-16 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-3 gap-4 sm:gap-8">
           {stats.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -28,10 +28,10 @@ export default function StatsSection({ studentsCount, clubsCount, avgRating }: S
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="text-center"
             >
-              <p className="text-4xl sm:text-5xl font-extrabold text-white mb-1">
+              <p className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-1">
                 {stat.value}
               </p>
-              <p className="text-white/70 text-sm sm:text-base font-medium">
+              <p className="text-white/70 text-xs sm:text-sm sm:text-base font-medium">
                 {stat.label}
               </p>
             </motion.div>

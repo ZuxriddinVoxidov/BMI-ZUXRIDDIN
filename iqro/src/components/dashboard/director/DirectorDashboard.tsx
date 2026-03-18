@@ -83,11 +83,11 @@ export default function DirectorDashboard({
   return (
     <div className="space-y-6">
       {/* Export buttons */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-extrabold text-gray-900">Direktor paneli</h1>
+      <div className="flex flex-wrap justify-between items-start gap-3">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900">Direktor paneli</h1>
         <div className="flex gap-2">
-          <button onClick={handleExportPDF} className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors">📄 PDF</button>
-          <button onClick={handleExportExcel} className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors">📊 Excel</button>
+          <button onClick={handleExportPDF} className="flex items-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors">📄 PDF</button>
+          <button onClick={handleExportExcel} className="flex items-center gap-2 px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors">📊 Excel</button>
         </div>
       </div>
 
@@ -153,16 +153,17 @@ export default function DirectorDashboard({
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Teachers Table */}
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-50">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-50">
             <h2 className="font-bold text-gray-800">O&apos;qituvchilar samaradorligi</h2>
           </div>
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-50">
-                <th className="text-left px-6 py-3 text-gray-500 font-medium">O&apos;qituvchi</th>
-                <th className="text-left px-6 py-3 text-gray-500 font-medium">To&apos;garaklar</th>
-                <th className="text-left px-6 py-3 text-gray-500 font-medium">Rag&apos;batlar</th>
-                <th className="text-left px-6 py-3 text-gray-500 font-medium">Daraja</th>
+                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 font-medium">O&apos;qituvchi</th>
+                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 font-medium">To&apos;garaklar</th>
+                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 font-medium">Rag&apos;batlar</th>
+                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 font-medium">Daraja</th>
               </tr>
             </thead>
             <tbody>
@@ -173,15 +174,15 @@ export default function DirectorDashboard({
 
                 return (
                   <tr key={t.id} className="border-b border-gray-50 hover:bg-gray-50/50">
-                    <td className="px-6 py-3">
+                    <td className="px-4 sm:px-6 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">{initials}</div>
-                        <span className="font-medium text-gray-700">{t.name}</span>
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">{initials}</div>
+                        <span className="font-medium text-gray-700 truncate max-w-[100px]">{t.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-3 text-gray-600">{t.clubs}</td>
-                    <td className="px-6 py-3 text-gray-600">{t.rewards}</td>
-                    <td className="px-6 py-3">
+                    <td className="px-4 sm:px-6 py-3 text-gray-600">{t.clubs}</td>
+                    <td className="px-4 sm:px-6 py-3 text-gray-600">{t.rewards}</td>
+                    <td className="px-4 sm:px-6 py-3">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${gradeColor}`}>{grade}</span>
                     </td>
                   </tr>
@@ -192,6 +193,7 @@ export default function DirectorDashboard({
               )}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* Top 5 Students */}

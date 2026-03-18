@@ -145,7 +145,7 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Davomat olish</h1>
+      <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900">Davomat olish</h1>
 
       {/* Controls */}
       <div className="bg-white rounded-2xl p-6 border border-gray-100">
@@ -194,22 +194,22 @@ export default function AttendancePage() {
               const st = statuses[student.id] || 'present'
               return (
                 <motion.div key={student.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
-                  className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-gray-50 gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">{initials}</div>
+                    <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs flex-shrink-0">{initials}</div>
                     <span className="text-sm font-semibold text-gray-900">{student.full_name}</span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     <button onClick={() => setStatus(student.id, 'present')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors ${st === 'present' ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-emerald-50'}`}>
+                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors ${st === 'present' ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-emerald-50'}`}>
                       <Check size={14} /> Keldi
                     </button>
                     <button onClick={() => setStatus(student.id, 'absent')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors ${st === 'absent' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-red-50'}`}>
+                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors ${st === 'absent' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-red-50'}`}>
                       <X size={14} /> Kelmadi
                     </button>
                     <button onClick={() => setStatus(student.id, 'excused')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-colors ${st === 'excused' ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-amber-50'}`}>
+                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors ${st === 'excused' ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-amber-50'}`}>
                       <Clock size={14} /> Sababli
                     </button>
                   </div>

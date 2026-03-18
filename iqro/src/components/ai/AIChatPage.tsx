@@ -242,15 +242,7 @@ export default function AIChatPage({
     setShowSidebar(false)
   }
 
-  async function executeFetch(history: {role: string, content: string}[], currentSessionId: string) {
-    const aiMessageId = Date.now().toString()
-    setMessages(prev => [...prev.filter(m => !m.isError), {
-      id: aiMessageId,
-      role: 'assistant',
-      content: '',
-      created_at: new Date().toISOString()
-    }])
-
+  async function executeFetch(history: {role: string, content: string}[], currentSessionId: string, aiMessageTempId: string) {
     try {
       const response = await fetch(apiRoute, {
         method: 'POST',
@@ -258,28 +250,28 @@ export default function AIChatPage({
         body: JSON.stringify({ messages: history, sessionId: currentSessionId })
       })
 
-      if (!response.ok) {
-        throw new Error('API xatosi')
-      }
-
       const data = await response.json()
 
-      if (data.error) {
-        throw new Error(data.error)
+      if (!response.ok || data.error) {
+        setMessages(prev => prev.map(m => 
+          m.id === aiMessageTempId 
+            ? { ...m, content: data.error || "Xatolik yuz berdi. Qayta urinib ko'ring.", isError: true }
+            : m
+        ))
+        return
       }
 
-      // Add AI response to messages
-      setMessages(prev => [...prev.filter(m => m.id !== aiMessageId), {
-        id: aiMessageId,
-        role: 'assistant' as const,
-        content: data.reply,
-        created_at: new Date().toISOString()
-      }])
+      // Replace placeholder with actual response
+      setMessages(prev => prev.map(m =>
+        m.id === aiMessageTempId
+          ? { ...m, content: data.reply, id: Date.now().toString() }
+          : m
+      ))
     } catch (err) {
-      setMessages(prev => prev.map(msg => 
-        msg.id === aiMessageId
-          ? { ...msg, content: "Xatolik yuz berdi. Internet aloqasini tekshiring va qayta urinib ko'ring.", isError: true }
-          : msg
+      setMessages(prev => prev.map(m => 
+        m.id === aiMessageTempId
+          ? { ...m, content: "Xatolik yuz berdi. Internet aloqasini tekshiring va qayta urinib ko'ring.", isError: true }
+          : m
       ))
     } finally {
       setIsLoading(false)
@@ -295,17 +287,35 @@ export default function AIChatPage({
     setIsLoading(true)
     setSlowResponse(false)
 
+    // Remove any previous errors
     setMessages(prev => prev.filter(m => !m.isError))
 
-    const userMsg: Message = { role: 'user', content: msg }
-    setMessages(prev => [...prev, userMsg])
+    // Step 1: Add user message
+    const userMsgId = Date.now().toString()
+    const userMsg: Message = { 
+      id: userMsgId,
+      role: 'user', 
+      content: msg,
+      created_at: new Date().toISOString()
+    }
+    
+    // Step 2: Add temporary AI placeholder with unique ID
+    const tempId = `temp-${Date.now()}`
+    const tempAiMsg: Message = {
+      id: tempId,
+      role: 'assistant',
+      content: '',
+      created_at: new Date().toISOString()
+    }
+
+    setMessages(prev => [...prev, userMsg, tempAiMsg])
 
     await saveMessage(currentSession.id, 'user', msg)
 
     const history = [...messages.filter(m => !m.isError), userMsg]
       .map(m => ({ role: m.role, content: m.content }))
 
-    await executeFetch(history, currentSession.id)
+    await executeFetch(history, currentSession.id, tempId)
   }
 
   async function handleRetry() {
@@ -315,11 +325,22 @@ export default function AIChatPage({
     
     setMessages(prev => prev.filter(m => !m.isError))
     
+    // Create new temporary AI message
+    const tempId = `temp-${Date.now()}`
+    const tempAiMsg: Message = {
+      id: tempId,
+      role: 'assistant',
+      content: '',
+      created_at: new Date().toISOString()
+    }
+    
+    setMessages(prev => [...prev, tempAiMsg])
+    
     const history = messages
       .filter(m => !m.isError)
       .map(m => ({ role: m.role, content: m.content }))
 
-    await executeFetch(history, currentSession.id)
+    await executeFetch(history, currentSession.id, tempId)
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {

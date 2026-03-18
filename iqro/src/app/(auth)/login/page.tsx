@@ -391,6 +391,9 @@ export default function LoginPage() {
                   </AnimatePresence>
 
                   <form onSubmit={handleLogin} className="space-y-4">
+                    {/* Hidden input for server action validation if needed */}
+                    <input type="hidden" name="selectedRole" value={loginRole} />
+
                     {/* Email */}
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
@@ -543,6 +546,9 @@ export default function LoginPage() {
                   </AnimatePresence>
 
                   <form onSubmit={handleRegister} className="space-y-4">
+                    {/* Hidden input for server action validation if needed */}
+                    <input type="hidden" name="selectedRole" value="student" />
+
                     {/* Full name */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
                       <Label className="text-gray-700 font-medium text-sm mb-1.5 block">

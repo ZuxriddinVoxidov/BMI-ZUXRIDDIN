@@ -71,10 +71,29 @@
 /* Smooth Scroll */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
   font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Tap highlight */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent iOS input zoom (must be 16px or larger) */
+input, select, textarea {
+  font-size: 16px !important;
+}
+@media (min-width: 768px) {
+  input, select, textarea {
+    font-size: inherit !important;
+  }
 }
 
 /* Swiper Custom Styles */
