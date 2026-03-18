@@ -202,7 +202,7 @@ export default function LoginPage() {
       }
       router.push(routes[role] || '/student')
     },
-    [loginEmail, loginPassword, router, supabase]
+    [loginEmail, loginPassword, router, supabase, loginRole]
   )
 
   // ══════════════════════════════════════════════════════════
