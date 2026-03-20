@@ -77,7 +77,7 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
         {[
           { key: 'all' as const, label: `Hammasi (${messages.length})` },
           { key: 'unread' as const, label: `Yangi (${unreadCount})` },
@@ -85,7 +85,7 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
           { key: 'replied' as const, label: 'Javob berilgan' },
         ].map(tab => (
           <button key={tab.key} onClick={() => setFilter(tab.key)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition ${filter === tab.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border hover:bg-gray-50'}`}>
+            className={`whitespace-nowrap flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition ${filter === tab.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border hover:bg-gray-50'}`}>
             {tab.label}
           </button>
         ))}
@@ -149,36 +149,38 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
 
       {/* Detail Dialog */}
       {detail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setDetail(null)}>
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 sm:p-4 p-0" onClick={() => setDetail(null)}>
+          <div className="bg-white sm:rounded-2xl max-w-lg w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-6 shadow-2xl overflow-y-auto flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4 shrink-0">
               <h3 className="text-lg font-bold text-gray-900">📬 Xabar tafsilotlari</h3>
               <button onClick={() => setDetail(null)} className="text-gray-400 hover:text-gray-600">✕</button>
             </div>
 
-            <div className="space-y-3 mb-6">
+            <div className="space-y-4 mb-6 flex-1 overflow-y-auto pr-1">
               <div className="grid grid-cols-2 gap-3">
                 <div><p className="text-xs text-gray-400">Ism</p><p className="text-sm font-medium">{detail.full_name}</p></div>
-                <div><p className="text-xs text-gray-400">Email</p><p className="text-sm font-medium">{detail.email}</p></div>
+                <div><p className="text-xs text-gray-400">Email</p><p className="text-sm font-medium break-all">{detail.email}</p></div>
                 {detail.phone && <div><p className="text-xs text-gray-400">Telefon</p><p className="text-sm font-medium">{detail.phone}</p></div>}
                 <div><p className="text-xs text-gray-400">Mavzu</p><p className="text-sm font-medium">{detail.subject}</p></div>
               </div>
               <div>
                 <p className="text-xs text-gray-400 mb-1">Xabar</p>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 rounded-xl p-4">{detail.message}</p>
+                <div className="text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 rounded-xl p-4 border border-gray-100">
+                  {detail.message}
+                </div>
               </div>
               <p className="text-xs text-gray-400">Yuborilgan: {new Date(detail.created_at).toLocaleString('uz-UZ')}</p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0 mt-auto">
               {!detail.is_read && (
                 <button onClick={() => { handleMarkRead(detail.id); setDetail({ ...detail, is_read: true }) }}
-                  className="flex-1 py-2 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700">
-                  ✅ O&apos;qilgan deb belgilash
+                  className="flex-1 py-3 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors">
+                  ✅ O&apos;qilgan
                 </button>
               )}
               <button onClick={() => handleMarkReplied(detail.id)}
-                className="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700">
+                className="flex-1 py-3 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors">
                 💬 Javob berildi
               </button>
             </div>

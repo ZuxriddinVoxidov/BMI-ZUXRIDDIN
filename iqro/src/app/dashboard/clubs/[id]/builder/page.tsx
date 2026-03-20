@@ -117,20 +117,20 @@ export default function ClubBuilderPage() {
       )}
 
       {/* Header */}
-      <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard/clubs" className="text-gray-400 hover:text-gray-600 text-sm">
-            ← To&apos;garaklarga qaytish
+      <div className="bg-white border-b px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          <Link href="/dashboard/clubs" className="text-gray-400 hover:text-gray-600 text-sm whitespace-nowrap">
+            ←<span className="hidden sm:inline"> To&apos;garaklarga qaytish</span>
           </Link>
-          <h1 className="text-lg font-bold text-gray-900">{emoji} {club.name}</h1>
+          <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">{emoji} <span className="truncate max-w-[150px] sm:max-w-none">{club.name}</span></h1>
           {published ? (
-            <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">✅ Nashr qilingan</span>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full whitespace-nowrap">✅ Nashr qilingan</span>
           ) : (
-            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">📝 Qoralama</span>
+            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full whitespace-nowrap">📝 Qoralama</span>
           )}
         </div>
         {published && (
-          <Link href={`/clubs/${clubId}`} target="_blank" className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
+          <Link href={`/clubs/${clubId}`} target="_blank" className="inline-flex items-center justify-center gap-1.5 text-indigo-600 text-sm font-medium hover:text-indigo-700 bg-indigo-50 px-4 py-2 rounded-xl w-full sm:w-auto">
             👁 Batafsil sahifani ko&apos;rish
           </Link>
         )}
