@@ -23,7 +23,7 @@ export default async function DirectorClubsPage() {
         <h1 className="text-2xl font-extrabold text-gray-900">🏫 To&apos;garaklar</h1>
         <p className="text-sm text-gray-500 mt-1">{clubs?.length || 0} ta to&apos;garak</p>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {clubs?.map(club => (
           <div key={club.id} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-3">

@@ -184,7 +184,8 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
           animate={{ opacity: 1 }}
           className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
         >
-          <table className="w-full">
+          <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full min-w-[800px]">
             <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left py-4 px-5 text-xs font-semibold text-gray-400 uppercase">O&apos;qituvchi</th>
@@ -265,13 +266,14 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
               })}
             </tbody>
           </table>
+          </div>
         </motion.div>
       )}
 
       {/* Add Teacher Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setShowAddModal(false)}>
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 sm:p-4 p-0" onClick={() => setShowAddModal(false)}>
+          <div className="bg-white sm:rounded-2xl max-w-md w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-6 shadow-2xl overflow-y-auto absolute sm:relative inset-0" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold text-gray-900">👨‍🏫 Yangi o&apos;qituvchi</h3>
               <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
@@ -310,8 +312,10 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
 
       {/* Teacher Edit Modal */}
       {showTeacherModal && editingTeacher && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setShowTeacherModal(false)}>
-          <div className="bg-white rounded-2xl max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm sm:p-4 p-0" onClick={() => setShowTeacherModal(false)}>
+          <div className="bg-white sm:rounded-2xl max-w-lg w-full shadow-2xl h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto absolute sm:relative inset-0 flex flex-col" onClick={e => e.stopPropagation()}>
+            
+            <div className="flex-1 pb-24 sm:pb-0">
             {/* Header */}
             <div className="flex items-center gap-3 p-6 border-b border-gray-100">
               <div className="w-11 h-11 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
@@ -416,9 +420,10 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                 </div>
               </div>
             </div>
+            </div>
 
             {/* Footer */}
-            <div className="flex gap-3 p-6 border-t border-gray-100">
+            <div className="flex gap-3 p-4 sm:p-6 border-t border-gray-100 mt-auto sticky bottom-0 bg-white sm:relative">
               <button onClick={() => setShowTeacherModal(false)}
                 className="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Bekor qilish</button>
               <button onClick={handleTeacherSave} disabled={savingTeacher}

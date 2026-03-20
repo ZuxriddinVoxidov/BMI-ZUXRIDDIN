@@ -39,7 +39,7 @@ export default function DirectorDashboardClient(props: Props) {
           </div>
         )}
 
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           {kpi.map((k, i) => (
             <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-3">
@@ -54,10 +54,11 @@ export default function DirectorDashboardClient(props: Props) {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+        <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 w-full">
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 w-full overflow-x-auto no-scrollbar">
             <h3 className="text-sm font-bold text-gray-700 mb-4">📈 Oylik davomat</h3>
-            <ResponsiveContainer width="100%" height={250}>
+            <div className="min-w-[350px]">
+              <ResponsiveContainer width="100%" height={250}>
               <BarChart data={props.monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="month" fontSize={12} />
@@ -67,9 +68,10 @@ export default function DirectorDashboardClient(props: Props) {
                 <Bar dataKey="kelmadi" fill="#F43F5E" radius={[4, 4, 0, 0]} name="Kelmadi" />
               </BarChart>
             </ResponsiveContainer>
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-6">
+          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 w-full">
             <h3 className="text-sm font-bold text-gray-700 mb-4">🕐 So&apos;nggi faoliyat</h3>
             <div className="space-y-3 max-h-[250px] overflow-y-auto">
               {props.recentActivity.length === 0 ? (

@@ -36,7 +36,7 @@ export default async function DirectorStudentsPage() {
         <p className="text-sm text-gray-500 mt-1">{students?.length || 0} ta o&apos;quvchi</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl border border-gray-100 p-5">
           <p className="text-xs text-gray-500 mb-1">Jami</p>
           <p className="text-3xl font-extrabold text-gray-900">{students?.length || 0}</p>
@@ -53,7 +53,7 @@ export default async function DirectorStudentsPage() {
 
       <div className="bg-white rounded-2xl border border-gray-100 p-6">
         <h3 className="text-sm font-bold text-gray-700 mb-4">📊 Sinf bo&apos;yicha taqsimot</h3>
-        <div className="grid grid-cols-6 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
           {gradeData.map(([grade, count]) => (
             <div key={grade} className="text-center bg-gray-50 rounded-xl p-3">
               <p className="text-lg font-bold text-indigo-600">{count}</p>
@@ -64,8 +64,9 @@ export default async function DirectorStudentsPage() {
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <table className="w-full">
-          <thead>
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full min-w-[500px]">
+            <thead>
             <tr className="border-b border-gray-100">
               <th className="text-left py-4 px-5 text-xs font-semibold text-gray-400 uppercase">O&apos;quvchi</th>
               <th className="text-left py-4 px-5 text-xs font-semibold text-gray-400 uppercase">Sinf</th>
@@ -93,6 +94,7 @@ export default async function DirectorStudentsPage() {
             ))}
           </tbody>
         </table>
+        </div>
         {students && students.length > 20 && (
           <p className="text-center text-xs text-gray-400 py-3">va yana {students.length - 20} ta...</p>
         )}

@@ -120,9 +120,9 @@ export default function ApplicationsManager({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center justify-between"
+                  className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
                     <div className="w-11 h-11 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">
                       {(app.student?.full_name || '?')
                         .split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)}
@@ -146,7 +146,7 @@ export default function ApplicationsManager({
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex w-full sm:w-auto gap-2">
                     <button
                       onClick={() => handleApprove(app)}
                       disabled={loadingId === app.id}
@@ -178,7 +178,8 @@ export default function ApplicationsManager({
               Hali qayta ishlangan ariza yo&apos;q
             </div>
           ) : (
-            <table className="w-full">
+            <div className="overflow-x-auto no-scrollbar">
+            <table className="w-full min-w-[600px]">
               <thead>
                 <tr className="border-b border-gray-100">
                   <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">
@@ -220,6 +221,7 @@ export default function ApplicationsManager({
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </motion.div>
       )}

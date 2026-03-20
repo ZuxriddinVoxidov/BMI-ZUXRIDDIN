@@ -59,21 +59,21 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
   ]
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 w-full overflow-x-hidden px-4 sm:px-0">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-lg font-semibold text-gray-900">Ballar tarixi</h3>
-        <span className="text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
+        <span className="text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full whitespace-nowrap">
           Jami: {totalPoints} ball
         </span>
       </div>
 
       {/* Period filters */}
-      <div className="flex gap-2 items-center overflow-x-auto pb-2 no-scrollbar w-full">
+      <div className="flex flex-wrap gap-2 items-center w-full">
         {periods.map(p => (
           <button
             key={p.key}
             onClick={() => setFilter(p.key)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
               filter === p.key
                 ? 'bg-indigo-600 text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -83,7 +83,7 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
           </button>
         ))}
         {filter !== 'all' && (
-          <p className="text-xs font-semibold text-indigo-500 ml-auto whitespace-nowrap">
+          <p className="text-xs font-semibold text-indigo-500 whitespace-nowrap">
             Bu davrda: +{totalFiltered} ball
           </p>
         )}

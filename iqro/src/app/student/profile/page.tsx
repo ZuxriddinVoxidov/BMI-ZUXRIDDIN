@@ -56,47 +56,62 @@ export default async function StudentProfilePage() {
   const pointsToNext = getPointsToNextLevel(points)
   const nextLevel = LEVELS.find(l => l.level === level.level + 1)
 
-  const school = profile.school as Record<string, unknown> | null
+  const school = profile.school as { name: string, district?: string } | null
   const initials = (profile.full_name || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
   const regDate = new Date(profile.created_at).toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' })
 
   return (
     <div className="space-y-6">
       {/* SECTION 1 — Profile Card */}
-      <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-100 p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg">
-              {initials}
-            </div>
+      <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-100 overflow-hidden">
+        {/* Banner */}
+        <div className="h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative">
+          <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"/>
+          <div className="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"/>
+          
+          <div className="absolute -bottom-10 left-4 sm:left-8 w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-black border-4 border-white shadow-lg z-20">
+            {initials}
+          </div>
+        </div>
+
+        {/* Profile Row */}
+        <div className="pt-12 px-4 pb-6 sm:px-8 sm:pb-8 relative z-10">
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
             <div>
-              <h1 className="text-2xl font-extrabold text-gray-900">{profile.full_name}</h1>
-              <p className="text-gray-500 text-sm">🏫 {school?.name ? `${school.name}-maktab` : "Maktab ko'rsatilmagan"}</p>
-              <div className="mt-2 text-sm font-semibold text-gray-700 bg-gray-100 px-3 py-1 rounded-full inline-block">
-                Sinf: {profile.grade || '-'}
+              <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 mb-2">{profile.full_name}</h1>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 text-sm text-gray-600">
+                <span className="font-medium text-emerald-600 flex items-center gap-1 shrink-0">🎓 O&apos;quvchi</span>
+                <span className="flex items-center gap-1 text-gray-500" title={school?.name || undefined}>
+                  <span className="hidden sm:inline text-gray-300 shrink-0">•</span>
+                  <span className="line-clamp-2">🏫 {school?.name ? `${school.name}-maktab` : "Maktab ko'rsatilmagan"}</span>
+                </span>
+                <span className="flex items-center gap-1 text-gray-500 shrink-0">
+                  <span className="hidden sm:inline text-gray-300 shrink-0">•</span>
+                  <span className="bg-gray-100 px-2 py-0.5 rounded-full font-semibold">Sinf: {profile.grade || '-'}</span>
+                </span>
               </div>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-2 mt-3">
                 <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ backgroundColor: level.bgColor, color: level.textColor }}>
                   {level.emoji} {level.name}
                 </span>
-                <span className="text-xs text-gray-400">{points} ball</span>
+                <span className="text-xs text-gray-400 font-bold">{points} ball</span>
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { icon: '🏫', label: "To'garaklar", value: enrollments?.length || 0 },
-              { icon: '🏆', label: 'Jami ball', value: points },
-              { icon: '📊', label: 'Davomat', value: `${attendanceRate}%` },
-              { icon: '📁', label: 'Yuklangan ishlar', value: works?.length || 0 },
-            ].map((s, i) => (
-              <div key={i} className="bg-gray-50 rounded-xl p-3 text-center">
-                <span className="text-lg">{s.icon}</span>
-                <p className="text-lg font-bold text-gray-900 mt-1">{s.value}</p>
-                <p className="text-[11px] text-gray-500">{s.label}</p>
-              </div>
-            ))}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto mt-2 lg:mt-0">
+              {[
+                { icon: '🏫', label: "To'garaklar", value: enrollments?.length || 0 },
+                { icon: '🏆', label: 'Jami ball', value: points },
+                { icon: '📊', label: 'Davomat', value: `${attendanceRate}%` },
+                { icon: '📁', label: 'Yuklangan ishlar', value: works?.length || 0 },
+              ].map((s, i) => (
+                <div key={i} className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100 flex flex-col justify-center">
+                  <span className="text-lg">{s.icon}</span>
+                  <p className="text-lg font-bold text-gray-900 mt-1">{s.value}</p>
+                  <p className="text-[11px] text-gray-500">{s.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

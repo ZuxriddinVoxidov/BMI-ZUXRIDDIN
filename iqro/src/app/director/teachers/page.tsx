@@ -24,7 +24,7 @@ export default async function DirectorTeachersPage() {
         <h1 className="text-2xl font-extrabold text-gray-900">👨‍🏫 O&apos;qituvchilar</h1>
         <p className="text-sm text-gray-500 mt-1">{teachers?.length || 0} ta o&apos;qituvchi</p>
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {teachers?.map(t => {
           const initials = (t.full_name || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
           return (

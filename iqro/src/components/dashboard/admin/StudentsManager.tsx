@@ -276,10 +276,10 @@ export default function StudentsManager({ students }: { students: Student[] }) {
 
       {/* Edit Dialog */}
       {editStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={() => setEditStudent(null)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4 p-0" onClick={() => setEditStudent(null)}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="p-6 space-y-5">
+            className="bg-white sm:rounded-2xl shadow-2xl w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg overflow-y-auto absolute sm:relative inset-0 sm:inset-auto flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="p-4 sm:p-6 space-y-5 flex-1 pb-24 sm:pb-6">
 
               {/* Header */}
               <div className="flex items-center justify-between">
@@ -406,7 +406,7 @@ export default function StudentsManager({ students }: { students: Student[] }) {
               </div>
 
               {/* Save */}
-              <div className="flex gap-3 pt-2 border-t">
+              <div className="flex gap-3 pt-3 border-t mt-auto sticky bottom-0 bg-white sm:relative py-4 sm:py-0">
                 <button onClick={() => setEditStudent(null)} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Bekor qilish</button>
                 <button onClick={handleSave} disabled={saving}
                   className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition disabled:opacity-50">

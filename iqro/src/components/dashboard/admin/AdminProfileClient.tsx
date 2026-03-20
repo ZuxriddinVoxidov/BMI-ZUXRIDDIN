@@ -83,33 +83,32 @@ export default function AdminProfileClient({ profile, email }: Props) {
       {/* Profile Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {/* Banner */}
-        <div className="h-36 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative overflow-hidden">
+        <div className="h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative">
           <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"/>
           <div className="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"/>
           <div className="absolute top-4 right-20 w-12 h-12 bg-white/10 rounded-full"/>
+          
+          <div className="absolute -bottom-10 left-4 sm:left-8 w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-black border-4 border-white shadow-lg z-20">
+            {initials}
+          </div>
         </div>
 
         {/* Profile Row */}
-        <div className="px-8 pb-8 relative z-10">
-          <div className="flex items-end gap-5 -mt-10 mb-6">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-black border-4 border-white shadow-lg flex-shrink-0">
-              {initials}
-            </div>
-            <div className="pb-1">
-              <h2 className="text-xl font-bold text-gray-900">{profile.full_name}</h2>
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-sm text-indigo-600 font-medium">🛡️ {roleLabel}</span>
-                {profile.school?.name && (
-                  <>
-                    <span className="text-gray-300">•</span>
-                    <span className="text-sm text-gray-500">📍 {profile.school.name}</span>
-                  </>
-                )}
-              </div>
-            </div>
+        <div className="pt-12 px-4 pb-6 sm:px-8 sm:pb-8 relative z-10">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{profile.full_name}</h2>
+          <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 text-sm text-gray-600">
+            <span className="font-medium text-indigo-600 flex items-center gap-1 shrink-0">🛡️ {roleLabel}</span>
+            {profile.school?.name && (
+              <span className="flex items-center gap-1 text-gray-500" title={profile.school.name}>
+                <span className="hidden sm:inline text-gray-300 shrink-0">•</span>
+                <span className="line-clamp-2">📍 {profile.school.name}</span>
+              </span>
+            )}
           </div>
+        </div>
 
-          {/* Info Grid */}
+        {/* Info Grid */}
+        <div className="px-4 pb-6 sm:px-8 sm:pb-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Personal Info Card */}
             <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
@@ -123,9 +122,9 @@ export default function AdminProfileClient({ profile, email }: Props) {
                   { label: 'Maktab', value: profile.school?.name || '—' },
                   { label: 'Rol', value: roleLabel, highlight: true },
                 ].map(item => (
-                  <div key={item.label} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
-                    <span className="text-sm text-gray-500">{item.label}</span>
-                    <span className={`text-sm font-medium ${'highlight' in item && item.highlight ? 'text-indigo-600' : 'text-gray-900'}`}>
+                  <div key={item.label} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 border-b border-gray-100 last:border-0 gap-1 sm:gap-4">
+                    <span className="text-sm text-gray-500 shrink-0">{item.label}</span>
+                    <span className={`text-sm font-medium break-words w-full sm:w-auto sm:text-right ${'highlight' in item && item.highlight ? 'text-indigo-600' : 'text-gray-900'}`}>
                       {item.value}
                     </span>
                   </div>
@@ -139,12 +138,12 @@ export default function AdminProfileClient({ profile, email }: Props) {
                 🔐 Tizimga kirish
               </h3>
               <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-sm text-gray-500">Email</span>
-                  <span className="text-sm font-medium text-gray-900 truncate max-w-[160px]">{email}</span>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 border-b border-gray-100 gap-1 sm:gap-4">
+                  <span className="text-sm text-gray-500 shrink-0">Email</span>
+                  <span className="text-sm font-medium text-gray-900 break-words w-full sm:w-auto sm:text-right">{email}</span>
                 </div>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-sm text-gray-500">Parol</span>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 gap-2 sm:gap-4">
+                  <span className="text-sm text-gray-500 shrink-0">Parol</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm">
                       {showPassword ? (profile.plain_password || '—') : '••••••••'}
@@ -166,9 +165,9 @@ export default function AdminProfileClient({ profile, email }: Props) {
         </div>
 
         {/* Edit Button */}
-        <div className="flex justify-end px-8 pb-6">
+        <div className="flex justify-end px-4 pb-6 sm:px-8">
           <button onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-colors">
+            className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3 sm:py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors">
             ✏️ Tahrirlash
           </button>
         </div>

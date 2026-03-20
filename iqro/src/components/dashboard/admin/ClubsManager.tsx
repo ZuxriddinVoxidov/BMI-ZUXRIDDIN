@@ -191,7 +191,7 @@ export default function ClubsManager({
               <Plus size={18} /> Yangi to&apos;garak
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-2xl w-full h-full sm:h-auto max-w-none sm:max-h-[85vh] !rounded-none sm:!rounded-xl p-4 sm:p-6 m-0 border-0 sm:border overflow-y-auto">
             <DialogHeader>
               <DialogTitle>
                 {editingClub ? "To'garakni tahrirlash" : "Yangi to'garak qo'shish"}
@@ -203,7 +203,7 @@ export default function ClubsManager({
                 <Input value={name} onChange={(e) => setName(e.target.value)}
                   placeholder="Robototexnika" required className="mt-1" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Kategoriya *</Label>
                   <Select value={category} onValueChange={setCategory} required>
@@ -284,7 +284,7 @@ export default function ClubsManager({
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Xona</Label>
                   <Input value={room} onChange={(e) => setRoom(e.target.value)}
