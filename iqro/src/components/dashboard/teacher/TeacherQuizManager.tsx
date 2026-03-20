@@ -270,9 +270,10 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
         <motion.div initial={{opacity:0, height:0}} animate={{opacity:1, height:'auto'}} className="bg-gray-50 border-x border-b rounded-b-xl p-4 -mt-2 mb-2">
           <h4 className="text-sm font-bold text-gray-700 mb-3">Ishtirokchilar natijalari ({new Date(q.created_at).toLocaleDateString()})</h4>
           <div className="bg-white rounded-xl border overflow-hidden">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
+            <div className="overflow-x-auto no-scrollbar">
+              <table className="w-full text-left text-sm min-w-[500px]">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
                   <th className="px-4 py-2 font-semibold text-gray-600 w-16 text-center">O&apos;rin</th>
                   <th className="px-4 py-2 font-semibold text-gray-600">O&apos;quvchi</th>
                   <th className="px-4 py-2 font-semibold text-gray-600 text-right">Natija</th>
@@ -305,8 +306,9 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                     <td colSpan={4} className="px-4 py-6 text-center text-gray-400 text-sm">Ishtirokchilar topilmadi</td>
                   </tr>
                 )}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         </motion.div>
       )}
@@ -369,7 +371,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
               <select 
                 value={filterClub} 
                 onChange={e => setFilterClub(e.target.value)}
-                className="px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm font-medium"
+                className="px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-[16px] sm:text-sm font-medium w-full md:w-auto"
               >
                 <option value="all">Barcha to&apos;garaklar</option>
                 {clubs.map(c => (
@@ -435,21 +437,21 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Mavzu (AI shu bo&apos;yicha test tuzadi)</label>
-                <input value={topic} onChange={e => setTopic(e.target.value)} placeholder={getPlaceholder(selectedClubObj?.category as string | null)} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm"/>
+                <input value={topic} onChange={e => setTopic(e.target.value)} placeholder={getPlaceholder(selectedClubObj?.category as string | null)} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-[16px] sm:text-sm"/>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Savollar soni</label>
-                  <input type="number" min={5} max={25} value={qCount} onChange={e => setQCount(parseInt(e.target.value))} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm"/>
+                  <input type="number" min={5} max={25} value={qCount} onChange={e => setQCount(parseInt(e.target.value))} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-[16px] sm:text-sm"/>
                 </div>
                 <div className="flex-1">
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Davomiyligi (Daqiqa)</label>
-                  <input type="number" min={1} max={60} value={durationMins} onChange={e => setDurationMins(parseInt(e.target.value))} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm"/>
+                  <input type="number" min={1} max={60} value={durationMins} onChange={e => setDurationMins(parseInt(e.target.value))} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-[16px] sm:text-sm"/>
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-end gap-3">
+              <div className="pt-4 flex flex-col sm:flex-row justify-end gap-3">
                 <button type="button" disabled={isPending} onClick={() => {
                   setEditQuizId(null)
                   setEditTitle('Yangi Test')
@@ -460,7 +462,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                 }} className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
                   Qo&apos;lda tuzish
                 </button>
-                <button type="submit" disabled={isPending || !topic.trim()} className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 rounded-xl shadow-md transition-all flex items-center gap-2">
+                <button type="submit" disabled={isPending || !topic.trim()} className="px-5 py-3 sm:py-2.5 w-full sm:w-auto text-[16px] sm:text-sm font-bold text-white bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
                   {isPending ? 'AI Yaratmoqda...' : '✨ AI bilan yaratish'}
                 </button>
               </div>
@@ -499,12 +501,12 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                 <div className="bg-white border rounded-xl p-5 shadow-sm space-y-4">
                   <div>
                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Test Sarlavhasi</label>
-                    <input value={editTitle} onChange={e=>setEditTitle(e.target.value)} className="w-full text-lg font-bold text-gray-900 border-b-2 border-transparent focus:border-indigo-500 py-1 outline-none transition-colors" placeholder="Test nomini kiriting..."/>
+                    <input value={editTitle} onChange={e=>setEditTitle(e.target.value)} className="w-full text-base sm:text-lg font-bold text-gray-900 border-b-2 border-transparent focus:border-indigo-500 py-1 outline-none transition-colors" placeholder="Test nomini kiriting..."/>
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
                       <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Davomiyligi (Daqiqa)</label>
-                      <input type="number" value={Math.round(editDurationSecs/60)} onChange={e=>setEditDurationSecs(parseInt(e.target.value)*60)} className="w-full text-sm bg-gray-50 border rounded-lg p-2.5 outline-none"/>
+                      <input type="number" value={Math.round(editDurationSecs/60)} onChange={e=>setEditDurationSecs(parseInt(e.target.value)*60)} className="w-full text-[16px] sm:text-sm bg-gray-50 border rounded-lg p-2.5 outline-none"/>
                     </div>
                     {/* Club Select needed if manually created */}
                     {!editQuizId && (

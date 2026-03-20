@@ -144,7 +144,7 @@ export default function AttendancePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
       <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900">Davomat olish</h1>
 
       {/* Controls */}
@@ -152,8 +152,8 @@ export default function AttendancePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1.5">To&apos;garak</label>
-            <select value={selectedClub} onChange={e => setSelectedClub(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+              <select value={selectedClub} onChange={e => setSelectedClub(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
               <option value="">Tanlang...</option>
               {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -164,7 +164,7 @@ export default function AttendancePage() {
               setSelectedDate(e.target.value)
               setStudents([]) // Clear students if date changes to avoid invalid saves
             }}
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
             {!isAllowedToTakeAttendance && (
               <p className="text-xs text-red-500 font-medium mt-1.5 flex items-start gap-1">
                 <X size={14} className="mt-0.5 shrink-0" />

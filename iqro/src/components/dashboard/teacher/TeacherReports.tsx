@@ -94,11 +94,11 @@ export default function TeacherReports({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
       <h1 className="text-2xl font-extrabold text-gray-900">Hisobotlar</h1>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl p-5 border border-gray-100">
           <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-3">
@@ -130,20 +130,22 @@ export default function TeacherReports({
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="bg-white rounded-2xl p-6 border border-gray-100">
           <h3 className="text-lg font-bold text-gray-900 mb-6">Oylik davomat (%)</h3>
-          <div className="flex items-end gap-3 h-52">
-            {monthlyStats.map((m, i) => (
-              <div key={i} className="flex flex-col items-center flex-1">
-                <span className="text-xs font-bold text-indigo-600 mb-1">{m.percentage}%</span>
-                <div className="w-full bg-gray-100 rounded-t-lg relative" style={{ height: '100%' }}>
-                  <motion.div
-                    initial={{ height: 0 }} animate={{ height: `${m.percentage}%` }}
-                    transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
-                    className="absolute bottom-0 w-full bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t-lg"
-                  />
+          <div className="overflow-x-auto no-scrollbar pb-2">
+            <div className="flex items-end gap-3 h-52 min-w-[350px]">
+              {monthlyStats.map((m, i) => (
+                <div key={i} className="flex flex-col items-center flex-1 min-w-[40px]">
+                  <span className="text-xs font-bold text-indigo-600 mb-1">{m.percentage}%</span>
+                  <div className="w-full bg-gray-100 rounded-t-lg relative" style={{ height: '100%' }}>
+                    <motion.div
+                      initial={{ height: 0 }} animate={{ height: `${m.percentage}%` }}
+                      transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
+                      className="absolute bottom-0 w-full bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t-lg"
+                    />
+                  </div>
+                  <span className="text-xs text-gray-500 mt-2">{m.name}</span>
                 </div>
-                <span className="text-xs text-gray-500 mt-2">{m.name}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </motion.div>
       )}
@@ -159,8 +161,8 @@ export default function TeacherReports({
               <button onClick={handleExportExcel} className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-medium transition-colors">📊 Excel</button>
             </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto no-scrollbar pb-2">
+            <table className="w-full min-w-[500px]">
               <thead>
                 <tr className="border-b border-gray-100">
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase">Ism</th>

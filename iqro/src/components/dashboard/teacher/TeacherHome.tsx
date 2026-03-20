@@ -28,7 +28,7 @@ export default function TeacherHome({
 
   if (clubs.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="bg-gradient-to-r from-cyan-600 via-blue-500 to-indigo-500 rounded-2xl p-6 sm:p-8">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-1">Salom, {firstName}! 👋</h1>
@@ -46,14 +46,14 @@ export default function TeacherHome({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
         className="bg-gradient-to-r from-cyan-600 via-blue-500 to-indigo-500 rounded-2xl p-6 sm:p-8">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-1">Salom, {firstName}! 👋</h1>
         <p className="text-white/70">Sizda {clubs.length} ta to&apos;garak bor</p>
       </motion.div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map((stat, i) => (
           <Link key={stat.label} href={stat.href}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}

@@ -94,9 +94,10 @@ export default function QuizResults({ participants }: QuizResultsProps) {
 
       {/* Unified Leaderboard Table */}
       <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
-        <table className="w-full text-left text-sm md:text-base">
-          <thead className="bg-gray-50 border-b">
-            <tr>
+        <div className="overflow-x-auto no-scrollbar pb-2">
+          <table className="w-full text-left text-sm md:text-base min-w-[400px]">
+            <thead className="bg-gray-50 border-b">
+              <tr>
               <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase w-20 text-center">O&apos;rin</th>
               <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;quvchi</th>
               <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Natija</th>
@@ -134,6 +135,7 @@ export default function QuizResults({ participants }: QuizResultsProps) {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       <div className="pt-4 pb-8 flex justify-center">

@@ -65,7 +65,7 @@ export default async function StudentHomePage() {
   const pending = pendingClubsCount || 0
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
       {/* Welcome */}
       <div className="bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400 rounded-2xl p-6">
         <h1 className="text-2xl font-extrabold text-white mb-1">
@@ -79,7 +79,7 @@ export default async function StudentHomePage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <div className="bg-white rounded-2xl p-5 border border-gray-100">
           <p className="text-xs text-gray-500 mb-1">🏆 Mening ballim</p>
           <p className="text-2xl font-extrabold text-gray-900">{points}</p>
@@ -105,7 +105,7 @@ export default async function StudentHomePage() {
       </div>
 
       {/* Main Content — 2 columns */}
-      <div className="grid lg:grid-cols-5 gap-6">
+      <div className="grid lg:grid-cols-5 gap-4 sm:gap-6">
         {/* LEFT — Growing Tree (3/5) */}
         <div className="lg:col-span-3">
           <GrowingTree points={points} level={level} />

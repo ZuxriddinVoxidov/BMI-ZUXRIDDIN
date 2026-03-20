@@ -69,13 +69,13 @@ export default function TeacherStudents({ enrollments, attendanceData }: { enrol
   const filtered = students.filter(s => s.name?.toLowerCase().includes(search.toLowerCase()))
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
       <h1 className="text-2xl font-extrabold text-gray-900">O&apos;quvchilar</h1>
 
       <div className="relative">
         <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
         <input type="text" placeholder="Ism bo'yicha qidirish..." value={search} onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
+          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
       </div>
 
       {filtered.length === 0 ? (
@@ -86,8 +86,9 @@ export default function TeacherStudents({ enrollments, attendanceData }: { enrol
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-          <table className="w-full">
-            <thead>
+          <div className="overflow-x-auto no-scrollbar pb-2">
+            <table className="w-full min-w-[700px]">
+              <thead>
               <tr className="border-b border-gray-100">
                 <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">O&apos;quvchi</th>
                 <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">To&apos;garak</th>
@@ -138,6 +139,7 @@ export default function TeacherStudents({ enrollments, attendanceData }: { enrol
               })}
             </tbody>
           </table>
+        </div>
         </motion.div>
       )}
 

@@ -143,11 +143,11 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
               
               {/* Header Button */}
               <button onClick={() => setOpenClub(isOpen ? null : club.id)}
-                className="w-full flex items-center justify-between p-5 hover:bg-gray-50/50 transition-colors text-left border-b border-transparent">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl">📚</div>
+                className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-5 hover:bg-gray-50/50 transition-colors text-left border-b border-transparent">
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg sm:text-xl flex-shrink-0 mt-1 sm:mt-0">📚</div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">{club.name}</h3>
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">{club.name}</h3>
                     <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
                       <span className="flex items-center gap-1"><Calendar size={12} />{(club.schedule as string) || '-'}</span>
                       {Boolean(club.room) && <span className="flex items-center gap-1"><MapPin size={12} />{String(club.room)}</span>}
@@ -160,7 +160,7 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap w-full sm:w-auto mt-2 sm:mt-0">
                   <button 
                     onClick={(e) => {
                       e.stopPropagation()
@@ -231,7 +231,7 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                             onChange={e => setTitle(e.target.value)}
                             placeholder="Masalan: 1-Mavzu taqdimoti"
                             required
-                            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400"
+                            className="w-full px-3 py-2 text-[16px] sm:text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400"
                           />
                         </div>
                         <div>
@@ -241,14 +241,14 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
                             onChange={e => setFile(e.target.files?.[0] || null)}
                             required
-                            className="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-600 file:text-xs file:font-semibold hover:file:bg-indigo-100 cursor-pointer"
+                            className="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-600 file:text-[16px] sm:file:text-xs file:font-semibold hover:file:bg-indigo-100 cursor-pointer"
                           />
                         </div>
                         <div className="pt-2 flex justify-end">
                           <button
                             type="submit"
                             disabled={isPending || !file || !title.trim()}
-                            className="flex items-center gap-2 px-5 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg disabled:opacity-50 hover:bg-indigo-700 transition-colors"
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 sm:py-2 bg-indigo-600 text-white text-[16px] sm:text-sm font-semibold rounded-lg disabled:opacity-50 hover:bg-indigo-700 transition-colors"
                           >
                             <Upload size={14} />
                             {isPending ? 'Yuklanmoqda...' : 'Yuklash'}
@@ -433,8 +433,9 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                       {approvedStudents.length === 0 ? (
                         <p className="text-sm text-gray-500 text-center py-4">Hali o&apos;quvchi yo&apos;q</p>
                       ) : (
-                        <table className="w-full">
-                          <thead>
+                        <div className="overflow-x-auto no-scrollbar pb-2">
+                          <table className="w-full min-w-[500px]">
+                            <thead>
                             <tr className="text-left">
                               <th className="text-xs font-semibold text-gray-400 uppercase pb-3">O&apos;quvchi</th>
                               <th className="text-xs font-semibold text-gray-400 uppercase pb-3">Daraja</th>
@@ -467,7 +468,8 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                               )
                             })}
                           </tbody>
-                        </table>
+                          </table>
+                        </div>
                       )}
                     </div>
                   </motion.div>

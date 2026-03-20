@@ -145,7 +145,7 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
   const timeString = `${m}:${s.toString().padStart(2, '0')}`
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
       
       {/* Header Info */}
       <div className="bg-white p-6 rounded-2xl border shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -175,7 +175,7 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
                 <Loader2 size={20} className="animate-spin" />
                 O&apos;quvchilar testga qo&apos;shilishi kutilmoqda...
               </div>
-              <button disabled={isPending || totalCount === 0} onClick={handleStart} className="flex items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold rounded-xl shadow-md transition-all">
+              <button disabled={isPending || totalCount === 0} onClick={handleStart} className="flex w-full sm:w-auto justify-center items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold rounded-xl shadow-md transition-all mt-4 sm:mt-0">
                 <Play size={18} /> Testni Boshlash
               </button>
             </div>
@@ -225,14 +225,15 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
                 </div>
               </div>
               
-              <button disabled={isFinishing} onClick={handleFinish} className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-all">
+              <button disabled={isFinishing} onClick={handleFinish} className="w-full sm:w-auto flex justify-center items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-semibold rounded-xl transition-all">
                 {isFinishing ? '⏳ Yakunlanmoqda...' : '⏹ Yakunlash'}
               </button>
             </div>
 
             <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b">
+              <div className="overflow-x-auto no-scrollbar pb-2">
+                <table className="w-full text-left min-w-[400px]">
+                  <thead className="bg-gray-50 border-b">
                   <tr>
                     <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;quvchi</th>
                     <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Holat</th>
@@ -264,6 +265,7 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           </motion.div>
         )}
