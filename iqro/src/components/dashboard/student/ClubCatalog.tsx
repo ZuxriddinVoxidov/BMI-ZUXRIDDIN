@@ -133,8 +133,8 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
       )}
 
       {/* Search + Price Filter */}
-      <div className="flex flex-wrap gap-3 mb-2">
-        <div className="relative flex-1 min-w-48">
+      <div className="flex flex-col sm:flex-row gap-3 mb-2 w-full">
+        <div className="relative flex-1 w-full sm:min-w-48">
           <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
           <input
             type="text"
@@ -144,7 +144,7 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
             className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-400"
           />
         </div>
-        <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+        <div className="flex overflow-x-auto no-scrollbar gap-1 bg-gray-100 rounded-xl p-1 w-full sm:w-auto">
           {([
             { key: 'all', label: 'Hammasi' },
             { key: 'free', label: '🆓 Bepul' },
@@ -153,7 +153,7 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
             <button
               key={f.key}
               onClick={() => setPriceFilter(f.key)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 priceFilter === f.key
                   ? 'bg-white shadow text-indigo-600'
                   : 'text-gray-500 hover:text-gray-700'
@@ -166,12 +166,12 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
       </div>
 
       {/* Category Tabs */}
-      <div className="flex flex-wrap gap-2 mb-2">
+      <div className="flex overflow-x-auto gap-2 mb-2 pb-2 no-scrollbar w-full">
         {categories.map((cat) => (
           <button
             key={cat.key}
             onClick={() => setActiveCategory(cat.key)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+            className={`px-4 py-2 flex-shrink-0 rounded-xl text-[16px] sm:text-sm font-medium transition-all whitespace-nowrap ${
               activeCategory === cat.key
                 ? 'bg-indigo-600 text-white'
                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'

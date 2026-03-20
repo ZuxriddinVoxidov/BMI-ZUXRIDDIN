@@ -81,16 +81,16 @@ export default function MyClubsWithReview({ enrollments }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 hover:bg-emerald-100 transition-colors">
-                <span className="text-[10px]">✅</span> A&apos;zosiz
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-gray-100 mt-auto">
+              <span className="inline-flex self-start sm:self-auto items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm font-bold border border-emerald-100">
+                <span className="text-xs">✅</span> A&apos;zosiz
               </span>
               
               <Link 
                 href={`/clubs/${club.id}`}
-                className="text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition-colors"
+                className="w-full sm:w-auto text-center px-4 py-3 sm:py-2 sm:px-0 bg-indigo-50 sm:bg-transparent text-indigo-700 sm:text-indigo-600 rounded-xl sm:rounded-none text-[16px] sm:text-sm font-bold sm:hover:text-indigo-800 transition-colors"
               >
-                To&apos;garak sahifasi <span className="text-lg leading-none transition-transform group-hover:translate-x-1">→</span>
+                To&apos;garak sahifasi <span className="hidden sm:inline-block leading-none transition-transform group-hover:translate-x-1">→</span>
               </Link>
             </div>
           </div>

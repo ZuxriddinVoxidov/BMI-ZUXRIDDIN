@@ -170,12 +170,15 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
           <motion.div key="active" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full max-w-4xl space-y-6">
             
             {/* Header / Timer & Nav */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-3xl border shadow-sm">
-              <div className="flex flex-wrap gap-2 justify-center flex-1">
+            <div className="flex flex-col justify-between items-center gap-4 bg-white p-4 rounded-3xl border shadow-sm">
+              <div className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3 bg-amber-50 text-amber-600 font-bold font-mono text-2xl sm:text-xl rounded-2xl border border-amber-100 shrink-0">
+                <Clock size={24}/> {timeString}
+              </div>
+              <div className="flex flex-wrap gap-2 justify-center w-full">
                 {quiz.quiz_questions.map((q, idx) => {
                   const isCurrent = idx === currQIdx;
                   const isAnswered = !!answers[q.id];
-                  let btnClass = "w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ";
+                  let btnClass = "w-8 h-8 text-xs sm:w-10 sm:h-10 sm:text-sm rounded-full flex items-center justify-center font-bold transition-all ";
                   if (isCurrent) {
                     btnClass += "bg-indigo-600 text-white ring-4 ring-indigo-200";
                   } else if (isAnswered) {
@@ -190,9 +193,6 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                     </button>
                   );
                 })}
-              </div>
-              <div className="flex items-center justify-center gap-2 px-6 py-3 bg-amber-50 text-amber-600 font-bold font-mono text-xl rounded-2xl border border-amber-100 shrink-0">
-                <Clock size={20}/> {timeString}
               </div>
             </div>
 
@@ -215,12 +215,12 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                     <button 
                       key={opt}
                       onClick={() => handleSelect(opt)}
-                      className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 shadow-md transform scale-[1.01]' : 'border-gray-100 bg-white hover:border-gray-300 hover:bg-gray-50'}`}
+                      className={`w-full min-h-[48px] text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 shadow-md transform scale-[1.01]' : 'border-gray-100 bg-white hover:border-gray-300 hover:bg-gray-50'}`}
                     >
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-600'}`}>
+                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-600'}`}>
                         {opt}
                       </div>
-                      <span className={`font-semibold text-lg ${isSelected ? 'text-emerald-900' : 'text-gray-700'}`}>
+                      <span className={`font-semibold text-[16px] sm:text-lg ${isSelected ? 'text-emerald-900' : 'text-gray-700'}`}>
                         {optText}
                       </span>
                     </button>

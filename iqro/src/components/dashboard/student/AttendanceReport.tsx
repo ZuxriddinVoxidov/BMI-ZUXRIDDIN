@@ -114,8 +114,8 @@ export default function AttendanceReport({ records }: AttendanceReportProps) {
           <h2 className="font-bold text-gray-800">Davomat jadvali</h2>
         </div>
         {records.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0 no-scrollbar">
+            <table className="w-full min-w-[600px] text-sm">
               <thead>
                 <tr className="border-b border-gray-50">
                   <th className="text-left px-6 py-3 text-gray-500 font-medium">Sana</th>

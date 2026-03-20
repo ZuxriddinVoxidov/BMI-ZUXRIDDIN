@@ -186,7 +186,7 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
         <select 
           value={selectedClub} 
           onChange={e => setSelectedClub(e.target.value)}
-          className="px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-sm font-medium"
+          className="px-4 py-2.5 w-full md:w-auto border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-[16px] md:text-sm font-medium"
         >
           <option value="all">Barcha to&apos;garaklar</option>
           {uniqueClubs.map(c => (
@@ -194,7 +194,7 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
           ))}
         </select>
 
-        <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
+        <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar w-full md:w-auto">
            {[
              { id: 'all', label: 'Barchasi' },
              { id: 'waiting', label: 'Kutilmoqda' },

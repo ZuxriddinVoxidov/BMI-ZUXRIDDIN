@@ -55,7 +55,7 @@ export default async function StudentLayout({
           notifications={(notifications || []) as { id: string; message: string; is_read: boolean; created_at: string }[]}
           unreadCount={unreadCount}
         />
-        <main className="p-4 md:p-6">{children}</main>
+        <main className="p-4 pt-20 md:p-6 md:pt-6">{children}</main>
       </div>
     </div>
   )

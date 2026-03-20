@@ -82,7 +82,8 @@ export default function WeeklySchedule({ enrollments }: WeeklyScheduleProps) {
   }
 
   return (
-    <div className="grid grid-cols-5 gap-3">
+    <div className="overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
+      <div className="grid grid-cols-5 gap-3 min-w-[700px] sm:min-w-0">
       {dayNames.map((day, i) => (
         <div key={day} className={`rounded-2xl overflow-hidden border ${todayIndex === i ? 'border-indigo-300 bg-indigo-50/30' : 'border-gray-100 bg-white'}`}>
           {/* Day header */}
@@ -113,6 +114,7 @@ export default function WeeklySchedule({ enrollments }: WeeklyScheduleProps) {
           </div>
         </div>
       ))}
+      </div>
     </div>
   )
 }

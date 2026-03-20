@@ -388,7 +388,7 @@ export default function AIChatPage({
   const Icon = config.icon
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] -m-4 md:-m-6 overflow-hidden bg-gray-50">
+    <div className="flex h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] -m-4 md:-m-6 overflow-hidden bg-gray-50">
       
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
@@ -682,7 +682,7 @@ export default function AIChatPage({
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={config.placeholder}
-                className="flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none py-2.5 px-3 text-[15px] placeholder:text-gray-400 text-gray-800"
+                className="flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none py-2.5 px-3 text-[16px] sm:text-[15px] placeholder:text-gray-400 text-gray-800"
                 rows={1}
                 disabled={isLoading}
               />

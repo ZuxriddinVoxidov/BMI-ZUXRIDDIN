@@ -68,7 +68,7 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
       </div>
 
       {/* Period filters */}
-      <div className="flex gap-2 flex-wrap items-center">
+      <div className="flex gap-2 items-center overflow-x-auto pb-2 no-scrollbar w-full">
         {periods.map(p => (
           <button
             key={p.key}
@@ -100,14 +100,14 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
           {filtered.map(t => (
             <div key={t.id} 
               className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm">
-              <div className="flex items-center gap-3">
-                <span className="text-xl">{SOURCE_ICONS[t.source] || '🎯'}</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-800">{t.reason}</p>
-                  <p className="text-xs text-gray-400">{formatDate(t.created_at)}</p>
+              <div className="flex items-center gap-3 min-w-0 pr-2">
+                <span className="text-xl flex-shrink-0">{SOURCE_ICONS[t.source] || '🎯'}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-800 truncate">{t.reason}</p>
+                  <p className="text-xs text-gray-400 whitespace-nowrap">{formatDate(t.created_at)}</p>
                 </div>
               </div>
-              <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap">
+              <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
                 +{t.points} ball
               </span>
             </div>
