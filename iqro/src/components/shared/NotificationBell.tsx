@@ -89,15 +89,15 @@ export default function NotificationBell({ userId }: { userId?: string }) {
 
   const notificationContent = (
     <>
-      <div className="flex items-center justify-between p-4 border-b">
-        <h3 className="font-semibold text-gray-800 text-sm">Bildirishnomalar</h3>
+      <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
+        <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-sm">Bildirishnomalar</h3>
         <div className="flex items-center gap-2">
           {unreadCount > 0 && (
-            <button onClick={markAllRead} className="text-xs text-indigo-600 hover:text-indigo-700 font-medium">
+            <button onClick={markAllRead} className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-medium">
               Hammasini o&apos;qilgan
             </button>
           )}
-          <button onClick={() => setIsOpen(false)} className="sm:hidden p-1 rounded-lg hover:bg-gray-100 text-gray-400">
+          <button onClick={() => setIsOpen(false)} className="sm:hidden p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400">
             <X size={18} />
           </button>
         </div>
@@ -106,17 +106,17 @@ export default function NotificationBell({ userId }: { userId?: string }) {
         {notifications.length === 0 ? (
           <div className="p-8 text-center">
             <div className="text-4xl mb-2">🔔</div>
-            <p className="text-gray-500 text-sm">Bildirishnomalar yo&apos;q</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Bildirishnomalar yo&apos;q</p>
           </div>
         ) : (
           notifications.map(n => (
             <div key={n.id} onClick={() => !n.is_read && markOneRead(n.id)}
-              className={`p-4 border-b cursor-pointer hover:bg-gray-50 transition-colors ${!n.is_read ? 'bg-indigo-50/50' : ''}`}>
+              className={`p-4 border-b dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${!n.is_read ? 'bg-indigo-50/50 dark:bg-indigo-950/30' : ''}`}>
               <div className="flex gap-3">
-                <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${n.is_read ? 'bg-gray-300' : 'bg-indigo-500'}`} />
+                <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${n.is_read ? 'bg-gray-300 dark:bg-gray-600' : 'bg-indigo-500'}`} />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${n.is_read ? 'text-gray-600' : 'text-gray-800 font-medium'}`}>{n.message}</p>
-                  <p className="text-xs text-gray-400 mt-1">{timeAgo(n.created_at)}</p>
+                  <p className={`text-sm ${n.is_read ? 'text-gray-600 dark:text-gray-400' : 'text-gray-800 dark:text-gray-100 font-medium'}`}>{n.message}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{timeAgo(n.created_at)}</p>
                 </div>
               </div>
             </div>
@@ -129,8 +129,8 @@ export default function NotificationBell({ userId }: { userId?: string }) {
   return (
     <div className="relative" ref={dropdownRef}>
       <button onClick={() => setIsOpen(!isOpen)}
-        className="relative w-10 h-10 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
-        <Bell className="w-5 h-5 text-gray-600" />
+        className="relative w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors">
+        <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
@@ -142,13 +142,13 @@ export default function NotificationBell({ userId }: { userId?: string }) {
         <>
           {/* Mobile: full-screen overlay + bottom sheet */}
           <div className="sm:hidden fixed inset-0 z-50 bg-black/30" onClick={() => setIsOpen(false)} />
-          <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-2xl shadow-2xl max-h-[80vh] overflow-hidden animate-in slide-in-from-bottom">
-            <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-2" />
+          <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 rounded-t-2xl shadow-2xl max-h-[80vh] overflow-hidden animate-in slide-in-from-bottom">
+            <div className="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mt-2" />
             {notificationContent}
           </div>
 
           {/* Desktop: dropdown */}
-          <div className="hidden sm:block absolute right-0 top-12 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden">
+          <div className="hidden sm:block absolute right-0 top-12 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 z-50 overflow-hidden">
             {notificationContent}
           </div>
         </>

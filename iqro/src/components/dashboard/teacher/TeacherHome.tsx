@@ -35,11 +35,11 @@ export default function TeacherHome({
           <p className="text-white/70">O&apos;qituvchi paneli</p>
         </motion.div>
         <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-24 h-24 rounded-full bg-indigo-50 flex items-center justify-center mb-4">
+          <div className="w-24 h-24 rounded-full bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center mb-4">
             <span className="text-5xl">🏫</span>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 mb-1">Sizga hali to&apos;garak biriktirilmagan</h3>
-          <p className="text-sm text-gray-500">Admin bilan bog&apos;laning</p>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Sizga hali to&apos;garak biriktirilmagan</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Admin bilan bog&apos;laning</p>
         </div>
       </div>
     )
@@ -57,12 +57,12 @@ export default function TeacherHome({
         {stats.map((stat, i) => (
           <Link key={stat.label} href={stat.href}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-              className="bg-white rounded-2xl p-5 border border-gray-100 hover:border-indigo-200 hover:shadow-md transition-all">
+              className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 hover:border-indigo-200 hover:shadow-md transition-all">
               <div className={`w-10 h-10 ${stat.color} rounded-xl flex items-center justify-center mb-3`}>
                 <stat.icon size={20} />
               </div>
-              <p className="text-2xl font-extrabold text-gray-900">{stat.value}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{stat.label}</p>
+              <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{stat.value}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{stat.label}</p>
             </motion.div>
           </Link>
         ))}
@@ -71,27 +71,27 @@ export default function TeacherHome({
       <div className="grid lg:grid-cols-2 gap-6">
         {/* My Clubs */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100">
+          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">Mening to&apos;garaklarim</h3>
-            <Link href="/teacher/clubs" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Mening to&apos;garaklarim</h3>
+            <Link href="/teacher/clubs" className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-medium">
               Barchasini ko&apos;rish →
             </Link>
           </div>
           <div className="space-y-3">
             {clubs.map((club) => (
-              <div key={club.id as string} className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+              <div key={club.id as string} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">📚</div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">{club.name as string}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">{club.name as string}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       <Calendar size={10} className="inline mr-1" />
                       {(club.schedule as string) || '-'}
                     </p>
                   </div>
                 </div>
-                <span className="text-xs px-2 py-1 rounded-full bg-indigo-50 text-indigo-600 font-medium">
+                <span className="text-xs px-2 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-medium">
                   {(club.studentCount as number) || 0} o&apos;quvchi
                 </span>
               </div>
@@ -101,29 +101,29 @@ export default function TeacherHome({
 
         {/* Recent Rewards */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">So&apos;nggi rag&apos;batlar</h3>
+          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">So&apos;nggi rag&apos;batlar</h3>
           {recentRewards.length === 0 ? (
             <div className="py-8 text-center">
-              <Star className="mx-auto text-gray-300 mb-2" size={32} />
-              <p className="text-sm text-gray-500">Hali rag&apos;bat berilmagan</p>
+              <Star className="mx-auto text-gray-300 dark:text-gray-600 mb-2" size={32} />
+              <p className="text-sm text-gray-500 dark:text-gray-400">Hali rag&apos;bat berilmagan</p>
             </div>
           ) : (
             <div className="space-y-3">
               {recentRewards.map((r) => (
-                <div key={r.id as string} className="flex items-center justify-between p-3 rounded-xl bg-amber-50/50">
+                <div key={r.id as string} className="flex items-center justify-between p-3 rounded-xl bg-amber-50/50 dark:bg-amber-950/20">
                   <div className="flex items-center gap-3">
                     <span className="text-lg">⭐</span>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
                         {(r.student as Record<string, unknown>)?.full_name as string || "O'quvchi"}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {(r.club as Record<string, unknown>)?.name as string || "To'garak"}
                       </p>
                     </div>
                   </div>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-gray-400 dark:text-gray-500">
                     {new Date(r.created_at as string).toLocaleDateString('uz-UZ')}
                   </span>
                 </div>
@@ -135,8 +135,8 @@ export default function TeacherHome({
 
       {/* Quick Actions */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-        className="bg-white rounded-2xl p-6 border border-gray-100">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Tezkor amallar</h3>
+        className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Tezkor amallar</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {[
             { label: 'Davomat olish', href: '/teacher/attendance', emoji: '📋' },
@@ -144,9 +144,9 @@ export default function TeacherHome({
             { label: 'Hisobotlar', href: '/teacher/reports', emoji: '📊' },
           ].map((a) => (
             <Link key={a.label} href={a.href}
-              className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all">
+              className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-indigo-200 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/30 transition-all">
               <span className="text-xl">{a.emoji}</span>
-              <span className="text-sm font-medium text-gray-700">{a.label}</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{a.label}</span>
             </Link>
           ))}
         </div>

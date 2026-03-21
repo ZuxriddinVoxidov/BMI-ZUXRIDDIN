@@ -147,8 +147,8 @@ export default function StudentsManager({ students }: { students: Student[] }) {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900">O&apos;quvchilar</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">O&apos;quvchilar</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             <Users size={14} className="inline mr-1" />
             {studentsList.length} ta o&apos;quvchi
           </p>
@@ -160,12 +160,12 @@ export default function StudentsManager({ students }: { students: Student[] }) {
           <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <input type="text" placeholder="Ism yoki email bo'yicha qidirish..." value={search}
              onChange={(e) => setSearch(e.target.value)}
-             className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
+             className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
         </div>
         <select 
           value={gradeFilter} 
           onChange={e => setGradeFilter(e.target.value)}
-          className="w-full sm:w-48 px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 bg-white"
+          className="w-full sm:w-48 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
         >
           <option value="">Barcha sinflar</option>
           {GRADES.map(g => (
@@ -176,27 +176,27 @@ export default function StudentsManager({ students }: { students: Student[] }) {
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
-          <div className="w-20 h-20 rounded-full bg-indigo-50 flex items-center justify-center mb-4">
+          <div className="w-20 h-20 rounded-full bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center mb-4">
             <span className="text-4xl">👨‍🎓</span>
           </div>
-          <h3 className="text-lg font-bold text-gray-900">O&apos;quvchi topilmadi</h3>
-          <p className="text-sm text-gray-500 mt-1">Qidiruv shartlarini o&apos;zgartiring</p>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">O&apos;quvchi topilmadi</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Qidiruv shartlarini o&apos;zgartiring</p>
         </div>
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className="bg-white rounded-2xl border border-gray-100 overflow-x-auto">
+          className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-x-auto">
           <table className="w-full min-w-[900px]">
             <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 uppercase">O&apos;quvchi</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 uppercase">Sinf</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 uppercase">Daraja</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 uppercase">Ball</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 uppercase">Email</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 uppercase">Parol</th>
-                <th className="text-center py-4 px-4 text-xs font-semibold text-gray-400 uppercase">TG</th>
-                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 uppercase">Holat</th>
-                <th className="text-center py-4 px-4 text-xs font-semibold text-gray-400 uppercase">Amal</th>
+              <tr className="border-b border-gray-100 dark:border-gray-800">
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">O&apos;quvchi</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Sinf</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Daraja</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Ball</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Email</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Parol</th>
+                <th className="text-center py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">TG</th>
+                <th className="text-left py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Holat</th>
+                <th className="text-center py-4 px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Amal</th>
               </tr>
             </thead>
             <tbody>
@@ -206,26 +206,26 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                 const initials = (student.full_name || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
 
                 return (
-                  <tr key={student.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
+                  <tr key={student.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-[10px]">{initials}</div>
-                        <p className="text-sm font-semibold text-gray-900">{student.full_name}</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{student.full_name}</p>
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      {student.grade ? <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">{student.grade}</span> : <span className="text-xs text-gray-400">—</span>}
+                      {student.grade ? <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold">{student.grade}</span> : <span className="text-xs text-gray-400">—</span>}
                     </td>
                     <td className="py-3 px-4">
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold" style={{ backgroundColor: level.bgColor, color: level.textColor }}>
                         {level.emoji} {level.nameUz}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-sm font-bold text-gray-900">{points}</td>
-                    <td className="py-3 px-4 text-xs text-gray-600 font-mono">{student.email || '—'}</td>
+                    <td className="py-3 px-4 text-sm font-bold text-gray-900 dark:text-white">{points}</td>
+                    <td className="py-3 px-4 text-xs text-gray-600 dark:text-gray-400 font-mono">{student.email || '—'}</td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-1">
-                        <span className="font-mono text-xs text-gray-600">
+                        <span className="font-mono text-xs text-gray-600 dark:text-gray-400">
                           {showPasswords[student.id] ? (student.plain_password || '—') : '••••••'}
                         </span>
                         <button onClick={() => setShowPasswords(p => ({ ...p, [student.id]: !p[student.id] }))} className="text-gray-400 hover:text-gray-600 p-0.5">
@@ -278,59 +278,59 @@ export default function StudentsManager({ students }: { students: Student[] }) {
       {editStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm sm:p-4 p-0" onClick={() => setEditStudent(null)}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-            className="bg-white sm:rounded-2xl shadow-2xl w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg overflow-y-auto absolute sm:relative inset-0 sm:inset-auto flex flex-col" onClick={e => e.stopPropagation()}>
+            className="bg-white dark:bg-gray-900 sm:rounded-2xl shadow-2xl w-full h-full sm:h-auto sm:max-h-[90vh] sm:max-w-lg overflow-y-auto absolute sm:relative inset-0 sm:inset-auto flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="p-4 sm:p-6 space-y-5 flex-1 pb-24 sm:pb-6">
 
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
                     {(editStudent.full_name || '?')[0].toUpperCase()}
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-900">✏️ {editStudent.full_name}</h2>
-                    <p className="text-xs text-gray-500">O&apos;quvchi ma&apos;lumotlarini tahrirlash</p>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">✏️ {editStudent.full_name}</h2>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">O&apos;quvchi ma&apos;lumotlarini tahrirlash</p>
                   </div>
                 </div>
-                <button onClick={() => setEditStudent(null)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400"><X size={18} /></button>
+                <button onClick={() => setEditStudent(null)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400"><X size={18} /></button>
               </div>
 
               {/* Section 1: Personal */}
               <div className="space-y-3">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">👤 Shaxsiy ma&apos;lumotlar</h3>
+                <h3 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">👤 Shaxsiy ma&apos;lumotlar</h3>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">To&apos;liq ism *</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">To&apos;liq ism *</label>
                   <input value={formData.full_name} onChange={e => setFormData(p => ({ ...p, full_name: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-indigo-400" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">🎓 Sinf</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">🎓 Sinf</label>
                     <select value={formData.grade} onChange={e => setFormData(p => ({ ...p, grade: e.target.value }))}
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400">
+                      className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-indigo-400">
                       <option value="">Tanlang</option>
                       {GRADES.map(g => <option key={g} value={g}>{g}-sinf</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700 mb-1 block">📞 Telefon</label>
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">📞 Telefon</label>
                     <input value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
                       placeholder="+998 90 123 45 67"
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                      className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-indigo-400" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">👨‍👩‍👦 Ota-ona ismi</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">👨‍👩‍👦 Ota-ona ismi</label>
                   <input value={formData.parent_name} onChange={e => setFormData(p => ({ ...p, parent_name: e.target.value }))}
                     placeholder="Masalan: Karimov Sardor"
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-indigo-400" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">📱 Ota-ona Telegram Chat ID</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">📱 Ota-ona Telegram Chat ID</label>
                   <input value={formData.parent_telegram_id} onChange={e => setFormData(p => ({ ...p, parent_telegram_id: e.target.value }))}
                     placeholder="Masalan: 123456789"
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400" />
-                  <p className="text-[11px] text-gray-400 mt-1">ID olish: <span className="text-indigo-500 font-medium">@IQRO_notify_bot</span> ga <code className="bg-gray-100 px-1 rounded">/start</code> yuboring</p>
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-indigo-400" />
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">ID olish: <span className="text-indigo-500 font-medium">@IQRO_notify_bot</span> ga <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">/start</code> yuboring</p>
                 </div>
               </div>
 
@@ -338,17 +338,17 @@ export default function StudentsManager({ students }: { students: Student[] }) {
 
               {/* Section 2: Login */}
               <div className="space-y-3">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide">🔐 Login ma&apos;lumotlari</h3>
+                <h3 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">🔐 Login ma&apos;lumotlari</h3>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">📧 Email (Login)</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">📧 Email (Login)</label>
                   <input value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))}
                     type="email" placeholder="student@iqro.uz"
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-mono outline-none focus:border-indigo-400" />
+                    className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm font-mono bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-indigo-400" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">🔑 Joriy parol</label>
-                  <div className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl">
-                    <span className="flex-1 font-mono text-sm text-gray-700">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">🔑 Joriy parol</label>
+                  <div className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl">
+                    <span className="flex-1 font-mono text-sm text-gray-700 dark:text-gray-200">
                       {showModalPwd ? (editStudent.plain_password || '—') : '••••••••'}
                     </span>
                     <button type="button" onClick={() => setShowModalPwd(!showModalPwd)} className="text-gray-400 hover:text-gray-600">
@@ -359,14 +359,14 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                         className="text-gray-400 hover:text-indigo-600"><Copy size={14} /></button>
                     )}
                   </div>
-                  <p className="text-[11px] text-gray-400 mt-1">{editStudent.plain_password ? "Admin tomonidan o'rnatilgan parol" : "O'quvchi o'zi ro'yxatdan o'tgan"}</p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-1">{editStudent.plain_password ? "Admin tomonidan o'rnatilgan parol" : "O'quvchi o'zi ro'yxatdan o'tgan"}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">🔒 Yangi parol (ixtiyoriy)</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">🔒 Yangi parol (ixtiyoriy)</label>
                   <div className="relative">
                     <input value={formData.new_password} onChange={e => setFormData(p => ({ ...p, new_password: e.target.value }))}
                       type={showNewPwd ? 'text' : 'password'} placeholder="Kamida 8 belgi. Bo'sh qolsa o'zgarmaydi."
-                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm outline-none focus:border-indigo-400 pr-10" />
+                      className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white outline-none focus:border-indigo-400 pr-10" />
                     <button type="button" onClick={() => setShowNewPwd(!showNewPwd)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                       {showNewPwd ? '🙈' : '👁'}
@@ -406,8 +406,8 @@ export default function StudentsManager({ students }: { students: Student[] }) {
               </div>
 
               {/* Save */}
-              <div className="flex gap-3 pt-3 border-t mt-auto sticky bottom-0 bg-white sm:relative py-4 sm:py-0">
-                <button onClick={() => setEditStudent(null)} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Bekor qilish</button>
+              <div className="flex gap-3 pt-3 border-t dark:border-gray-700 mt-auto sticky bottom-0 bg-white dark:bg-gray-900 sm:relative py-4 sm:py-0">
+                <button onClick={() => setEditStudent(null)} className="flex-1 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">Bekor qilish</button>
                 <button onClick={handleSave} disabled={saving}
                   className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition disabled:opacity-50">
                   {saving ? '⏳ Saqlanmoqda...' : '💾 Saqlash'}
@@ -420,16 +420,16 @@ export default function StudentsManager({ students }: { students: Student[] }) {
       )}
       {deleteTarget && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-sm w-full shadow-xl border border-gray-100 dark:border-gray-800">
             <div className="text-center mb-5">
               <div className="text-5xl mb-3">🗑️</div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">O&apos;chirishni tasdiqlang</h3>
-              <p className="text-gray-500 text-sm">
-                <span className="font-semibold text-gray-700">{deleteTarget.name}</span> ni haqiqatan ham o&apos;chirmoqchimisiz? Bu amalni qaytarib bo&apos;lmaydi.
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">O&apos;chirishni tasdiqlang</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                <span className="font-semibold text-gray-700 dark:text-gray-200">{deleteTarget.name}</span> ni haqiqatan ham o&apos;chirmoqchimisiz? Bu amalni qaytarib bo&apos;lmaydi.
               </p>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => setDeleteTarget(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50">
+              <button onClick={() => setDeleteTarget(null)} className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800">
                 Bekor qilish
               </button>
               <button onClick={handleDelete} disabled={deleteLoading} className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-medium hover:bg-red-700 disabled:opacity-50">

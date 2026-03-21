@@ -19,7 +19,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -31,7 +31,7 @@ export default function Navbar() {
                 <a
                   key={link.label}
                   href={link.href}
-                  className="text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
+                  className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                 >
                   {link.label}
                 </a>
@@ -55,11 +55,11 @@ export default function Navbar() {
 
             {/* Mobile Hamburger — bigger touch target */}
             <button
-              className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors"
+              className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Menu"
             >
-              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+              {mobileOpen ? <X size={22} className="dark:text-gray-200" /> : <Menu size={22} className="dark:text-gray-200" />}
             </button>
           </div>
         </div>
@@ -74,19 +74,19 @@ export default function Navbar() {
             onClick={() => setMobileOpen(false)}
           />
           {/* Dropdown panel positioned exactly below the 64px header */}
-          <div className="fixed top-16 left-0 right-0 z-50 md:hidden bg-white shadow-2xl border-b border-gray-100">
+          <div className="fixed top-16 left-0 right-0 z-50 md:hidden bg-white dark:bg-gray-900 shadow-2xl border-b border-gray-100 dark:border-gray-800">
             <nav className="flex flex-col px-4 py-4 gap-1">
               {navLinks.map((link) => (
                 <a
                   key={link.label}
                   href={link.href}
-                  className="text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl px-4 py-3.5 transition-colors"
+                  className="text-base font-medium text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950 rounded-xl px-4 py-3.5 transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
                 </a>
               ))}
-              <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                 <Button
                   variant="outline"
                   className="w-full h-12 border-indigo-500 text-indigo-600 rounded-full text-base font-semibold"

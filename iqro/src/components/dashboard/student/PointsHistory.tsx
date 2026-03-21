@@ -61,8 +61,8 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
   return (
     <div className="space-y-4 w-full overflow-x-hidden px-4 sm:px-0">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-lg font-semibold text-gray-900">Ballar tarixi</h3>
-        <span className="text-sm font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full whitespace-nowrap">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Ballar tarixi</h3>
+        <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded-full whitespace-nowrap">
           Jami: {totalPoints} ball
         </span>
       </div>
@@ -76,7 +76,7 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
               filter === p.key
                 ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
             }`}
           >
             {p.label}
@@ -99,15 +99,15 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
         <div className="space-y-2 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
           {filtered.map(t => (
             <div key={t.id} 
-              className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm">
+              className="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl px-4 py-3 shadow-sm">
               <div className="flex items-center gap-3 min-w-0 pr-2">
                 <span className="text-xl flex-shrink-0">{SOURCE_ICONS[t.source] || '🎯'}</span>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-800 truncate">{t.reason}</p>
-                  <p className="text-xs text-gray-400 whitespace-nowrap">{formatDate(t.created_at)}</p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{t.reason}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{formatDate(t.created_at)}</p>
                 </div>
               </div>
-              <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
+              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
                 +{t.points} ball
               </span>
             </div>

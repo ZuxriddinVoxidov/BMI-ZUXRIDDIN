@@ -104,14 +104,14 @@ export default function DashboardContent({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08 }}
-              className="bg-white rounded-2xl p-5 border border-gray-100 hover:border-indigo-200 hover:shadow-md transition-all cursor-pointer"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 hover:border-indigo-200 hover:shadow-md transition-all cursor-pointer"
             >
               <div className={`w-10 h-10 ${stat.color} rounded-xl flex items-center justify-center mb-3`}>
                 <stat.icon size={20} />
               </div>
-              <p className="text-2xl font-extrabold text-gray-900">{stat.value}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{stat.label}</p>
-              <p className="text-[10px] text-gray-400 mt-0.5">{stat.subtitle}</p>
+              <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{stat.value}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{stat.label}</p>
+              <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{stat.subtitle}</p>
             </motion.div>
           </Link>
         ))}
@@ -163,11 +163,11 @@ export default function DashboardContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100"
+          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">So&apos;nggi arizalar</h3>
-            <Link href="/dashboard/applications" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">So&apos;nggi arizalar</h3>
+            <Link href="/dashboard/applications" className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-medium">
               Barchasi →
             </Link>
           </div>
@@ -175,7 +175,7 @@ export default function DashboardContent({
           {recentApplications.length === 0 ? (
             <div className="py-8 text-center">
               <span className="text-3xl">🎉</span>
-              <p className="text-sm text-gray-500 mt-2">Yangi ariza yo&apos;q</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Yangi ariza yo&apos;q</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -183,12 +183,12 @@ export default function DashboardContent({
                 const student = app.student as Record<string, unknown> | null
                 const club = app.club as Record<string, unknown> | null
                 return (
-                  <div key={app.id as string} className="flex items-center justify-between p-3 rounded-xl bg-amber-50/50">
+                  <div key={app.id as string} className="flex items-center justify-between p-3 rounded-xl bg-amber-50/50 dark:bg-amber-950/20">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold">⏳</div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-900">{(student?.full_name as string) || "O'quvchi"}</p>
-                        <p className="text-xs text-gray-500">{(club?.name as string) || "To'garak"}</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{(student?.full_name as string) || "O'quvchi"}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{(club?.name as string) || "To'garak"}</p>
                       </div>
                     </div>
                     <span className="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-600 font-medium">Kutilmoqda</span>
@@ -199,7 +199,7 @@ export default function DashboardContent({
               {recentApplications.length > 2 && (
                 <button 
                   onClick={() => setShowAllApps(!showAllApps)}
-                  className="w-full text-center mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
+                  className="w-full text-center mt-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition-colors"
                 >
                   {showAllApps ? 'Yashirish' : `Barchasini ko'rish (${recentApplications.length})`}
                 </button>
@@ -213,11 +213,11 @@ export default function DashboardContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100"
+          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800"
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">To&apos;garaklar</h3>
-            <Link href="/dashboard/clubs" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">To&apos;garaklar</h3>
+            <Link href="/dashboard/clubs" className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-medium">
               Barchasi →
             </Link>
           </div>
@@ -225,25 +225,25 @@ export default function DashboardContent({
           {recentClubs.length === 0 ? (
             <div className="py-8 text-center">
               <span className="text-3xl">🏫</span>
-              <p className="text-sm text-gray-500 mt-2">To&apos;garak qo&apos;shilmagan</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">To&apos;garak qo&apos;shilmagan</p>
             </div>
           ) : (
             <div className="space-y-3">
               {recentClubs.map(club => {
                 const teacher = club.teacher as Record<string, unknown> | null
                 return (
-                  <div key={club.id as string} className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                  <div key={club.id as string} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">📚</div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-900">{club.name as string}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{club.name as string}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           <Calendar size={10} className="inline mr-1" />
                           {(teacher?.full_name as string) || "O'qituvchi"}
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 font-medium">
+                    <span className="text-xs px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 font-medium">
                       {(club.category as string) || 'Boshqa'}
                     </span>
                   </div>
@@ -258,11 +258,11 @@ export default function DashboardContent({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100"
+          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800"
         >
-          <h3 className="text-lg font-bold text-gray-900 mb-4">🏆 Top o&apos;quvchilar</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">🏆 Top o&apos;quvchilar</h3>
           {topStudents.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-gray-400 dark:text-gray-500">
               <p className="text-3xl mb-2">🏆</p>
               <p className="text-sm">Hali reytingda hech kim yo&apos;q</p>
             </div>
@@ -271,24 +271,24 @@ export default function DashboardContent({
               {topStudents.map((s, i) => (
                 <div key={(s as Record<string, unknown>).student_id as string || i}
                   className={`flex items-center gap-3 p-3 rounded-xl ${
-                    i === 0 ? 'bg-amber-50 border border-amber-100'
-                    : i === 1 ? 'bg-gray-50 border border-gray-100'
-                    : i === 2 ? 'bg-orange-50 border border-orange-100'
-                    : 'hover:bg-gray-50'
+                    i === 0 ? 'bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900'
+                    : i === 1 ? 'bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700'
+                    : i === 2 ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900'
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}>
                   <span className="text-xl w-8 text-center">
                     {i < 3 ? medals[i] : (
-                      <span className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 text-xs font-bold inline-flex items-center justify-center">
+                      <span className="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 text-xs font-bold inline-flex items-center justify-center">
                         {i + 1}
                       </span>
                     )}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-gray-900 text-sm truncate">
+                    <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
                       {(s as Record<string, unknown>).full_name as string || "Noma'lum"}
                     </p>
                     {!!(s as Record<string, unknown>).grade ? (
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
                         {String((s as Record<string, unknown>).grade)}-sinf
                       </p>
                     ) : null}
@@ -308,9 +308,9 @@ export default function DashboardContent({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="bg-white rounded-2xl p-6 border border-gray-100"
+        className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800"
       >
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Tezkor amallar</h3>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Tezkor amallar</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { label: "To'garak qo'shish", href: '/dashboard/clubs', emoji: '➕' },
@@ -321,10 +321,10 @@ export default function DashboardContent({
             <Link
               key={action.label}
               href={action.href}
-              className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all"
+              className="flex items-center gap-3 p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-indigo-200 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/30 transition-all"
             >
               <span className="text-xl">{action.emoji}</span>
-              <span className="text-sm font-medium text-gray-700">{action.label}</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{action.label}</span>
             </Link>
           ))}
         </div>

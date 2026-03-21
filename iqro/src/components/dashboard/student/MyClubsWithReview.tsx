@@ -26,10 +26,10 @@ interface Props {
 export default function MyClubsWithReview({ enrollments }: Props) {
   if (enrollments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
+      <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
         <span className="text-5xl mb-4">🎯</span>
-        <h3 className="text-lg font-bold text-gray-900 mb-2">Hali to&apos;garaklarga a&apos;zo emassiz</h3>
-        <p className="text-gray-500 mb-6 font-medium text-sm">O&apos;zingizga yoqqan to&apos;garakni tanlang va a&apos;zo bo&apos;ling</p>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Hali to&apos;garaklarga a&apos;zo emassiz</h3>
+        <p className="text-gray-500 dark:text-gray-400 mb-6 font-medium text-sm">O&apos;zingizga yoqqan to&apos;garakni tanlang va a&apos;zo bo&apos;ling</p>
         <Link 
           href="/student/explore"
           className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition-all active:scale-95"
@@ -47,7 +47,7 @@ export default function MyClubsWithReview({ enrollments }: Props) {
         if (!club) return null
 
         return (
-          <div key={enrollment.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between group">
+          <div key={enrollment.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between group">
             <div>
               {/* Header */}
               <div className="flex items-center gap-4 mb-4">
@@ -55,17 +55,17 @@ export default function MyClubsWithReview({ enrollments }: Props) {
                   {club.emoji || '🎓'}
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate group-hover:text-indigo-600 transition-colors">
                     {club.name}
                   </h3>
-                  <p className="text-sm font-medium text-gray-500 truncate mt-0.5">
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate mt-0.5">
                     {club.profiles?.full_name || 'Ustoz belgilanmagan'}
                   </p>
                 </div>
               </div>
 
               {/* Details */}
-              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-600 mb-6 bg-gray-50 p-2.5 rounded-xl">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-600 dark:text-gray-300 mb-6 bg-gray-50 dark:bg-gray-800 p-2.5 rounded-xl">
                 {club.schedule && (
                   <span className="flex items-center gap-1.5">
                     <span className="text-sm opacity-80">📅</span> {club.schedule}
@@ -81,8 +81,8 @@ export default function MyClubsWithReview({ enrollments }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-gray-100 mt-auto">
-              <span className="inline-flex self-start sm:self-auto items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-sm font-bold border border-emerald-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-gray-100 dark:border-gray-800 mt-auto">
+              <span className="inline-flex self-start sm:self-auto items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-sm font-bold border border-emerald-100 dark:border-emerald-900">
                 <span className="text-xs">✅</span> A&apos;zosiz
               </span>
               

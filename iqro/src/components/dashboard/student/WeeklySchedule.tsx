@@ -85,11 +85,19 @@ export default function WeeklySchedule({ enrollments }: WeeklyScheduleProps) {
     <div className="overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
       <div className="grid grid-cols-5 gap-3 min-w-[700px] sm:min-w-0">
       {dayNames.map((day, i) => (
-        <div key={day} className={`rounded-2xl overflow-hidden border ${todayIndex === i ? 'border-indigo-300 bg-indigo-50/30' : 'border-gray-100 bg-white'}`}>
+        <div key={day} className={`rounded-2xl overflow-hidden border ${
+          todayIndex === i 
+            ? 'border-indigo-300 dark:border-indigo-700 bg-indigo-50/30 dark:bg-indigo-950/30' 
+            : 'border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900'
+        }`}>
           {/* Day header */}
-          <div className={`px-4 py-3 text-center ${todayIndex === i ? 'bg-indigo-100' : 'bg-gray-50'}`}>
-            <p className={`font-bold text-sm ${todayIndex === i ? 'text-indigo-700' : 'text-gray-700'}`}>{day}</p>
-            <p className="text-xs text-gray-400">{weekDates[i]}</p>
+          <div className={`px-4 py-3 text-center ${
+            todayIndex === i 
+              ? 'bg-indigo-100 dark:bg-indigo-900' 
+              : 'bg-gray-50 dark:bg-gray-800'
+          }`}>
+            <p className={`font-bold text-sm ${todayIndex === i ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-200'}`}>{day}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">{weekDates[i]}</p>
           </div>
 
           {/* Slots */}
@@ -98,17 +106,17 @@ export default function WeeklySchedule({ enrollments }: WeeklyScheduleProps) {
               daySlots[i].map((slot, j) => (
                 <div
                   key={j}
-                  className={`rounded-xl border-t-4 p-3 ${categoryBorders[slot.category] || 'border-t-gray-400 bg-gray-50/50'}`}
+                  className={`rounded-xl border-t-4 p-3 ${categoryBorders[slot.category] || 'border-t-gray-400 bg-gray-50/50 dark:bg-gray-800/50'}`}
                 >
-                  <p className="font-semibold text-sm text-gray-900">{slot.name}</p>
-                  {slot.time && <p className="text-xs text-gray-500 mt-1">🕐 {slot.time}</p>}
-                  {slot.room && <p className="text-xs text-gray-500">📍 {slot.room}</p>}
-                  {slot.teacher && <p className="text-xs text-gray-400 mt-1">{slot.teacher}</p>}
+                  <p className="font-semibold text-sm text-gray-900 dark:text-white">{slot.name}</p>
+                  {slot.time && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">🕐 {slot.time}</p>}
+                  {slot.room && <p className="text-xs text-gray-500 dark:text-gray-400">📍 {slot.room}</p>}
+                  {slot.teacher && <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{slot.teacher}</p>}
                 </div>
               ))
             ) : (
               <div className="flex items-center justify-center h-full">
-                <p className="text-xs text-gray-300">Bo&apos;sh</p>
+                <p className="text-xs text-gray-300 dark:text-gray-600">Bo&apos;sh</p>
               </div>
             )}
           </div>

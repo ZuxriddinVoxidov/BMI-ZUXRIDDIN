@@ -72,19 +72,19 @@ export default function AttendanceReport({ records }: AttendanceReportProps) {
       </div>
 
       {/* Chart */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-bold text-gray-800">Davomat tendensiyasi</h2>
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+          <h2 className="font-bold text-gray-800 dark:text-gray-100">Davomat tendensiyasi</h2>
+          <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
               onClick={() => setChartMode('weekly')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${chartMode === 'weekly' ? 'bg-white shadow text-indigo-700' : 'text-gray-500'}`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${chartMode === 'weekly' ? 'bg-white dark:bg-gray-700 shadow text-indigo-700 dark:text-indigo-300' : 'text-gray-500 dark:text-gray-400'}`}
             >
               Haftalik
             </button>
             <button
               onClick={() => setChartMode('monthly')}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${chartMode === 'monthly' ? 'bg-white shadow text-indigo-700' : 'text-gray-500'}`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${chartMode === 'monthly' ? 'bg-white dark:bg-gray-700 shadow text-indigo-700 dark:text-indigo-300' : 'text-gray-500 dark:text-gray-400'}`}
             >
               Oylik
             </button>
@@ -109,30 +109,30 @@ export default function AttendanceReport({ records }: AttendanceReportProps) {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-50">
-          <h2 className="font-bold text-gray-800">Davomat jadvali</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-50 dark:border-gray-800">
+          <h2 className="font-bold text-gray-800 dark:text-gray-100">Davomat jadvali</h2>
         </div>
         {records.length > 0 ? (
           <div className="overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0 no-scrollbar">
             <table className="w-full min-w-[600px] text-sm">
               <thead>
-                <tr className="border-b border-gray-50">
-                  <th className="text-left px-6 py-3 text-gray-500 font-medium">Sana</th>
-                  <th className="text-left px-6 py-3 text-gray-500 font-medium">To&apos;garak</th>
-                  <th className="text-left px-6 py-3 text-gray-500 font-medium">Holat</th>
-                  <th className="text-left px-6 py-3 text-gray-500 font-medium">Izoh</th>
+                <tr className="border-b border-gray-50 dark:border-gray-800">
+                  <th className="text-left px-6 py-3 text-gray-500 dark:text-gray-400 font-medium">Sana</th>
+                  <th className="text-left px-6 py-3 text-gray-500 dark:text-gray-400 font-medium">To&apos;garak</th>
+                  <th className="text-left px-6 py-3 text-gray-500 dark:text-gray-400 font-medium">Holat</th>
+                  <th className="text-left px-6 py-3 text-gray-500 dark:text-gray-400 font-medium">Izoh</th>
                 </tr>
               </thead>
               <tbody>
                 {records.map((r, i) => {
                   const club = r.club as Record<string, unknown> | null
                   return (
-                    <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50">
-                      <td className="px-6 py-3 text-gray-700">{r.date as string}</td>
-                      <td className="px-6 py-3 text-gray-700">{(club?.name as string) || '—'}</td>
+                    <tr key={i} className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
+                      <td className="px-6 py-3 text-gray-700 dark:text-gray-200">{r.date as string}</td>
+                      <td className="px-6 py-3 text-gray-700 dark:text-gray-200">{(club?.name as string) || '—'}</td>
                       <td className="px-6 py-3">{statusBadge(r.status as string)}</td>
-                      <td className="px-6 py-3 text-gray-400">{(r.note as string) || '—'}</td>
+                      <td className="px-6 py-3 text-gray-400 dark:text-gray-500">{(r.note as string) || '—'}</td>
                     </tr>
                   )
                 })}
@@ -140,7 +140,7 @@ export default function AttendanceReport({ records }: AttendanceReportProps) {
             </table>
           </div>
         ) : (
-          <div className="px-6 py-12 text-center text-gray-300">
+          <div className="px-6 py-12 text-center text-gray-300 dark:text-gray-600">
             <p className="text-4xl mb-3">📊</p>
             <p>Hali davomat ma&apos;lumotlari yo&apos;q</p>
           </div>

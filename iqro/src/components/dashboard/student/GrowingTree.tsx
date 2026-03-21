@@ -244,16 +244,16 @@ export default function GrowingTree({ points, level }: { points: number; level: 
       </motion.div>
 
       {/* Points Display */}
-      <p className="text-2xl font-extrabold text-gray-900 mb-1">
+      <p className="text-2xl font-extrabold text-gray-900 dark:text-white mb-1">
         {points}{' '}
-        <span className="text-base font-normal text-gray-400">
+        <span className="text-base font-normal text-gray-400 dark:text-gray-500">
           / {level.level === 4 ? '∞' : level.maxPoints + 1} ball
         </span>
       </p>
 
       {/* Progress Bar */}
       <div className="w-full max-w-xs mt-3 mb-2">
-        <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+        <div className="w-full h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
@@ -266,9 +266,9 @@ export default function GrowingTree({ points, level }: { points: number; level: 
 
       {/* Next Level Info */}
       {nextLevel ? (
-        <p className="text-xs text-gray-500 text-center">
+        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
           Keyingi daraja: <span className="font-semibold">{nextLevel.emoji} {nextLevel.nameUz}</span>
-          {' — '}<span className="font-bold text-gray-700">{pointsNeeded} ball</span> kerak
+          {' — '}<span className="font-bold text-gray-700 dark:text-gray-200">{pointsNeeded} ball</span> kerak
         </p>
       ) : (
         <p className="text-xs font-semibold text-emerald-600">
