@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Logo } from '@/components/shared/Logo'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 const NAV_ITEMS = [
   { href: '/director', icon: Home, label: "Bosh sahifa" },
@@ -69,6 +70,10 @@ export default function DirectorSidebar({ profile }: Props) {
         </nav>
 
         <div className="px-3 py-4 border-t border-gray-100 space-y-1">
+          <div className={`flex items-center gap-3 px-3 py-2.5 ${collapsed ? 'justify-center' : ''}`}>
+            <ThemeToggle />
+            {!collapsed && <span className="text-sm font-medium text-gray-500">Mavzu</span>}
+          </div>
           <button onClick={() => logout()} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full transition-all touch-manipulation">
             <LogOut size={20} />{!collapsed && <span>Chiqish</span>}
           </button>

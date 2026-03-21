@@ -5,6 +5,7 @@ import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Logo } from '@/components/shared/Logo'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -39,6 +40,7 @@ export default function Navbar() {
 
             {/* Desktop Buttons */}
             <div className="hidden md:flex items-center gap-3">
+              <ThemeToggle />
               <Button
                 variant="outline"
                 className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 rounded-full px-6"
