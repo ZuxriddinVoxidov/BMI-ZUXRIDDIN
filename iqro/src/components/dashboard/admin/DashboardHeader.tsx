@@ -1,10 +1,12 @@
 'use client'
 
 import NotificationBell from '@/components/shared/NotificationBell'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 export default function DashboardHeader() {
   return (
     <header className="h-14 sm:h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center justify-end px-4 sm:px-6 gap-3 sticky top-0 z-40">
+      <ThemeToggle />
       <NotificationBell />
       <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
         <div className="w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">

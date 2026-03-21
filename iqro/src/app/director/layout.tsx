@@ -1,5 +1,6 @@
 import DirectorSidebar from '@/components/dashboard/director/DirectorSidebar'
 import NotificationBell from '@/components/shared/NotificationBell'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -26,6 +27,7 @@ export default async function DirectorLayout({ children }: { children: React.Rea
         <div className="h-14 sm:h-16 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
           <p className="text-sm text-gray-500 dark:text-gray-400 truncate pl-10 sm:pl-0">Salom, {fullName.split(' ')[0]}! 👋</p>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <NotificationBell userId={profile.id} />
             <div className="hidden sm:flex items-center gap-2">
               <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">{initials}</div>

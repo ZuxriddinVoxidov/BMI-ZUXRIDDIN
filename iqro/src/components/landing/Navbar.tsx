@@ -40,7 +40,6 @@ export default function Navbar() {
 
             {/* Desktop Buttons */}
             <div className="hidden md:flex items-center gap-3">
-              <ThemeToggle />
               <Button
                 variant="outline"
                 className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 rounded-full px-6"
@@ -53,14 +52,17 @@ export default function Navbar() {
               </Button>
             </div>
 
-            {/* Mobile Hamburger — bigger touch target */}
-            <button
-              className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              onClick={() => setMobileOpen(!mobileOpen)}
-              aria-label="Menu"
-            >
-              {mobileOpen ? <X size={22} className="dark:text-gray-200" /> : <Menu size={22} className="dark:text-gray-200" />}
-            </button>
+            {/* Mobile items (ThemeToggle + Hamburger) */}
+            <div className="flex items-center gap-3 md:pl-3 md:border-l md:border-gray-200 md:dark:border-gray-700">
+              <ThemeToggle />
+              <button
+                className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                aria-label="Menu"
+              >
+                {mobileOpen ? <X size={22} className="dark:text-gray-200" /> : <Menu size={22} className="dark:text-gray-200" />}
+              </button>
+            </div>
           </div>
         </div>
       </header>

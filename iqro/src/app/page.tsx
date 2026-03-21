@@ -63,7 +63,7 @@ export default async function Home() {
     .limit(10)
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen w-full overflow-x-hidden">
       <Navbar />
       <HeroSection
         studentsCount={studentsCount || 0}

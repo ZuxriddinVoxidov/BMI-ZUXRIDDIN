@@ -16,7 +16,7 @@ export default function StatsSection({ studentsCount, clubsCount, avgRating }: S
   ]
 
   return (
-    <section className="py-16 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400">
+    <section className="py-16 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400 w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-3 gap-4 sm:gap-8">
           {stats.map((stat, i) => (

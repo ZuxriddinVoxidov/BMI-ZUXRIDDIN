@@ -145,7 +145,7 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
   }
 
   return (
-    <section id="clubs" className="py-20 bg-gradient-to-b from-blue-50/50 to-white">
+    <section id="clubs" className="py-20 bg-gradient-to-b from-blue-50/50 to-white w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-12 gap-4">

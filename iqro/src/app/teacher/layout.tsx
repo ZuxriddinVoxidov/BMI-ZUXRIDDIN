@@ -1,5 +1,6 @@
 import TeacherSidebar from '@/components/dashboard/teacher/TeacherSidebar'
 import NotificationBell from '@/components/shared/NotificationBell'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -33,6 +34,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
             Salom, {profile.full_name?.split(' ')[0] || 'O\'qituvchi'}! 👋
           </p>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <NotificationBell userId={profile.id} />
             <div className="hidden sm:flex items-center gap-2">
               <div className="w-9 h-9 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-xs">

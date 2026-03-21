@@ -1,6 +1,7 @@
 'use client'
 
 import NotificationBell from '@/components/shared/NotificationBell'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 export default function StudentHeader({
   fullName,
@@ -22,6 +23,7 @@ export default function StudentHeader({
         Salom, {firstName}! 👋
       </p>
       <div className="flex items-center gap-3 sm:gap-4">
+        <ThemeToggle />
         <NotificationBell userId={profileId} />
         <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
           <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm">
