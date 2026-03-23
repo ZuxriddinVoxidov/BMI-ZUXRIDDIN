@@ -19,6 +19,7 @@ interface Teacher {
   created_at: string
   school_id?: string
   clubs: { id: string; name: string }[]
+  avatar_url?: string | null
 }
 
 export default function TeachersManager({ teachers, schoolId }: { teachers: Teacher[]; schoolId: string }) {
@@ -203,7 +204,11 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                   <tr key={teacher.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="py-4 px-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">{initials}</div>
+                        {teacher.avatar_url ? (
+                          <img src={teacher.avatar_url} alt={teacher.full_name} className="w-9 h-9 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">{initials}</div>
+                        )}
                         <p className="text-sm font-semibold text-gray-900 dark:text-white">{teacher.full_name}</p>
                       </div>
                     </td>

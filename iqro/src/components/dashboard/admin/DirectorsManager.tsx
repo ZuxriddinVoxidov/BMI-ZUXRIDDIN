@@ -119,7 +119,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
           {directorsList.map((director) => (
             <div
               key={director.id}
-              className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all"
+              className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md transition-all"
             >
               {/* Banner */}
               <div className="h-24 bg-indigo-600 relative">
@@ -152,7 +152,7 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
                 </div>
 
                 {/* Info */}
-                <h3 className="font-bold text-gray-900 text-lg leading-tight mb-1">
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight mb-1">
                   {director.full_name}
                 </h3>
                 <p className="text-indigo-600 text-sm font-semibold mb-3">

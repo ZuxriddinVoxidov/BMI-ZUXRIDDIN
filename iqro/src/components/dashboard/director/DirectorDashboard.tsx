@@ -31,7 +31,7 @@ interface DirectorDashboardProps {
   attendanceRate: number
   chartData: { name: string; davomat: number }[]
   categoryData: { name: string; count: number }[]
-  teacherData: { id: string; name: string; clubs: number; rewards: number }[]
+  teacherData: { id: string; name: string; clubs: number; rewards: number; avatar_url?: string | null }[]
   topStudents: { name: string; points: number }[]
   activityData: { student: string; club: string; status: string; date: string }[]
 }
@@ -176,7 +176,11 @@ export default function DirectorDashboard({
                   <tr key={t.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="px-4 sm:px-6 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">{initials}</div>
+                        {t.avatar_url ? (
+                          <img src={t.avatar_url} alt={t.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">{initials}</div>
+                        )}
                         <span className="font-medium text-gray-700 dark:text-gray-200 truncate max-w-[100px]">{t.name}</span>
                       </div>
                     </td>

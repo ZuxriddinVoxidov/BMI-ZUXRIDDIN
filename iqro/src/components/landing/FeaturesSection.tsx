@@ -66,17 +66,20 @@ export default function FeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
-              className={`${feature.bg} dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-300`}
-            >
-              <div
-                className={`${feature.iconBg} w-14 h-14 rounded-2xl flex items-center justify-center mb-6 dark:opacity-90`}
+                 className="w-full bg-white dark:bg-gray-800 rounded-[2rem] p-8 sm:p-10 border border-gray-100 dark:border-gray-700 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 group"
               >
-                <feature.icon size={24} className="text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                {/* Icon */}
+                <div 
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${feature.iconBg} dark:bg-indigo-950 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300`}
+                >
+                  <feature.icon size={24} className="text-white" />
+                </div>
+
+                {/* Content */}
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>

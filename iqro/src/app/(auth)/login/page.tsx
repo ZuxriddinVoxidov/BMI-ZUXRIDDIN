@@ -286,7 +286,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="relative z-10">
-          <Logo className="mb-16" textClassName="text-white" />
+          <Logo className="mb-16" textClassName="text-white" forceDark={true} />
         </div>
 
         {/* Quote */}

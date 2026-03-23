@@ -17,6 +17,7 @@ export interface Profile {
   phone?: string
   parent_phone?: string
   school?: School
+  avatar_url?: string | null
 }
 
 export interface Club {

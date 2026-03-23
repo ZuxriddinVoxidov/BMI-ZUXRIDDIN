@@ -108,7 +108,7 @@ export default function ClubBuilderPage() {
   const catColor = getCategoryColor(club.category || '')
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       {/* Toast */}
       {toast && (
         <div className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl shadow-lg text-sm font-medium ${toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}>
@@ -117,12 +117,12 @@ export default function ClubBuilderPage() {
       )}
 
       {/* Header */}
-      <div className="bg-white border-b px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-gray-900 border-b dark:border-gray-800 px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <Link href="/dashboard/clubs" className="text-gray-400 hover:text-gray-600 text-sm whitespace-nowrap">
             ←<span className="hidden sm:inline"> To&apos;garaklarga qaytish</span>
           </Link>
-          <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">{emoji} <span className="truncate max-w-[150px] sm:max-w-none">{club.name}</span></h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">{emoji} <span className="truncate max-w-[150px] sm:max-w-none">{club.name}</span></h1>
           {published ? (
             <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full whitespace-nowrap">✅ Nashr qilingan</span>
           ) : (
@@ -138,13 +138,13 @@ export default function ClubBuilderPage() {
 
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* LEFT — PREVIEW (sticky) */}
-        <div className="lg:w-[420px] lg:flex-shrink-0 bg-gray-100 p-6 overflow-y-auto border-r border-gray-200">
+        <div className="lg:w-[420px] lg:flex-shrink-0 bg-gray-100 dark:bg-gray-950 p-6 overflow-y-auto border-r border-gray-200 dark:border-gray-800">
           <div className="flex gap-2 mb-4">
             {(['card', 'detail'] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setPreviewTab(tab)}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition ${previewTab === tab ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border'}`}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition ${previewTab === tab ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700'}`}
               >
                 {tab === 'card' ? '🃏 Karta' : '📄 Batafsil'}
               </button>
@@ -153,7 +153,7 @@ export default function ClubBuilderPage() {
 
           {previewTab === 'card' ? (
             /* Card Preview */
-            <div className="max-w-xs mx-auto bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
+            <div className="max-w-xs mx-auto bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800">
               <div className="relative h-36 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                 {formData.cover_image_url ? (
                   <>
@@ -166,7 +166,7 @@ export default function ClubBuilderPage() {
                 <div className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-xs font-semibold ${catColor}`}>{club.category}</div>
               </div>
               <div className="p-5">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{club.name}</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{club.name}</h3>
                 <div className="flex flex-wrap gap-1.5 mb-3">
                   {club.is_paid ? (
                     <span className="bg-amber-100 text-amber-700 text-xs font-semibold px-2 py-1 rounded-full">💳 {club.price?.toLocaleString()} so&apos;m</span>
@@ -198,13 +198,13 @@ export default function ClubBuilderPage() {
                 </div>
               </div>
               {/* Description */}
-              <div className="bg-white rounded-xl p-4 border">
+              <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-100 dark:border-gray-800">
                 <h3 className="font-bold text-sm mb-2">📖 To&apos;garak haqida</h3>
                 <p className="text-xs text-gray-600 whitespace-pre-wrap">{formData.full_description || club.description || "Ma'lumot kiritilmagan"}</p>
               </div>
               {/* Achievements */}
               {formData.achievements.length > 0 && (
-                <div className="bg-white rounded-xl p-4 border">
+                <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-100 dark:border-gray-800">
                   <h3 className="font-bold text-sm mb-2">🏆 Yutuqlar</h3>
                   <div className="flex flex-wrap gap-1">
                     {formData.achievements.map((a, i) => (
@@ -214,7 +214,7 @@ export default function ClubBuilderPage() {
                 </div>
               )}
               {/* Teacher */}
-              <div className="bg-white rounded-xl p-4 border">
+              <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-100 dark:border-gray-800">
                 <h3 className="font-bold text-sm mb-2">👨‍🏫 O&apos;qituvchi</h3>
                 <div className="flex items-center gap-3">
                   {formData.teacher_image_url ? (
@@ -233,7 +233,7 @@ export default function ClubBuilderPage() {
               </div>
               {/* Room */}
               {formData.room_image_url && (
-                <div className="bg-white rounded-xl overflow-hidden border">
+                <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={formData.room_image_url} alt="" className="w-full h-32 object-cover" />
                   <p className="text-center text-xs text-gray-500 py-2">📍 Dars xonasi</p>
@@ -244,22 +244,22 @@ export default function ClubBuilderPage() {
         </div>
 
         {/* RIGHT — FORM (scrollable) */}
-        <div className="flex-1 bg-white overflow-y-auto">
+        <div className="flex-1 bg-white dark:bg-gray-900 overflow-y-auto">
           <div className="p-6 space-y-6">
             {/* Description */}
             <div>
-              <h3 className="text-sm font-bold text-gray-900 mb-2">📝 To&apos;liq tavsif</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">📝 To&apos;liq tavsif</h3>
               <textarea
                 value={formData.full_description}
                 onChange={e => setFormData(p => ({ ...p, full_description: e.target.value }))}
                 placeholder="To'garak haqida batafsil yozing... Nima o'rganiladi? Kimlar uchun?"
                 rows={6}
-                className="w-full border rounded-xl p-3 text-sm outline-none focus:border-indigo-400 resize-none"
+                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl p-3 text-sm outline-none focus:border-indigo-400 resize-none"
               />
               <p className="text-xs text-gray-400 mt-1">{formData.full_description.length} / 1000</p>
             </div>
 
-            <hr className="border-gray-100" />
+            <hr className="border-gray-100 dark:border-gray-800" />
 
             {/* Section 2: Achievements */}
             <div>
@@ -283,23 +283,23 @@ export default function ClubBuilderPage() {
                   }
                 }}
                 placeholder="Yutuq qo'shing... (Enter bosing)"
-                className="w-full border rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400"
+                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl px-3 py-2 text-sm outline-none focus:border-indigo-400"
               />
             </div>
 
             {/* Teacher Bio */}
             <div>
-              <h3 className="text-sm font-bold text-gray-900 mb-2">👨‍🏫 O&apos;qituvchi haqida</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">👨‍🏫 O&apos;qituvchi haqida</h3>
               <textarea
                 value={formData.teacher_bio}
                 onChange={e => setFormData(p => ({ ...p, teacher_bio: e.target.value }))}
                 placeholder="O'qituvchi haqida qisqacha (tajriba, yutuqlar...)"
                 rows={3}
-                className="w-full border rounded-xl p-3 text-sm outline-none focus:border-indigo-400 resize-none"
+                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl p-3 text-sm outline-none focus:border-indigo-400 resize-none"
               />
             </div>
 
-            <hr className="border-gray-100" />
+            <hr className="border-gray-100 dark:border-gray-800" />
 
             {/* Section 4: Images */}
             <div>
@@ -334,13 +334,13 @@ export default function ClubBuilderPage() {
           </div>
 
           {/* Bottom Actions */}
-          <div className="sticky bottom-0 bg-white border-t p-4 flex gap-3 justify-between">
+          <div className="sticky bottom-0 bg-white dark:bg-gray-900 border-t dark:border-gray-800 p-4 flex gap-3 justify-between">
             <span className="text-xs text-gray-400 self-center">Tayyor bo&apos;lgach saqlang</span>
             <div className="flex gap-3">
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="px-4 py-2 border border-gray-200 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="px-4 py-2 border border-gray-200 dark:border-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors disabled:opacity-50"
               >
                 {isSaving ? '⏳ Saqlanmoqda...' : '💾 Saqlash'}
               </button>

@@ -37,9 +37,11 @@ const navItems = [
 export default function TeacherSidebar({
   fullName,
   clubCount,
+  avatarUrl,
 }: {
   fullName: string
   clubCount: number
+  avatarUrl?: string | null
 }) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
@@ -91,9 +93,13 @@ export default function TeacherSidebar({
 
       <div className={cn('px-4 py-4 border-b border-gray-100 dark:border-gray-800', collapsed && 'px-2')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
-            {initials}
-          </div>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={firstName} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
+              {initials}
+            </div>
+          )}
           {!collapsed && (
             <div>
               <p className="font-semibold text-sm text-gray-900 dark:text-white">
