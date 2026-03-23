@@ -1,3 +1,5 @@
+'use client'
+
 import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
 import Link from 'next/link'
 import { Logo } from '@/components/shared/Logo'
@@ -9,7 +11,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Logo & Description */}
           <div>
-            <Logo href="/" className="mb-4" textClassName="text-white" />
+            <Logo href="/" className="mb-4" textClassName="text-white" forceDark />
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
               O&apos;zbekiston maktablari uchun zamonaviy to&apos;garak va davomat
               boshqaruv platformasi.

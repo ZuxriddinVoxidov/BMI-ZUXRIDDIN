@@ -42,7 +42,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center gap-3">
               <Button
                 variant="outline"
-                className="border-indigo-500 text-indigo-600 hover:bg-indigo-50 rounded-full px-6"
+                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-full px-6"
                 asChild
               >
                 <Link href="/login">Kirish</Link>

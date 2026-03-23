@@ -42,7 +42,7 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
     const catColor = getCategoryColor(club.category)
 
     const cardContent = (
-      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-300 h-full flex flex-col">
         {/* Card Header */}
         <div className="relative h-36 shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
           {club.cover_image_url ? (
@@ -70,7 +70,7 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
 
         {/* Card Body */}
         <div className="p-5 flex flex-col flex-grow">
-          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1 border-b border-transparent">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1 border-b border-transparent">
             {club.name}
           </h3>
           {/* Price & Grade badges */}
@@ -95,20 +95,20 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
             )}
           </div>
           <div className="space-y-2 mb-4 shrink-0 mt-auto">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <User size={14} className="text-gray-400 shrink-0" />
               <span className="truncate">{club.teacher?.full_name || '-'}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Calendar size={14} className="text-gray-400 shrink-0" />
               <span className="truncate">{club.schedule || '-'}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Users size={14} className="text-gray-400 shrink-0" />
               <span>{enrollCount} / {club.max_students} o&apos;quvchi</span>
             </div>
           </div>
-          <div className="flex items-center justify-between shrink-0 pt-2 mt-auto border-t border-gray-50">
+          <div className="flex items-center justify-between shrink-0 pt-2 mt-auto border-t border-gray-50 dark:border-gray-800">
             <Badge
               className={
                 available
@@ -118,7 +118,7 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
             >
               {available ? "Bo'sh joy bor" : "To'lgan"}
             </Badge>
-            <Link href={`/clubs/${club.id}`} className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
+            <Link href={`/clubs/${club.id}`} className="text-indigo-600 dark:text-indigo-400 text-sm font-medium hover:text-indigo-700 dark:hover:text-indigo-300">
               Batafsil →
             </Link>
           </div>
@@ -145,7 +145,7 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
   }
 
   return (
-    <section id="clubs" className="py-20 bg-gradient-to-b from-blue-50/50 to-white w-full overflow-x-hidden">
+    <section id="clubs" className="py-20 bg-gradient-to-b from-blue-50/50 to-white dark:from-gray-900 dark:to-gray-950 w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-12 gap-4">
@@ -162,10 +162,10 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
             >
               To&apos;garaklar
             </Badge>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
               Eng yaxshi to&apos;garaklar
             </h2>
-            <p className="text-gray-500 max-w-lg">
+            <p className="text-gray-500 dark:text-gray-400 max-w-lg">
               O&apos;zingizga mos to&apos;garakni toping va hoziroq a&apos;zo bo&apos;ling
             </p>
           </motion.div>

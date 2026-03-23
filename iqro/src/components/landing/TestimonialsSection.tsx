@@ -14,7 +14,7 @@ interface Review {
 
 function ReviewCard({ review }: { review: Review }) {
   return (
-    <div className="w-80 flex-shrink-0 bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mx-3">
+    <div className="w-80 flex-shrink-0 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mx-3">
       {/* Stars */}
       <div className="flex gap-1 mb-4">
         {[1, 2, 3, 4, 5].map(star => (
@@ -28,7 +28,7 @@ function ReviewCard({ review }: { review: Review }) {
       </div>
 
       {/* Comment */}
-      <p className="text-gray-700 text-sm leading-relaxed mb-4 line-clamp-3 italic">
+      <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed mb-4 line-clamp-3 italic">
         &ldquo;{review.comment}&rdquo;
       </p>
 
@@ -38,7 +38,7 @@ function ReviewCard({ review }: { review: Review }) {
           {review.student?.full_name?.charAt(0) || '?'}
         </div>
         <div>
-          <p className="font-semibold text-sm text-gray-800">
+          <p className="font-semibold text-sm text-gray-800 dark:text-white">
             {review.student?.full_name || "O'quvchi"}
           </p>
           <p className="text-xs text-gray-500">
@@ -56,7 +56,7 @@ export default function TestimonialsSection({ reviews }: { reviews?: any[] }) {
   const hasReviews = data.length > 0
 
   return (
-    <section className="py-20 bg-gray-50/50 w-full overflow-x-hidden">
+    <section className="py-20 bg-gray-50/50 dark:bg-gray-900 w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -71,10 +71,10 @@ export default function TestimonialsSection({ reviews }: { reviews?: any[] }) {
           >
             Fikrlar ({data.length})
           </Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
             O&apos;quvchilar fikri
           </h2>
-          <p className="text-gray-500 max-w-lg mx-auto">
+          <p className="text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
             To&apos;garaklarga a&apos;zo bo&apos;lgan o&apos;quvchilarning fikrlari
           </p>
         </motion.div>

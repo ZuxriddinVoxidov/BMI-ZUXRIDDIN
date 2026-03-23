@@ -89,8 +89,8 @@ export default function NotificationBell({ userId }: { userId?: string }) {
 
   const notificationContent = (
     <>
-      <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
-        <h3 className="font-semibold text-gray-800 dark:text-gray-100 text-sm">Bildirishnomalar</h3>
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
+        <h3 className="font-semibold text-gray-800 dark:text-white text-sm">Bildirishnomalar</h3>
         <div className="flex items-center gap-2">
           {unreadCount > 0 && (
             <button onClick={markAllRead} className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-medium">
@@ -111,11 +111,11 @@ export default function NotificationBell({ userId }: { userId?: string }) {
         ) : (
           notifications.map(n => (
             <div key={n.id} onClick={() => !n.is_read && markOneRead(n.id)}
-              className={`p-4 border-b dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${!n.is_read ? 'bg-indigo-50/50 dark:bg-indigo-950/30' : ''}`}>
+              className={`p-4 border-b border-gray-100 dark:border-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${!n.is_read ? 'bg-indigo-50/50 dark:bg-indigo-950/30' : ''}`}>
               <div className="flex gap-3">
                 <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${n.is_read ? 'bg-gray-300 dark:bg-gray-600' : 'bg-indigo-500'}`} />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${n.is_read ? 'text-gray-600 dark:text-gray-400' : 'text-gray-800 dark:text-gray-100 font-medium'}`}>{n.message}</p>
+                  <p className={`text-sm ${n.is_read ? 'text-gray-600 dark:text-gray-400' : 'text-gray-800 dark:text-gray-200 font-medium'}`}>{n.message}</p>
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{timeAgo(n.created_at)}</p>
                 </div>
               </div>
@@ -129,7 +129,7 @@ export default function NotificationBell({ userId }: { userId?: string }) {
   return (
     <div className="relative" ref={dropdownRef}>
       <button onClick={() => setIsOpen(!isOpen)}
-        className="relative w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors">
+        className="relative w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
         <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
@@ -148,7 +148,7 @@ export default function NotificationBell({ userId }: { userId?: string }) {
           </div>
 
           {/* Desktop: dropdown */}
-          <div className="hidden sm:block absolute right-0 top-12 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 z-50 overflow-hidden">
+          <div className="hidden sm:block absolute right-0 top-12 w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-xl dark:shadow-gray-900 border border-gray-100 dark:border-gray-800 z-50 overflow-hidden">
             {notificationContent}
           </div>
         </>

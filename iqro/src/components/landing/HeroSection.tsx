@@ -34,7 +34,7 @@ export default function HeroSection({ studentsCount, clubsCount, avgRating }: He
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 bg-indigo-900"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 bg-indigo-900 dark:bg-gray-950"
     >
       {/* Background Slideshow */}
       <AnimatePresence mode="popLayout">

@@ -28,8 +28,8 @@ export default function DirectorDashboardClient(props: Props) {
     <DataLoader loading={!ready} minHeight="min-h-[500px]">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900">📊 Maktab ko&apos;rsatkichlari</h1>
-          <p className="text-sm text-gray-500 mt-1">{props.schoolName}</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">📊 Maktab ko&apos;rsatkichlari</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{props.schoolName}</p>
         </div>
 
         {props.pendingCount > 0 && (
@@ -41,22 +41,22 @@ export default function DirectorDashboardClient(props: Props) {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
           {kpi.map((k, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+            <div key={i} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-3">
                 <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${k.color} flex items-center justify-center`}>
                   <k.icon size={18} className="text-white" />
                 </div>
-                <BarChart3 size={14} className="text-gray-300" />
+                <BarChart3 size={14} className="text-gray-300 dark:text-gray-600" />
               </div>
-              <p className="text-2xl font-extrabold text-gray-900">{k.value}</p>
-              <p className="text-xs text-gray-500 mt-1">{k.label}</p>
+              <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{k.value}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{k.label}</p>
             </div>
           ))}
         </div>
 
         <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 w-full">
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 w-full overflow-x-auto no-scrollbar">
-            <h3 className="text-sm font-bold text-gray-700 mb-4">📈 Oylik davomat</h3>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 sm:p-6 w-full overflow-x-auto no-scrollbar">
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-4">📈 Oylik davomat</h3>
             <div className="min-w-[350px]">
               <ResponsiveContainer width="100%" height={250}>
               <BarChart data={props.monthlyData}>
@@ -71,8 +71,8 @@ export default function DirectorDashboardClient(props: Props) {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 w-full">
-            <h3 className="text-sm font-bold text-gray-700 mb-4">🕐 So&apos;nggi faoliyat</h3>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 sm:p-6 w-full">
+            <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-4">🕐 So&apos;nggi faoliyat</h3>
             <div className="space-y-3 max-h-[250px] overflow-y-auto">
               {props.recentActivity.length === 0 ? (
                 <p className="text-sm text-gray-400 text-center py-8">Faoliyat yo&apos;q</p>
@@ -80,8 +80,8 @@ export default function DirectorDashboardClient(props: Props) {
                 <div key={i} className="flex items-start gap-3 text-sm">
                   <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${a.status === 'approved' ? 'bg-emerald-400' : a.status === 'pending' ? 'bg-amber-400' : 'bg-red-400'}`} />
                   <div>
-                    <p className="text-gray-700"><span className="font-medium">{a.student?.full_name || '?'}</span> — {a.club?.name || '?'}</p>
-                    <p className="text-xs text-gray-400">{new Date(a.created_at).toLocaleDateString('uz-UZ')}</p>
+                    <p className="text-gray-700 dark:text-gray-200"><span className="font-medium">{a.student?.full_name || '?'}</span> — {a.club?.name || '?'}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{new Date(a.created_at).toLocaleDateString('uz-UZ')}</p>
                   </div>
                 </div>
               ))}

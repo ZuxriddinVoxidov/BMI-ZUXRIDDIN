@@ -33,7 +33,7 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="py-20 bg-white w-full overflow-x-hidden">
+    <section id="features" className="py-20 bg-white dark:bg-gray-900 w-full overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -49,10 +49,10 @@ export default function FeaturesSection() {
           >
             Imkoniyatlar
           </Badge>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-3">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
             Nima uchun IQRO?
           </h2>
-          <p className="text-gray-500 max-w-lg mx-auto">
+          <p className="text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
             Zamonaviy maktablar uchun eng aqlli va qulay boshqaruv tizimi
           </p>
         </motion.div>
@@ -66,17 +66,17 @@ export default function FeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
-              className={`${feature.bg} rounded-2xl p-8 border border-gray-100 hover:shadow-lg transition-shadow duration-300`}
+              className={`${feature.bg} dark:bg-gray-800 rounded-2xl p-8 border border-gray-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-300`}
             >
               <div
-                className={`${feature.iconBg} w-14 h-14 rounded-2xl flex items-center justify-center mb-6`}
+                className={`${feature.iconBg} w-14 h-14 rounded-2xl flex items-center justify-center mb-6 dark:opacity-90`}
               >
                 <feature.icon size={24} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                 {feature.description}
               </p>
             </motion.div>

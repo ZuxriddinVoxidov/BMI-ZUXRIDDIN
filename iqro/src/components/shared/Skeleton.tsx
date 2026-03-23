@@ -2,7 +2,7 @@ export function SkeletonBox({
   className = '' 
 }: { className?: string }) {
   return (
-    <div className={`animate-pulse bg-gray-200 dark:bg-gray-700 
+    <div className={`animate-pulse bg-gray-200 dark:bg-gray-800 
                     rounded-xl ${className}`} />
   )
 }
@@ -96,7 +96,7 @@ export function ChartSkeleton() {
       <div className="flex items-end gap-3 h-40">
         {[60,80,45,90,70,55,85].map((h, i) => (
           <div key={i} 
-            className="flex-1 bg-gray-200 dark:bg-gray-700
+            className="flex-1 bg-gray-200 dark:bg-gray-800
                       rounded-t-lg animate-pulse"
             style={{ height: `${h}%` }}
           />

@@ -148,19 +148,19 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
         
         {/* ================= WAITING ROOM ================= */}
         {status === 'waiting' && (
-          <motion.div key="waiting" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:1.05}} className="text-center space-y-8 max-w-lg w-full bg-white p-10 rounded-3xl border shadow-sm">
-            <div className="w-24 h-24 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <motion.div key="waiting" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:1.05}} className="text-center space-y-8 max-w-lg w-full bg-white dark:bg-gray-900 p-10 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
+            <div className="w-24 h-24 bg-blue-50 dark:bg-blue-950 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <Loader2 size={48} className="animate-spin" />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-gray-900 mb-2">{quiz.title}</h2>
-              <p className="font-medium text-gray-500">{quiz.clubs?.name}</p>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">{quiz.title}</h2>
+              <p className="font-medium text-gray-500 dark:text-gray-400">{quiz.clubs?.name}</p>
             </div>
-            <div className="bg-gray-50 border rounded-2xl p-6">
-              <p className="text-lg font-bold text-gray-800 animate-pulse">
+            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6">
+              <p className="text-lg font-bold text-gray-800 dark:text-gray-100 animate-pulse">
                 O&apos;qituvchi testni boshlashini kuting...
               </p>
-              <p className="text-sm text-gray-500 mt-2">Barcha o&apos;quvchilar qo&apos;shilgach, test boshlanadi.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Barcha o&apos;quvchilar qo&apos;shilgach, test boshlanadi.</p>
             </div>
           </motion.div>
         )}
@@ -170,8 +170,8 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
           <motion.div key="active" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="w-full max-w-4xl space-y-6">
             
             {/* Header / Timer & Nav */}
-            <div className="flex flex-col justify-between items-center gap-4 bg-white p-4 rounded-3xl border shadow-sm">
-              <div className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3 bg-amber-50 text-amber-600 font-bold font-mono text-2xl sm:text-xl rounded-2xl border border-amber-100 shrink-0">
+            <div className="flex flex-col justify-between items-center gap-4 bg-white dark:bg-gray-900 p-4 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
+              <div className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 font-bold font-mono text-2xl sm:text-xl rounded-2xl border border-amber-100 dark:border-amber-900/50 shrink-0">
                 <Clock size={24}/> {timeString}
               </div>
               <div className="flex flex-wrap gap-2 justify-center w-full">
@@ -180,11 +180,11 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                   const isAnswered = !!answers[q.id];
                   let btnClass = "w-8 h-8 text-xs sm:w-10 sm:h-10 sm:text-sm rounded-full flex items-center justify-center font-bold transition-all ";
                   if (isCurrent) {
-                    btnClass += "bg-indigo-600 text-white ring-4 ring-indigo-200";
+                    btnClass += "bg-indigo-600 text-white ring-4 ring-indigo-200 dark:ring-indigo-800";
                   } else if (isAnswered) {
-                    btnClass += "bg-indigo-100 text-indigo-700 border-2 border-indigo-400";
+                    btnClass += "bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 border-2 border-indigo-400";
                   } else {
-                    btnClass += "bg-gray-100 text-gray-500 hover:bg-gray-200";
+                    btnClass += "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700";
                   }
                   
                   return (
@@ -197,9 +197,9 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
             </div>
 
             {/* Question Card */}
-            <div className="bg-white p-6 sm:p-10 rounded-3xl border shadow-sm relative overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm relative overflow-hidden">
               <div className="flex justify-between items-start mb-8 gap-4">
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 leading-relaxed flex-1">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-relaxed flex-1">
                   <span className="text-indigo-500 mr-2">{currQIdx + 1}.</span>
                   {quiz.quiz_questions[currQIdx].question}
                 </h3>
@@ -215,12 +215,12 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                     <button 
                       key={opt}
                       onClick={() => handleSelect(opt)}
-                      className={`w-full min-h-[48px] text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 shadow-md transform scale-[1.01]' : 'border-gray-100 bg-white hover:border-gray-300 hover:bg-gray-50'}`}
+                      className={`w-full min-h-[48px] text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 shadow-md transform scale-[1.01]' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                     >
-                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-gray-200 group-hover:text-gray-600'}`}>
+                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-300 group-hover:bg-gray-200 dark:group-hover:bg-gray-600 group-hover:text-gray-600 dark:group-hover:text-white'}`}>
                         {opt}
                       </div>
-                      <span className={`font-semibold text-[16px] sm:text-lg ${isSelected ? 'text-emerald-900' : 'text-gray-700'}`}>
+                      <span className={`font-semibold text-[16px] sm:text-lg ${isSelected ? 'text-emerald-900 dark:text-emerald-100' : 'text-gray-700 dark:text-gray-200'}`}>
                         {optText}
                       </span>
                     </button>
@@ -233,14 +233,14 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                   <button 
                     disabled={currQIdx === 0} 
                     onClick={() => setCurrQIdx(prev => prev - 1)}
-                    className="flex-1 sm:flex-none px-6 py-3 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                    className="flex-1 sm:flex-none px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-200 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
                   >
                     Oldingi
                   </button>
                   <button 
                     disabled={currQIdx === totalQ - 1} 
                     onClick={() => setCurrQIdx(prev => prev + 1)}
-                    className="flex-1 sm:flex-none px-6 py-3 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                    className="flex-1 sm:flex-none px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-200 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
                   >
                     Keyingi
                   </button>
@@ -265,12 +265,12 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
 
         {/* ================= SUBMITTING / WAITING RESULTS ================= */}
         {((status === 'submitting') || (status === 'active' && finalScore !== null)) && (
-           <motion.div key="submitting" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:1.05}} className="text-center space-y-8 max-w-lg w-full bg-white p-10 rounded-3xl border shadow-sm">
-             <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+           <motion.div key="submitting" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0, scale:1.05}} className="text-center space-y-8 max-w-lg w-full bg-white dark:bg-gray-900 p-10 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
+             <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle size={48} className={finalScore !== null ? "" : "animate-bounce"} />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-gray-900 mb-2">✅ Test yakunlandi!</h2>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">✅ Test yakunlandi!</h2>
               {finalScore !== null && (
                 <div className="my-6">
                   <p className="text-2xl font-bold text-indigo-600">
@@ -283,7 +283,7 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
               )}
 
               {studentRank !== null && (
-                <div className="my-6 p-6 bg-indigo-50 rounded-2xl border border-indigo-100">
+                <div className="my-6 p-6 bg-indigo-50 dark:bg-indigo-950 rounded-2xl border border-indigo-100 dark:border-indigo-800">
                   {studentRank <= 5 ? (
                     <div className="text-indigo-700 font-bold text-lg leading-relaxed">
                       🎉 Tabriklaymiz! Siz <span className="font-black text-2xl">{studentRank}</span>-o&apos;rinni egalladingiz! <br/>
@@ -298,9 +298,9 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
               )}
 
             </div>
-            <div className="bg-gray-50 border rounded-2xl p-6 mt-6">
+            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mt-6">
               <Loader2 size={24} className="animate-spin text-gray-400 mx-auto mb-3" />
-              <p className="text-sm font-bold text-gray-600">
+              <p className="text-sm font-bold text-gray-600 dark:text-gray-300">
                 O&apos;qituvchi testni yakunlagandan keyin umumiy natijalar e&apos;lon qilinadi
               </p>
             </div>
@@ -309,39 +309,39 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
 
         {/* ================= FINAL RESULTS ================= */}
         {status === 'finished' && (
-          <motion.div key="finished" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} className="space-y-8 w-full max-w-2xl bg-white p-10 rounded-3xl border shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
+          <motion.div key="finished" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} className="space-y-8 w-full max-w-2xl bg-white dark:bg-gray-900 p-10 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-[0_10px_40px_rgba(0,0,0,0.05)]">
             <div className="text-center">
-              <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-blue-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
+              <div className="w-24 h-24 bg-gradient-to-br from-indigo-100 to-blue-50 dark:from-indigo-900 dark:to-blue-950 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white dark:border-gray-900 shadow-lg">
                 <Trophy size={48} />
               </div>
-              <h2 className="text-3xl font-black text-gray-900 mb-2">Test To&apos;liq Yakunlandi!</h2>
-              <p className="text-gray-500 font-medium">Barcha o&apos;quvchilar natijalari va ballar ro&apos;yxati</p>
+              <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Test To&apos;liq Yakunlandi!</h2>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">Barcha o&apos;quvchilar natijalari va ballar ro&apos;yxati</p>
             </div>
 
-            <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm">
               <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;rin</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;quvchi</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Natija</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase text-right">Ball</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">O&apos;rin</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">O&apos;quvchi</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Natija</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Ball</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {leaderboard.map((p, i) => {
                     const isMe = p.student_id === (participation?.student_id || '')
                     const points = i === 0 ? 15 : i === 1 ? 12 : i === 2 ? 9 : i === 3 ? 6 : i === 4 ? 3 : 0
                     return (
-                      <tr key={p.student_id} className={`transition-colors ${isMe ? 'bg-indigo-50/80 hover:bg-indigo-50' : 'hover:bg-gray-50/50'}`}>
-                        <td className="px-6 py-4 font-bold text-gray-800 text-lg">
+                      <tr key={p.student_id} className={`transition-colors ${isMe ? 'bg-indigo-50/80 dark:bg-indigo-950/50 hover:bg-indigo-50 dark:hover:bg-indigo-950/80' : 'hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
+                        <td className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200 text-lg">
                            {i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : (i + 1)}
                         </td>
                         <td className={`px-6 py-4 font-bold ${isMe ? 'text-indigo-700' : 'text-gray-800'}`}>
                           {p.full_name} {isMe && <span className="ml-2 text-[10px] bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-full uppercase tracking-wider">Siz</span>}
                         </td>
-                        <td className="px-6 py-4 font-bold text-gray-600">
-                          {p.score}/{totalQ} <span className="text-xs text-gray-400">({Math.round((p.score/totalQ)*100)}%)</span>
+                        <td className="px-6 py-4 font-bold text-gray-600 dark:text-gray-300">
+                          {p.score}/{totalQ} <span className="text-xs text-gray-400 dark:text-gray-500">({Math.round((p.score/totalQ)*100)}%)</span>
                         </td>
                         <td className="px-6 py-4 font-black text-right">
                           <span className={points > 0 ? 'text-emerald-600' : 'text-gray-400'}>

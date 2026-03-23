@@ -77,9 +77,9 @@ export default function ParentRequests() {
   if (requests.length === 0) return null
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6 overflow-hidden mt-6">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 overflow-hidden mt-6">
       <div className="flex items-center gap-2 mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Telegram ulanish so&apos;rovlari</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Telegram ulanish so&apos;rovlari</h2>
         <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full">
           {requests.length}
         </span>
@@ -88,7 +88,7 @@ export default function ParentRequests() {
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-gray-100 text-gray-500">
+            <tr className="border-b border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-400">
               <th className="py-3 px-4 font-medium">Ota-ona</th>
               <th className="py-3 px-4 font-medium">Farzand</th>
               <th className="py-3 px-4 font-medium text-right">Amal</th>
@@ -96,12 +96,12 @@ export default function ParentRequests() {
           </thead>
           <tbody>
             {requests.map(req => (
-              <tr key={req.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition">
-                <td className="py-4 px-4 font-medium text-gray-900">
+              <tr key={req.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                <td className="py-4 px-4 font-medium text-gray-900 dark:text-white">
                   {req.parent_name}
-                  <div className="text-xs text-gray-400 font-normal">Chat ID: {req.chat_id}</div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 font-normal">Chat ID: {req.chat_id}</div>
                 </td>
-                <td className="py-4 px-4 text-gray-600">{req.child_name}</td>
+                <td className="py-4 px-4 text-gray-600 dark:text-gray-300">{req.child_name}</td>
                 <td className="py-4 px-4 text-right">
                   <button 
                     onClick={() => {
@@ -120,13 +120,13 @@ export default function ParentRequests() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
-           <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
+           <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-md shadow-2xl relative">
              <button onClick={() => setShowModal(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
                <X size={20} />
              </button>
              
-             <h3 className="font-bold text-lg text-gray-900 mb-1">O&apos;quvchiga biriktirish</h3>
-             <p className="text-sm text-gray-500 mb-4">Qidirilgan matn: <span className="font-semibold text-gray-900">{showModal.child_name}</span></p>
+             <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-1">O&apos;quvchiga biriktirish</h3>
+             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Qidirilgan matn: <span className="font-semibold text-gray-900 dark:text-white">{showModal.child_name}</span></p>
 
              <div className="relative mb-4">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -135,15 +135,15 @@ export default function ParentRequests() {
                   placeholder="O'quvchini izlash..." 
                   value={search}
                   onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500"
+                  className="w-full pl-9 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white dark:placeholder:text-gray-400 focus:outline-none focus:border-indigo-500"
                 />
              </div>
 
-             <div className="border border-gray-100 rounded-xl divide-y max-h-48 overflow-y-auto mb-4">
+             <div className="border border-gray-100 dark:border-gray-700 rounded-xl divide-y divide-gray-100 dark:divide-y dark:divide-gray-700 max-h-48 overflow-y-auto mb-4">
                {filteredStudents.length > 0 ? filteredStudents.map(s => (
-                 <label key={s.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer">
+                 <label key={s.id} className="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer">
                    <input type="radio" name="student" onChange={() => setSelectedStudent(s.id)} checked={selectedStudent === s.id} className="text-indigo-600" />
-                   <span className="text-sm font-medium text-gray-900">{s.full_name}</span>
+                   <span className="text-sm font-medium text-gray-900 dark:text-white">{s.full_name}</span>
                  </label>
                )) : (
                  <div className="p-4 text-center text-sm text-gray-500">O&apos;quvchi topilmadi</div>

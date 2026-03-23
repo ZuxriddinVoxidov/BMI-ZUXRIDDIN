@@ -148,17 +148,17 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
     <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
       
       {/* Header Info */}
-      <div className="bg-white p-6 rounded-2xl border shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
         <div>
-          <h1 className="text-2xl font-black text-gray-900">{quiz.title}</h1>
-          <p className="text-gray-500 font-medium mt-1">{quiz.clubs?.name}</p>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">{quiz.title}</h1>
+          <p className="text-gray-500 dark:text-gray-400 font-medium mt-1">{quiz.clubs?.name}</p>
         </div>
         <div className="flex gap-4">
-          <div className="text-center px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl">
+          <div className="text-center px-4 py-2 bg-indigo-50 dark:bg-gray-800 text-indigo-700 rounded-xl">
             <p className="text-xs font-bold uppercase tracking-wider mb-1">Savollar</p>
             <p className="text-xl font-black">{quiz.quiz_questions?.length}</p>
           </div>
-          <div className="text-center px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl">
+          <div className="text-center px-4 py-2 bg-emerald-50 dark:bg-gray-800 text-emerald-700 rounded-xl">
             <p className="text-xs font-bold uppercase tracking-wider mb-1">O&apos;quvchilar</p>
             <p className="text-xl font-black">{totalCount}</p>
           </div>
@@ -183,11 +183,11 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               <AnimatePresence>
                 {participants.map(p => (
-                  <motion.div key={p.id} initial={{scale:0.8, opacity:0}} animate={{scale:1, opacity:1}} className="bg-white border rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-sm">
+                  <motion.div key={p.id} initial={{scale:0.8, opacity:0}} animate={{scale:1, opacity:1}} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-sm">
                     <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg mb-3">
                       {p.profiles?.full_name?.charAt(0)}
                     </div>
-                    <span className="font-bold text-gray-800 text-sm line-clamp-1">{p.profiles?.full_name}</span>
+                    <span className="font-bold text-gray-800 dark:text-gray-200 text-sm line-clamp-1">{p.profiles?.full_name}</span>
                   </motion.div>
                 ))}
               </AnimatePresence>
@@ -204,24 +204,24 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
         {/* ================= ACTIVE STATE ================= */}
         {status === 'active' && (
           <motion.div key="active" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-amber-50 border border-amber-200 p-6 rounded-2xl shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-6 rounded-2xl shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-600 flex items-center justify-center">
                   <Clock size={32} />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-amber-700 uppercase tracking-wider mb-1">Qolgan vaqt</p>
-                  <p className="text-4xl font-black text-amber-600 font-mono tracking-tight">{timeString}</p>
+                  <p className="text-sm font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider mb-1">Qolgan vaqt</p>
+                  <p className="text-4xl font-black text-amber-600 dark:text-amber-400 font-mono tracking-tight">{timeString}</p>
                 </div>
               </div>
               
               <div className="text-center">
-                <p className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Jarayon</p>
+                <p className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Jarayon</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-48 h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="w-48 h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${totalCount > 0 ? (finishedCount/totalCount)*100 : 0}%` }} />
                   </div>
-                  <span className="font-bold text-gray-700">{finishedCount} / {totalCount}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-300">{finishedCount} / {totalCount}</span>
                 </div>
               </div>
               
@@ -230,18 +230,18 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
               </button>
             </div>
 
-            <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto no-scrollbar pb-2">
                 <table className="w-full text-left min-w-[400px]">
-                  <thead className="bg-gray-50 border-b">
+                  <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">O&apos;quvchi</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Holat</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">O&apos;quvchi</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Holat</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {participants.map(p => (
-                    <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">

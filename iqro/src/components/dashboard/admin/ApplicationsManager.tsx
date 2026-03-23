@@ -70,19 +70,19 @@ export default function ApplicationsManager({
   return (
     <DataLoader loading={!dataReady} minHeight="min-h-[300px]">
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Arizalar</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Arizalar</h1>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-2xl p-1.5">
+      <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-2xl p-1.5">
         <button
           onClick={() => setActiveTab('pending')}
           className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-            activeTab === 'pending' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            activeTab === 'pending' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
           }`}
         >
           Kutilmoqda
           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-            activeTab === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-gray-200 text-gray-500'
+            activeTab === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
           }`}>
             {pending.length}
           </span>
@@ -90,12 +90,12 @@ export default function ApplicationsManager({
         <button
           onClick={() => setActiveTab('processed')}
           className={`flex-1 py-3 px-4 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 ${
-            activeTab === 'processed' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            activeTab === 'processed' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
           }`}
         >
           Qayta ishlangan
           <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-            activeTab === 'processed' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-200 text-gray-500'
+            activeTab === 'processed' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
           }`}>
             {processed.length}
           </span>
@@ -110,8 +110,8 @@ export default function ApplicationsManager({
               <div className="w-20 h-20 rounded-full bg-green-50 flex items-center justify-center mb-4">
                 <span className="text-4xl">🎉</span>
               </div>
-              <h3 className="text-lg font-bold text-gray-900">Hozircha yangi ariza yo&apos;q</h3>
-              <p className="text-sm text-gray-500 mt-1">Yangi arizalar kelganda bu yerda ko&apos;rinadi</p>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Hozircha yangi ariza yo&apos;q</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Yangi arizalar kelganda bu yerda ko&apos;rinadi</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -120,7 +120,7 @@ export default function ApplicationsManager({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
                 >
                   <div className="flex items-center gap-4 w-full sm:w-auto">
                     <div className="w-11 h-11 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">
@@ -128,20 +128,20 @@ export default function ApplicationsManager({
                         .split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)}
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-gray-900 dark:text-white">
                         {app.student?.full_name || "Noma'lum"}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-sm text-gray-500">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
                           {app.club?.name || "To'garak"}
                         </span>
                         {app.club?.category && (
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                             {app.club.category}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                         {formatDate(app.created_at)}
                       </p>
                     </div>
@@ -172,7 +172,7 @@ export default function ApplicationsManager({
       {/* Processed Tab */}
       {activeTab === 'processed' && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
           {processed.length === 0 ? (
             <div className="py-12 text-center text-gray-500 text-sm">
               Hali qayta ishlangan ariza yo&apos;q
@@ -181,17 +181,17 @@ export default function ApplicationsManager({
             <div className="overflow-x-auto no-scrollbar">
             <table className="w-full min-w-[600px]">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">
                     O&apos;quvchi
                   </th>
-                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">
+                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">
                     To&apos;garak
                   </th>
-                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">
+                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">
                     Sana
                   </th>
-                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">
+                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">
                     Holat
                   </th>
                 </tr>
@@ -200,14 +200,14 @@ export default function ApplicationsManager({
                 {processed.map((app) => {
                   const cfg = statusConfig[app.status] || statusConfig.pending
                   return (
-                    <tr key={app.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
-                      <td className="py-4 px-6 text-sm font-semibold text-gray-900">
+                    <tr key={app.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
+                      <td className="py-4 px-6 text-sm font-semibold text-gray-900 dark:text-white">
                         {app.student?.full_name || '-'}
                       </td>
-                      <td className="py-4 px-6 text-sm text-gray-600">
+                      <td className="py-4 px-6 text-sm text-gray-600 dark:text-gray-300">
                         {app.club?.name || '-'}
                       </td>
-                      <td className="py-4 px-6 text-sm text-gray-500">
+                      <td className="py-4 px-6 text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(app.created_at)}
                       </td>
                       <td className="py-4 px-6">

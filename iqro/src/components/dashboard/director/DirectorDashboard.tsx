@@ -84,7 +84,7 @@ export default function DirectorDashboard({
     <div className="space-y-6">
       {/* Export buttons */}
       <div className="flex flex-wrap justify-between items-start gap-3">
-        <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900">Direktor paneli</h1>
+        <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white">Direktor paneli</h1>
         <div className="flex gap-2">
           <button onClick={handleExportPDF} className="flex items-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition-colors">📄 PDF</button>
           <button onClick={handleExportExcel} className="flex items-center gap-2 px-3 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-medium transition-colors">📊 Excel</button>
@@ -110,8 +110,8 @@ export default function DirectorDashboard({
       {/* Charts Row */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Bar Chart */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100">
-          <h2 className="font-bold text-gray-800 mb-4">Oylik davomat tendensiyasi</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+          <h2 className="font-bold text-gray-800 dark:text-gray-100 mb-4">Oylik davomat tendensiyasi</h2>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -124,8 +124,8 @@ export default function DirectorDashboard({
         </div>
 
         {/* Category Horizontal Bars */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-100">
-          <h2 className="font-bold text-gray-800 mb-4">To&apos;garaklar kategoriya bo&apos;yicha</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+          <h2 className="font-bold text-gray-800 dark:text-gray-100 mb-4">To&apos;garaklar kategoriya bo&apos;yicha</h2>
           <div className="space-y-4">
             {categoryData.map((cat) => {
               const pct = totalCats > 0 ? Math.round((cat.count / totalCats) * 100) : 0
@@ -133,10 +133,10 @@ export default function DirectorDashboard({
               return (
                 <div key={cat.name}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="font-medium text-gray-700">{cat.name}</span>
-                    <span className="text-gray-400">{cat.count} ta ({pct}%)</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-200">{cat.name}</span>
+                    <span className="text-gray-400 dark:text-gray-500">{cat.count} ta ({pct}%)</span>
                   </div>
-                  <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                     <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
                   </div>
                 </div>
@@ -152,18 +152,18 @@ export default function DirectorDashboard({
       {/* Teacher + Top Students */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Teachers Table */}
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-50">
-            <h2 className="font-bold text-gray-800">O&apos;qituvchilar samaradorligi</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-50 dark:border-gray-800">
+            <h2 className="font-bold text-gray-800 dark:text-gray-100">O&apos;qituvchilar samaradorligi</h2>
           </div>
           <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-50">
-                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 font-medium">O&apos;qituvchi</th>
-                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 font-medium">To&apos;garaklar</th>
-                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 font-medium">Rag&apos;batlar</th>
-                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 font-medium">Daraja</th>
+              <tr className="border-b border-gray-50 dark:border-gray-800">
+                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 dark:text-gray-400 font-medium">O&apos;qituvchi</th>
+                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 dark:text-gray-400 font-medium">To&apos;garaklar</th>
+                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 dark:text-gray-400 font-medium">Rag&apos;batlar</th>
+                <th className="text-left px-4 sm:px-6 py-3 text-gray-500 dark:text-gray-400 font-medium">Daraja</th>
               </tr>
             </thead>
             <tbody>
@@ -173,15 +173,15 @@ export default function DirectorDashboard({
                 const initials = t.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
                 return (
-                  <tr key={t.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                  <tr key={t.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="px-4 sm:px-6 py-3">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">{initials}</div>
-                        <span className="font-medium text-gray-700 truncate max-w-[100px]">{t.name}</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-200 truncate max-w-[100px]">{t.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 sm:px-6 py-3 text-gray-600">{t.clubs}</td>
-                    <td className="px-4 sm:px-6 py-3 text-gray-600">{t.rewards}</td>
+                    <td className="px-4 sm:px-6 py-3 text-gray-600 dark:text-gray-300">{t.clubs}</td>
+                    <td className="px-4 sm:px-6 py-3 text-gray-600 dark:text-gray-300">{t.rewards}</td>
                     <td className="px-4 sm:px-6 py-3">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${gradeColor}`}>{grade}</span>
                     </td>
@@ -197,8 +197,8 @@ export default function DirectorDashboard({
         </div>
 
         {/* Top 5 Students */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="font-bold text-gray-800 mb-4">Top 5 o&apos;quvchilar</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+          <h2 className="font-bold text-gray-800 dark:text-gray-100 mb-4">Top 5 o&apos;quvchilar</h2>
           <div className="space-y-3">
             {topStudents.map((s, i) => {
               const level = getStudentLevel(s.points)
@@ -209,8 +209,8 @@ export default function DirectorDashboard({
                     {s.name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-sm text-gray-900">{s.name}</p>
-                    <p className="text-xs text-gray-400">{level.emoji} {level.name}</p>
+                    <p className="font-medium text-sm text-gray-900 dark:text-white">{s.name}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{level.emoji} {level.name}</p>
                   </div>
                   <span className="font-bold text-indigo-600">{s.points} ball</span>
                 </div>
@@ -224,17 +224,17 @@ export default function DirectorDashboard({
       </div>
 
       {/* Activity Feed */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
-        <h2 className="font-bold text-gray-800 mb-4">So&apos;nggi faoliyat</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <h2 className="font-bold text-gray-800 dark:text-gray-100 mb-4">So&apos;nggi faoliyat</h2>
         <div className="space-y-3">
           {activityData.map((a, i) => (
-            <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
+            <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-50 dark:border-gray-800 last:border-0">
               <span className="text-lg">{a.status === 'approved' ? '✅' : a.status === 'pending' ? '👤' : '❌'}</span>
-              <p className="text-sm text-gray-700 flex-1">
+              <p className="text-sm text-gray-700 dark:text-gray-200 flex-1">
                 <span className="font-medium">{a.student}</span>
                 {a.status === 'approved' ? ' ' + a.club + ' ga qabul qilindi' : a.status === 'pending' ? ' ' + a.club + ' ga ariza yubordi' : ' arizasi rad etildi'}
               </p>
-              <span className="text-xs text-gray-400">{timeAgo(a.date)}</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">{timeAgo(a.date)}</span>
             </div>
           ))}
           {activityData.length === 0 && (

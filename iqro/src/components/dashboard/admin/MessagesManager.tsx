@@ -66,8 +66,8 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900">📬 Bog&apos;lanish xabarlari</h1>
-          <p className="text-sm text-gray-500 mt-1">{messages.length} ta xabar</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">📬 Bog&apos;lanish xabarlari</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{messages.length} ta xabar</p>
         </div>
         {unreadCount > 0 && (
           <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -85,7 +85,7 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
           { key: 'replied' as const, label: 'Javob berilgan' },
         ].map(tab => (
           <button key={tab.key} onClick={() => setFilter(tab.key)}
-            className={`whitespace-nowrap flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition ${filter === tab.key ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border hover:bg-gray-50'}`}>
+            className={`whitespace-nowrap flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition ${filter === tab.key ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
             {tab.label}
           </button>
         ))}
@@ -95,13 +95,13 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
       {filtered.length === 0 ? (
         <div className="text-center py-16">
           <span className="text-4xl block mb-3">📭</span>
-          <p className="text-gray-500">Xabar topilmadi</p>
+          <p className="text-gray-500 dark:text-gray-400">Xabar topilmadi</p>
         </div>
       ) : (
         <div className="space-y-3">
           {filtered.map(msg => (
             <div key={msg.id}
-              className={`bg-white rounded-2xl p-5 border transition-shadow ${!msg.is_read ? 'border-l-4 border-l-indigo-500 shadow-md' : 'border-gray-100'}`}>
+              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-shadow ${!msg.is_read ? 'border-l-4 border-l-indigo-500 shadow-md' : 'border-gray-100 dark:border-gray-800'}`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">
@@ -109,24 +109,24 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-gray-900 text-sm">{msg.full_name}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">{msg.full_name}</p>
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${subjectColors[msg.subject] || 'bg-gray-100 text-gray-600'}`}>
                         {msg.subject}
                       </span>
                       {!msg.is_read && <span className="w-2 h-2 bg-indigo-500 rounded-full" />}
                       {msg.is_replied && <span className="text-xs text-emerald-600">✅ Javob berildi</span>}
                     </div>
-                    <p className="text-xs text-gray-400">{msg.email}{msg.phone ? ` · ${msg.phone}` : ''}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{msg.email}{msg.phone ? ` · ${msg.phone}` : ''}</p>
                   </div>
                 </div>
-                <span className="text-xs text-gray-400 whitespace-nowrap">{timeAgo(msg.created_at)}</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{timeAgo(msg.created_at)}</span>
               </div>
 
-              <p className="text-sm text-gray-600 mt-3 line-clamp-2">{msg.message}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 line-clamp-2">{msg.message}</p>
 
               <div className="flex gap-2 mt-3">
                 <button onClick={() => setDetail(msg)}
-                  className="text-xs px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 font-medium">
+                  className="text-xs px-3 py-1.5 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 font-medium">
                   👁 Ko&apos;rish
                 </button>
                 {!msg.is_read && (
@@ -150,10 +150,10 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
       {/* Detail Dialog */}
       {detail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 sm:p-4 p-0" onClick={() => setDetail(null)}>
-          <div className="bg-white sm:rounded-2xl max-w-lg w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-6 shadow-2xl overflow-y-auto flex flex-col" onClick={e => e.stopPropagation()}>
+          <div className="bg-white dark:bg-gray-900 sm:rounded-2xl max-w-lg w-full h-full sm:h-auto sm:max-h-[90vh] p-4 sm:p-6 shadow-2xl overflow-y-auto flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4 shrink-0">
-              <h3 className="text-lg font-bold text-gray-900">📬 Xabar tafsilotlari</h3>
-              <button onClick={() => setDetail(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">📬 Xabar tafsilotlari</h3>
+              <button onClick={() => setDetail(null)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600">✕</button>
             </div>
 
             <div className="space-y-4 mb-6 flex-1 overflow-y-auto pr-1">
@@ -165,7 +165,7 @@ export default function MessagesManager({ messages: initial }: { messages: Msg[]
               </div>
               <div>
                 <p className="text-xs text-gray-400 mb-1">Xabar</p>
-                <div className="text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 rounded-xl p-4 border border-gray-100">
+                <div className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
                   {detail.message}
                 </div>
               </div>

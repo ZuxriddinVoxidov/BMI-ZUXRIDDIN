@@ -70,31 +70,31 @@ export default function TeacherStudents({ enrollments, attendanceData }: { enrol
 
   return (
     <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
-      <h1 className="text-2xl font-extrabold text-gray-900">O&apos;quvchilar</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">O&apos;quvchilar</h1>
 
       <div className="relative">
         <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
         <input type="text" placeholder="Ism bo'yicha qidirish..." value={search} onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300" />
+          className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500" />
       </div>
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
           <span className="text-4xl mb-3">👨‍🎓</span>
-          <h3 className="text-lg font-bold text-gray-900">O&apos;quvchi topilmadi</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">O&apos;quvchi topilmadi</h3>
         </div>
       ) : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-          className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+          className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
           <div className="overflow-x-auto no-scrollbar pb-2">
             <table className="w-full min-w-[700px]">
               <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">O&apos;quvchi</th>
-                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">To&apos;garak</th>
-                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">Daraja</th>
-                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 uppercase">Davomat</th>
-                <th className="text-right py-4 px-6 text-xs font-semibold text-gray-400 uppercase">Amal</th>
+              <tr className="border-b border-gray-100 dark:border-gray-800">
+                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">O&apos;quvchi</th>
+                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">To&apos;garak</th>
+                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Daraja</th>
+                <th className="text-left py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Davomat</th>
+                <th className="text-right py-4 px-6 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase">Amal</th>
               </tr>
             </thead>
             <tbody>
@@ -104,26 +104,26 @@ export default function TeacherStudents({ enrollments, attendanceData }: { enrol
                 const pct = s.total > 0 ? Math.round((s.present / s.total) * 100) : 0
                 return (
                   <motion.tr key={s.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-                    className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
+                    className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">{initials}</div>
-                        <span className="text-sm font-semibold text-gray-900">{s.name}</span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">{s.name}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-sm text-gray-600">{s.club}</td>
+                    <td className="py-4 px-6 text-sm text-gray-600 dark:text-gray-300">{s.club}</td>
                     <td className="py-4 px-6">
-                      <span className="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 font-medium">
+                      <span className="text-xs px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 font-medium">
                         {level.emoji} {level.name}
                       </span>
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-20 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="w-20 h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div className={`h-full rounded-full ${pct >= 80 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
                             style={{ width: `${pct}%` }} />
                         </div>
-                        <span className="text-xs font-medium text-gray-600">{pct}%</span>
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-300">{pct}%</span>
                       </div>
                     </td>
                     <td className="py-4 px-6 text-right">
@@ -148,9 +148,9 @@ export default function TeacherStudents({ enrollments, attendanceData }: { enrol
         {viewStudentWorks && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="font-bold text-xl text-gray-900">{viewStudentWorks.name}ning ishlari</h3>
+                <h3 className="font-bold text-xl text-gray-900 dark:text-white">{viewStudentWorks.name}ning ishlari</h3>
                 <button onClick={() => setViewStudentWorks(null)} className="text-gray-400 hover:text-gray-600"><X size={24} /></button>
               </div>
 
@@ -163,12 +163,12 @@ export default function TeacherStudents({ enrollments, attendanceData }: { enrol
                       const clubName = (w.club as any)?.name || ''
                       const date = new Date(w.created_at).toLocaleDateString('uz-UZ')
                       return (
-                        <div key={w.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+                        <div key={w.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
                           <div className="flex items-start gap-3">
                             <div className="mt-1 text-indigo-500"><FolderOpen size={20} /></div>
                             <div>
-                              <h4 className="font-semibold text-gray-900">{w.title}</h4>
-                              <div className="flex gap-2 text-xs text-gray-500 mt-1">
+                              <h4 className="font-semibold text-gray-900 dark:text-white">{w.title}</h4>
+                              <div className="flex gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 {clubName && <span className="text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">{clubName}</span>}
                                 <span>{date}</span>
                               </div>

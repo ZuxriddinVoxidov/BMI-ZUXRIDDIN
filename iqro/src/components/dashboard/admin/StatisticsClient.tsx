@@ -34,20 +34,20 @@ export default function StatisticsClient(props: Props) {
 
   return (
     <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
-      <h1 className="text-2xl font-extrabold text-gray-900">Tizim statistikasi</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Tizim statistikasi</h1>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {kpiCards.map((kpi, i) => (
           <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${kpi.color}`}>
               <kpi.icon size={22} />
             </div>
             <div>
-              <p className="text-2xl font-extrabold text-gray-900">{kpi.value}</p>
-              <p className="text-sm text-gray-500">{kpi.label}</p>
+              <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{kpi.value}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{kpi.label}</p>
             </div>
           </motion.div>
         ))}
@@ -56,8 +56,8 @@ export default function StatisticsClient(props: Props) {
       <div className="grid lg:grid-cols-2 gap-4 lg:gap-6 w-full">
         {/* Line Chart — User Growth */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 w-full overflow-x-auto no-scrollbar">
-          <h3 className="text-lg font-bold text-gray-900 mb-4 cursor-default">Oylik foydalanuvchilar o&apos;sishi</h3>
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-6 border border-gray-100 dark:border-gray-800 w-full overflow-x-auto no-scrollbar">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 cursor-default">Oylik foydalanuvchilar o&apos;sishi</h3>
           <div className="h-[300px] min-w-[500px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={userGrowthData}>
@@ -73,8 +73,8 @@ export default function StatisticsClient(props: Props) {
 
         {/* Donut Chart — Club Distribution */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 w-full overflow-x-auto no-scrollbar">
-          <h3 className="text-lg font-bold text-gray-900 mb-4 cursor-default">To&apos;garaklar taqsimoti</h3>
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-6 border border-gray-100 dark:border-gray-800 w-full overflow-x-auto no-scrollbar">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 cursor-default">To&apos;garaklar taqsimoti</h3>
           <div className="h-[300px] min-w-[350px]">
             {categoryData.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-400 text-sm">Hali to&apos;garak yo&apos;q</div>
@@ -95,8 +95,8 @@ export default function StatisticsClient(props: Props) {
 
       {/* Attendance Bar Chart */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 w-full overflow-x-auto no-scrollbar">
-        <h3 className="text-lg font-bold text-gray-900 mb-4 cursor-default">Oylik davomat</h3>
+        className="bg-white dark:bg-gray-900 rounded-2xl p-4 sm:p-6 border border-gray-100 dark:border-gray-800 w-full overflow-x-auto no-scrollbar">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 cursor-default">Oylik davomat</h3>
         <div className="h-[300px] min-w-[500px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={attendanceChartData}>

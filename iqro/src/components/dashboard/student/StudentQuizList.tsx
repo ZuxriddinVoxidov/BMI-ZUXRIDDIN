@@ -57,7 +57,7 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
         key={q.id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white border rounded-2xl p-5 shadow-sm hover:border-indigo-200 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
+        className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-700 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
       >
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
@@ -73,17 +73,17 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
             {isFinished && <span className="text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider bg-gray-100 text-gray-600">Siz ishlagansiz</span>}
           </div>
           
-          <h3 className="text-xl font-bold text-gray-900 mb-1">{q.title}</h3>
-          <p className="text-sm font-medium text-gray-500 flex items-center gap-2">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{q.title}</h3>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-2">
             <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{q.clubs?.name}</span>
             <span>O&apos;qituvchi: {q.profiles?.full_name}</span>
           </p>
           
           <div className="flex gap-4 mt-4">
-            <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg border">
+            <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
               <HelpCircle size={16} className="text-indigo-500" /> {qCount} savol
             </div>
-            <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600 bg-gray-50 px-3 py-1.5 rounded-lg border">
+            <div className="flex items-center gap-1.5 text-sm font-bold text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
               <Clock size={16} className="text-amber-500" /> {Math.round(q.duration_seconds / 60)} daqiqa
             </div>
           </div>
@@ -133,22 +133,22 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
 
             return (
             <div className="w-full mt-4 flex flex-col sm:flex-row gap-3">
-              <div className="flex-1 bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex items-center justify-between">
+              <div className="flex-1 bg-indigo-50 dark:bg-indigo-950 border border-indigo-100 dark:border-indigo-800 rounded-xl p-3 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5">O&apos;rningiz</p>
+                  <p className="text-[10px] font-bold text-indigo-400 dark:text-indigo-300 uppercase tracking-wider mb-0.5">O&apos;rningiz</p>
                   <div className="flex items-end gap-1">
-                    <span className="text-xl font-black text-indigo-700">{rankText}</span>
-                    <span className="text-xs font-bold text-indigo-400 mb-1">/ {totalP} o&apos;quvchi</span>
+                    <span className="text-xl font-black text-indigo-700 dark:text-indigo-300">{rankText}</span>
+                    <span className="text-xs font-bold text-indigo-400 dark:text-indigo-500 mb-1">/ {totalP} o&apos;quvchi</span>
                   </div>
                 </div>
                 <Trophy size={20} className="text-indigo-300" />
               </div>
               
-              <div className="flex-1 bg-amber-50 border border-amber-100 rounded-xl p-3 flex items-center justify-between">
+              <div className="flex-1 bg-amber-50 dark:bg-amber-950/50 border border-amber-100 dark:border-amber-900/50 rounded-xl p-3 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] font-bold text-amber-500 uppercase tracking-wider mb-0.5">Natija</p>
                   <div className="flex items-end gap-1">
-                    <span className="text-xl font-black text-amber-700">{part?.score || 0}</span>
+                    <span className="text-xl font-black text-amber-700 dark:text-amber-400">{part?.score || 0}</span>
                     <span className="text-xs font-bold text-amber-500 mb-1">/ {qCount}</span>
                   </div>
                 </div>
@@ -182,11 +182,11 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
   return (
     <div className="space-y-8">
       {/* FILTERS */}
-      <div className="bg-white p-4 rounded-2xl border shadow-sm flex flex-col md:flex-row gap-4">
+      <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col md:flex-row gap-4">
         <select 
           value={selectedClub} 
           onChange={e => setSelectedClub(e.target.value)}
-          className="px-4 py-2.5 w-full md:w-auto border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-[16px] md:text-sm font-medium"
+          className="px-4 py-2.5 w-full md:w-auto border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white text-[16px] md:text-sm font-medium"
         >
           <option value="all">Barcha to&apos;garaklar</option>
           {uniqueClubs.map(c => (
@@ -194,7 +194,7 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
           ))}
         </select>
 
-        <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar w-full md:w-auto">
+        <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto no-scrollbar w-full md:w-auto">
            {[
              { id: 'all', label: 'Barchasi' },
              { id: 'waiting', label: 'Kutilmoqda' },
@@ -203,7 +203,7 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
              <button
                key={tab.id}
                onClick={() => setSelectedStatus(tab.id)}
-               className={`px-4 py-1.5 text-sm font-bold rounded-lg whitespace-nowrap transition-colors ${selectedStatus === tab.id ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+               className={`px-4 py-1.5 text-sm font-bold rounded-lg whitespace-nowrap transition-colors ${selectedStatus === tab.id ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
              >
                {tab.label}
              </button>
@@ -212,10 +212,10 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
       </div>
 
       {filtered.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
-          <AlertCircle size={48} className="text-gray-300 mb-4" />
-          <h3 className="text-lg font-bold text-gray-900">Hozircha faol testlar yo&apos;q</h3>
-          <p className="text-sm text-gray-500 mt-1 mb-4">O&apos;qituvchilaringiz test boshlasa, shu yerda ko&apos;rinadi</p>
+        <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+          <AlertCircle size={48} className="text-gray-300 dark:text-gray-600 mb-4" />
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Hozircha faol testlar yo&apos;q</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4">O&apos;qituvchilaringiz test boshlasa, shu yerda ko&apos;rinadi</p>
         </div>
       )}
 

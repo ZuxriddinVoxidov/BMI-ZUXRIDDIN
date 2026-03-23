@@ -72,8 +72,8 @@ function RoleCard({
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       className={`flex flex-col items-center gap-2 p-5 rounded-xl border-2 transition-all cursor-pointer ${
         selected
-          ? 'border-indigo-500 bg-indigo-50 text-indigo-700 shadow-md shadow-indigo-100'
-          : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+          ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-400 shadow-md shadow-indigo-100 dark:shadow-indigo-900/20'
+          : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
       }`}
     >
       <Icon size={28} strokeWidth={selected ? 2.2 : 1.8} />
@@ -269,7 +269,7 @@ export default function LoginPage() {
   // RENDER
   // ══════════════════════════════════════════════════════════
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-gray-50/50 dark:bg-gray-950">
       {/* ╔═══════════════════════════════════════╗ */}
       {/* ║  LEFT BRANDING PANEL                  ║ */}
       {/* ╚═══════════════════════════════════════╝ */}
@@ -315,7 +315,7 @@ export default function LoginPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="w-full lg:w-[60%] flex items-center justify-center p-6 sm:p-10 bg-gray-50/50 overflow-y-auto"
+        className="w-full lg:w-[60%] flex items-center justify-center p-6 sm:p-10 bg-gray-50/50 dark:bg-gray-950 overflow-y-auto"
       >
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
@@ -328,22 +328,22 @@ export default function LoginPage() {
             transition={{ delay: 0.3 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-extrabold text-gray-900 mb-1">Xush kelibsiz!</h1>
-            <p className="text-gray-500">Hisobingizga kiring yoki yangi hisob yarating</p>
+            <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-1">Xush kelibsiz!</h1>
+            <p className="text-gray-500 dark:text-gray-400">Hisobingizga kiring yoki yangi hisob yarating</p>
           </motion.div>
 
           {/* ── TABS ─────────────────────────────── */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6 h-12 rounded-xl bg-gray-100 p-1">
+            <TabsList className="grid w-full grid-cols-2 mb-6 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 p-1">
               <TabsTrigger
                 value="login"
-                className="rounded-lg text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-indigo-700 data-[state=active]:shadow-sm"
+                className="rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm transition-all"
               >
                 Kirish
               </TabsTrigger>
               <TabsTrigger
                 value="register"
-                className="rounded-lg text-sm font-semibold data-[state=active]:bg-white data-[state=active]:text-indigo-700 data-[state=active]:shadow-sm"
+                className="rounded-lg text-sm font-semibold text-gray-600 dark:text-gray-300 data-[state=active]:bg-white dark:data-[state=active]:bg-gray-700 data-[state=active]:text-indigo-700 dark:data-[state=active]:text-indigo-400 data-[state=active]:shadow-sm transition-all"
               >
                 Ro&apos;yxatdan o&apos;tish
               </TabsTrigger>
@@ -382,7 +382,7 @@ export default function LoginPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-5"
+                        className="flex items-center gap-2 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 text-sm rounded-lg px-4 py-3 mb-5"
                       >
                         <AlertCircle size={16} />
                         {loginError}
@@ -400,7 +400,7 @@ export default function LoginPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 }}
                     >
-                      <Label htmlFor="login-email" className="text-gray-700 font-medium text-sm mb-1.5 block">
+                      <Label htmlFor="login-email" className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">
                         Email
                       </Label>
                       <div className="relative">
@@ -414,8 +414,8 @@ export default function LoginPage() {
                             setLoginErrors((prev) => ({ ...prev, email: undefined }))
                           }}
                           placeholder="sizning@email.uz"
-                          className={`h-12 pl-11 rounded-lg border-gray-200 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                            loginErrors.email ? 'border-red-400' : ''
+                          className={`h-12 pl-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${
+                            loginErrors.email ? 'border-red-400 dark:border-red-500' : ''
                           }`}
                         />
                       </div>
@@ -430,7 +430,7 @@ export default function LoginPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
                     >
-                      <Label htmlFor="login-pw" className="text-gray-700 font-medium text-sm mb-1.5 block">
+                      <Label htmlFor="login-pw" className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">
                         Parol
                       </Label>
                       <div className="relative">
@@ -444,14 +444,14 @@ export default function LoginPage() {
                             setLoginErrors((prev) => ({ ...prev, password: undefined }))
                           }}
                           placeholder="••••••••"
-                          className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 bg-white focus:ring-2 focus:ring-indigo-500 ${
-                            loginErrors.password ? 'border-red-400' : ''
+                          className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${
+                            loginErrors.password ? 'border-red-400 dark:border-red-500' : ''
                           }`}
                         />
                         <button
                           type="button"
                           onClick={() => setLoginShowPw(!loginShowPw)}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                         >
                           {loginShowPw ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
@@ -473,9 +473,9 @@ export default function LoginPage() {
                         id="remember"
                         checked={loginRemember}
                         onChange={(e) => setLoginRemember(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-indigo-600 focus:ring-indigo-500"
                       />
-                      <Label htmlFor="remember" className="text-gray-600 text-sm cursor-pointer">
+                      <Label htmlFor="remember" className="text-gray-600 dark:text-gray-300 text-sm cursor-pointer">
                         Meni eslab qol
                       </Label>
                     </motion.div>
@@ -522,7 +522,7 @@ export default function LoginPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm rounded-lg px-4 py-3 mb-5"
+                        className="flex items-center gap-2 bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-900/50 text-green-700 dark:text-green-400 text-sm rounded-lg px-4 py-3 mb-5"
                       >
                         <CheckCircle2 size={16} />
                         {regSuccess}
@@ -537,7 +537,7 @@ export default function LoginPage() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3 mb-5"
+                        className="flex items-center gap-2 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 text-sm rounded-lg px-4 py-3 mb-5"
                       >
                         <AlertCircle size={16} />
                         {regError}
@@ -551,7 +551,7 @@ export default function LoginPage() {
 
                     {/* Full name */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-                      <Label className="text-gray-700 font-medium text-sm mb-1.5 block">
+                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">
                         To&apos;liq ism sharif
                       </Label>
                       <div className="relative">
@@ -563,7 +563,7 @@ export default function LoginPage() {
                             setRegErrors((p) => ({ ...p, name: undefined }))
                           }}
                           placeholder="Ismingiz Familiyangiz"
-                          className={`h-12 pl-11 rounded-lg border-gray-200 bg-white ${regErrors.name ? 'border-red-400' : ''}`}
+                          className={`h-12 pl-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.name ? 'border-red-400 dark:border-red-500' : ''}`}
                         />
                       </div>
                       {regErrors.name && <p className="text-red-500 text-xs mt-1">{regErrors.name}</p>}
@@ -571,13 +571,13 @@ export default function LoginPage() {
 
                     {/* Grade Selector */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }}>
-                      <Label className="text-gray-700 font-medium text-sm mb-1.5 block">
+                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">
                         📚 Sinf
                       </Label>
                       <select
                         value={regGrade}
                         onChange={(e) => setRegGrade(e.target.value)}
-                        className="w-full h-12 rounded-lg border border-gray-200 bg-white px-3 text-sm outline-none focus:border-indigo-400"
+                        className="w-full h-12 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none"
                       >
                         <option value="">Sinfni tanlang</option>
                         {GRADES.map(g => (
@@ -588,7 +588,7 @@ export default function LoginPage() {
 
                     {/* Email */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                      <Label className="text-gray-700 font-medium text-sm mb-1.5 block">Email</Label>
+                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Email</Label>
                       <div className="relative">
                         <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                         <Input
@@ -599,7 +599,7 @@ export default function LoginPage() {
                             setRegErrors((p) => ({ ...p, email: undefined }))
                           }}
                           placeholder="sizning@email.uz"
-                          className={`h-12 pl-11 rounded-lg border-gray-200 bg-white ${regErrors.email ? 'border-red-400' : ''}`}
+                          className={`h-12 pl-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.email ? 'border-red-400 dark:border-red-500' : ''}`}
                         />
                       </div>
                       {regErrors.email && <p className="text-red-500 text-xs mt-1">{regErrors.email}</p>}
@@ -607,7 +607,7 @@ export default function LoginPage() {
 
                     {/* Password */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-                      <Label className="text-gray-700 font-medium text-sm mb-1.5 block">Parol</Label>
+                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Parol</Label>
                       <div className="relative">
                         <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                         <Input
@@ -618,12 +618,12 @@ export default function LoginPage() {
                             setRegErrors((p) => ({ ...p, password: undefined }))
                           }}
                           placeholder="Kamida 8 ta belgi"
-                          className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 bg-white ${regErrors.password ? 'border-red-400' : ''}`}
+                          className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.password ? 'border-red-400 dark:border-red-500' : ''}`}
                         />
                         <button
                           type="button"
                           onClick={() => setRegShowPw(!regShowPw)}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                         >
                           {regShowPw ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
@@ -640,7 +640,7 @@ export default function LoginPage() {
                               transition={{ duration: 0.3 }}
                             />
                           </div>
-                          <p className="text-xs mt-1 text-gray-500">
+                          <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
                             Parol kuchi:{' '}
                             <span
                               className={
@@ -660,7 +660,7 @@ export default function LoginPage() {
 
                     {/* Confirm password */}
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                      <Label className="text-gray-700 font-medium text-sm mb-1.5 block">Parolni takrorlash</Label>
+                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Parolni takrorlash</Label>
                       <div className="relative">
                         <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
                         <Input
@@ -671,12 +671,12 @@ export default function LoginPage() {
                             setRegErrors((p) => ({ ...p, confirm: undefined }))
                           }}
                           placeholder="Parolni qayta kiriting"
-                          className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 bg-white ${regErrors.confirm ? 'border-red-400' : ''}`}
+                          className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.confirm ? 'border-red-400 dark:border-red-500' : ''}`}
                         />
                         <button
                           type="button"
                           onClick={() => setRegShowConfirm(!regShowConfirm)}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                         >
                           {regShowConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>

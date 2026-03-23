@@ -377,7 +377,7 @@ export default function AIChatPage({
 
   if (initializing) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] bg-gray-50/50">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] bg-gray-50/50 dark:bg-gray-950/50">
         <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mb-4" />
         <p className="text-gray-500 font-medium animate-pulse">AI yordamchi yuklanmoqda...</p>
       </div>
@@ -388,7 +388,7 @@ export default function AIChatPage({
   const Icon = config.icon
 
   return (
-    <div className="flex h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] -m-4 md:-m-6 overflow-hidden bg-gray-50">
+    <div className="flex h-[calc(100dvh-4rem)] md:h-[calc(100vh-5rem)] -m-4 md:-m-6 overflow-hidden bg-gray-50 dark:bg-gray-950">
       
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
@@ -407,7 +407,7 @@ export default function AIChatPage({
       <aside
         className={`
           fixed lg:relative inset-y-0 left-0 z-50 lg:z-0
-          w-72 bg-white border-r border-gray-200 flex flex-col flex-shrink-0
+          w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col flex-shrink-0
           transform transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none
           ${showSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
@@ -429,7 +429,7 @@ export default function AIChatPage({
           
           <button
             onClick={handleNewChat}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-white hover:bg-opacity-90 text-indigo-600 rounded-xl font-semibold shadow-sm transition-all active:scale-[0.98]"
+            className="w-full flex items-center justify-center gap-2 py-3 bg-white dark:bg-gray-800 hover:bg-opacity-90 dark:hover:bg-gray-700 text-indigo-600 dark:text-gray-200 border dark:border-gray-700 rounded-xl font-semibold shadow-sm transition-all active:scale-[0.98]"
           >
             <Plus size={18} />
             Yangi suhbat
@@ -440,7 +440,7 @@ export default function AIChatPage({
         <div className="flex-1 overflow-y-auto py-3 px-3 space-y-5 custom-scrollbar">
           {sessionGroups.map(group => (
             <div key={group.label}>
-              <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3 mb-2">
+              <h3 className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 mb-2">
                 {group.label}
               </h3>
               <div className="space-y-1">
@@ -452,8 +452,8 @@ export default function AIChatPage({
                          onClick={() => loadSession(s)}
                          className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all truncate pr-8 border-l-2
                            ${isActive
-                             ? 'bg-indigo-50 text-indigo-700 font-medium border-indigo-500'
-                             : 'border-transparent text-gray-600 hover:bg-gray-50'
+                             ? 'bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-medium border-indigo-500 dark:border-indigo-700'
+                             : 'border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                            }`}
                       >
                          {s.title}
@@ -463,7 +463,7 @@ export default function AIChatPage({
                           e.stopPropagation()
                           setDeletingId(s.id)
                         }}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400"
                         title="O'chirish"
                       >
                         <Trash2 size={15} />
@@ -488,13 +488,13 @@ export default function AIChatPage({
       </aside>
 
       {/* RIGHT MAIN AREA */}
-      <div className="flex-1 flex flex-col min-w-0 bg-gray-50 relative">
+      <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-950 relative">
         
         {/* HEADER */}
-        <header className="h-16 bg-white border-b border-gray-200 shadow-sm flex items-center px-4 md:px-6 flex-shrink-0 z-10 transition-all">
+        <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm flex items-center px-4 md:px-6 flex-shrink-0 z-10 transition-all">
           <button
             onClick={() => setShowSidebar(true)}
-            className="lg:hidden p-2 -ml-2 mr-2 rounded-xl hover:bg-gray-50 text-gray-500"
+            className="lg:hidden p-2 -ml-2 mr-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-300"
           >
             <Menu size={22} />
           </button>
@@ -505,7 +505,7 @@ export default function AIChatPage({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="font-bold text-gray-900 leading-tight">IQRO AI</h1>
+                <h1 className="font-bold text-gray-900 dark:text-white leading-tight">IQRO AI</h1>
                 <span className={`text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-md border ${config.badgeColor} hidden sm:inline-block`}>
                   {config.badge}
                 </span>
@@ -516,11 +516,11 @@ export default function AIChatPage({
           
           <div className="ml-auto flex items-center gap-3">
              <div className="hidden md:flex flex-col items-end">
-                <span className="text-sm font-bold text-gray-700">{userName}</span>
-                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider flex items-center gap-1"><Icon size={10} /> {userRole}</span>
+                <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{userName}</span>
+                <span className="text-[10px] uppercase font-bold text-gray-400 dark:text-gray-500 tracking-wider flex items-center gap-1"><Icon size={10} /> {userRole}</span>
              </div>
-             <div className="h-8 w-px bg-gray-200 hidden md:block mx-1"></div>
-             <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full">
+             <div className="h-8 w-px bg-gray-200 dark:bg-gray-800 hidden md:block mx-1"></div>
+             <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded-full">
                {currentSession ? 'Faol suhbat' : sessions.length + ' ta suhbat'}
              </span>
           </div>
@@ -540,10 +540,10 @@ export default function AIChatPage({
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-indigo-200 mb-6">
                 <span className="text-4xl">🤖</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-2">
                 Salom, {userName.split(' ')[0]}! 👋
               </h2>
-              <p className="text-gray-500 mb-10 max-w-md mx-auto">
+              <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-md mx-auto">
                 {config.subtitle}. Sizga qanday yordam bera olaman?
               </p>
               
@@ -555,10 +555,10 @@ export default function AIChatPage({
                     whileTap={{ scale: 0.98 }}
                     onClick={() => sendMessage(suggestion)}
                     disabled={isLoading}
-                    className="p-4 bg-white rounded-2xl border border-gray-200 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all text-left text-sm font-medium text-gray-700 disabled:opacity-50 flex items-center gap-3 group"
+                    className="p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-md dark:hover:bg-gray-700 transition-all text-left text-sm font-medium text-gray-700 dark:text-gray-300 disabled:opacity-50 flex items-center gap-3 group"
                   >
                     <span className="flex-1">{suggestion}</span>
-                    <span className="w-6 h-6 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                    <span className="w-6 h-6 rounded-full bg-gray-50 dark:bg-gray-900 flex items-center justify-center text-gray-400 dark:text-gray-500 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                       →
                     </span>
                   </motion.button>
@@ -593,7 +593,7 @@ export default function AIChatPage({
                         className={`px-5 py-3.5 text-[15px] shadow-sm ${
                           msg.role === 'user'
                             ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl rounded-tr-sm'
-                            : 'bg-white text-gray-800 rounded-2xl rounded-tl-sm border-l-[3px] border-indigo-400'
+                            : 'bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 rounded-2xl rounded-tl-sm border-l-[3px] border-indigo-400 dark:border-l-indigo-500'
                         }`}
                       >
                          {msg.role === 'user' ? (
@@ -607,7 +607,7 @@ export default function AIChatPage({
                       
                       {/* MESSAGE META / ACTIONS */}
                       <div className={`flex items-center gap-3 mt-1.5 px-1 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <span className="text-[11px] text-gray-400 font-medium">
+                        <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">
                           {formatTime(msg.created_at) || formatTime(new Date().toISOString())}
                         </span>
                         
@@ -628,7 +628,7 @@ export default function AIChatPage({
                               onClick={() =>
                                 exportToPDF(msg.content, `IQRO AI Hisobot — ${new Date().toLocaleDateString('uz-UZ')}`)
                               }
-                              className="opacity-0 group-hover:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-md transition-all"
+                              className="opacity-0 group-hover:opacity-100 flex items-center gap-1.5 text-[11px] font-semibold text-indigo-600 dark:text-gray-300 bg-indigo-50 dark:bg-gray-800 dark:hover:bg-gray-700 border border-transparent dark:border-gray-600 hover:bg-indigo-100 px-2.5 py-1 rounded-md transition-all"
                             >
                               <Download size={12} />
                               PDF ga saqlash
@@ -652,11 +652,11 @@ export default function AIChatPage({
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0 mt-1">
                     <span className="text-sm">🤖</span>
                   </div>
-                  <div className="bg-white rounded-2xl rounded-tl-sm border-l-[3px] border-indigo-400 px-5 py-4 shadow-sm h-12 flex items-center">
+                  <div className="bg-white dark:bg-gray-900 rounded-2xl rounded-tl-sm border-l-[3px] border-indigo-400 dark:border-l-indigo-500 px-5 py-4 shadow-sm h-12 flex items-center">
                      <div className="flex gap-1.5">
-                        <motion.div className="w-2 h-2 bg-indigo-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
-                        <motion.div className="w-2 h-2 bg-indigo-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} />
-                        <motion.div className="w-2 h-2 bg-indigo-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
+                        <motion.div className="w-2 h-2 bg-indigo-400 dark:bg-gray-600 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
+                        <motion.div className="w-2 h-2 bg-indigo-400 dark:bg-gray-600 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} />
+                        <motion.div className="w-2 h-2 bg-indigo-400 dark:bg-gray-600 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
                      </div>
                   </div>
                 </div>
@@ -673,16 +673,16 @@ export default function AIChatPage({
         </div>
 
         {/* INPUT AREA */}
-        <div className="bg-white border-t border-gray-200 p-4 shrink-0 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)] relative z-20">
+        <div className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 p-4 shrink-0 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)] dark:shadow-none relative z-20">
           <div className="max-w-4xl mx-auto relative">
-            <div className="flex gap-3 items-end bg-white rounded-2xl border border-gray-200 p-2 focus-within:border-indigo-400 focus-within:ring-4 focus-within:ring-indigo-50 transition-all shadow-sm">
+            <div className="flex gap-3 items-end bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-2 focus-within:border-indigo-400 dark:focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-50 dark:focus-within:ring-indigo-900/20 transition-all shadow-sm">
               <textarea
                 ref={textareaRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder={config.placeholder}
-                className="flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none py-2.5 px-3 text-[16px] sm:text-[15px] placeholder:text-gray-400 text-gray-800"
+                className="flex-1 max-h-32 min-h-[44px] bg-transparent resize-none outline-none py-2.5 px-3 text-[16px] sm:text-[15px] placeholder:text-gray-400 dark:placeholder:text-gray-500 text-gray-800 dark:text-white"
                 rows={1}
                 disabled={isLoading}
               />
@@ -695,9 +695,9 @@ export default function AIChatPage({
               </button>
             </div>
             <div className="flex items-center justify-between mt-2 px-2">
-               <p className="text-[11px] text-gray-400 font-medium tracking-wide">IQRO AI · Gemini 2.5 Flash</p>
-               <p className="text-[10px] text-gray-400 hidden sm:block">
-                 <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200 mx-0.5">Enter</kbd> yuborish, <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200 mx-0.5">Shift+Enter</kbd> yangi qator
+               <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium tracking-wide">IQRO AI · Gemini 2.5 Flash</p>
+               <p className="text-[10px] text-gray-400 dark:text-gray-500 hidden sm:block">
+                 <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 mx-0.5">Enter</kbd> yuborish, <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 mx-0.5">Shift+Enter</kbd> yangi qator
                </p>
             </div>
           </div>
@@ -713,21 +713,21 @@ export default function AIChatPage({
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+              className="bg-white dark:bg-gray-900 rounded-2xl p-6 max-w-sm w-full shadow-2xl border dark:border-gray-800"
             >
               <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-4 mx-auto">
                 <Trash2 size={24} />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 text-center">
                 Suhbatni o&apos;chirish
               </h3>
-              <p className="text-sm text-gray-500 mb-6 text-center leading-relaxed">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 text-center leading-relaxed">
                 Bu suhbat va uning barcha xabarlari batamom o&apos;chib ketadi. Buni ortga qaytarib bo&apos;lmaydi. Davom etamizmi?
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setDeletingId(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   Bekor qilish
                 </button>

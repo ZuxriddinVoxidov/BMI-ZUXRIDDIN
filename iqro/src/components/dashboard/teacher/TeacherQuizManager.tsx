@@ -211,15 +211,15 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
 
     return (
       <div key={q.id}>
-      <div className="bg-white border rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-indigo-200 transition-colors">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-indigo-200 dark:hover:border-indigo-700 transition-colors">
         <div>
-          <h4 className="font-bold text-gray-800 flex items-center gap-2">
+          <h4 className="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
             {q.title}
             <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide
-              ${q.status === 'draft' ? 'bg-gray-100 text-gray-600' : ''}
-              ${q.status === 'waiting' ? 'bg-blue-100 text-blue-600' : ''}
-              ${q.status === 'active' ? 'bg-amber-100 text-amber-600' : ''}
-              ${q.status === 'finished' ? 'bg-emerald-100 text-emerald-600' : ''}
+              ${q.status === 'draft' ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300' : ''}
+              ${q.status === 'waiting' ? 'bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400' : ''}
+              ${q.status === 'active' ? 'bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400' : ''}
+              ${q.status === 'finished' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400' : ''}
             `}>
               {q.status === 'draft' && 'Qoralama'}
               {q.status === 'waiting' && 'Kutmoqda'}
@@ -227,11 +227,11 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
               {q.status === 'finished' && 'Yakunlangan'}
             </span>
           </h4>
-          <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
+          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
             <span>{clubName}</span>
             <span className="flex items-center gap-1"><HelpCircle size={12}/>{qCount} ta savol</span>
             <span className="flex items-center gap-1"><Clock size={12}/>{Math.round(q.duration_seconds/60)} daq</span>
-            <span className="flex items-center gap-1 text-xs text-gray-400">
+            <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
               🗓 {formatDate(displayDate)}
             </span>
           </div>
@@ -240,7 +240,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
         <div className="flex flex-wrap gap-2 w-full sm:w-auto mt-4 sm:mt-0">
           {q.status === 'draft' && (
             <>
-              <button disabled={isPending} onClick={() => openEdit(q)} className="flex-1 sm:flex-none px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition-colors">Tahrirlash</button>
+              <button disabled={isPending} onClick={() => openEdit(q)} className="flex-1 sm:flex-none px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg transition-colors">Tahrirlash</button>
               <button disabled={isPending} onClick={() => handleActionClick(q, 'publish')} className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors">Nashr qilish</button>
             </>
           )}
@@ -268,31 +268,31 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
       
       {q.status === 'finished' && expandedQuizId === q.id && (
         <motion.div initial={{opacity:0, height:0}} animate={{opacity:1, height:'auto'}} className="bg-gray-50 border-x border-b rounded-b-xl p-4 -mt-2 mb-2">
-          <h4 className="text-sm font-bold text-gray-700 mb-3">Ishtirokchilar natijalari ({new Date(q.created_at).toLocaleDateString()})</h4>
-          <div className="bg-white rounded-xl border overflow-hidden">
+          <h4 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3">Ishtirokchilar natijalari ({new Date(q.created_at).toLocaleDateString()})</h4>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div className="overflow-x-auto no-scrollbar">
               <table className="w-full text-left text-sm min-w-[500px]">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                   <tr>
-                  <th className="px-4 py-2 font-semibold text-gray-600 w-16 text-center">O&apos;rin</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600">O&apos;quvchi</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600 text-right">Natija</th>
-                  <th className="px-4 py-2 font-semibold text-gray-600 w-20 text-right">Ball</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600 dark:text-gray-400 w-16 text-center">O&apos;rin</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600 dark:text-gray-400">O&apos;quvchi</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600 dark:text-gray-400 text-right">Natija</th>
+                  <th className="px-4 py-2 font-semibold text-gray-600 dark:text-gray-400 w-20 text-right">Ball</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {participants?.filter(p => p.quiz_id === q.id).sort((a,b) => (b.score || 0) - (a.score || 0)).map((p, i) => {
                   const points = i === 0 ? 15 : i === 1 ? 12 : i === 2 ? 9 : i === 3 ? 6 : i === 4 ? 3 : 0;
                   return (
-                  <tr key={p.student_id} className={i < 3 ? 'bg-amber-50/30' : ''}>
+                  <tr key={p.student_id} className={i < 3 ? 'bg-amber-50/30 dark:bg-amber-950/20' : ''}>
                     <td className="px-4 py-3 text-center text-lg">
                       {i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : <span className="text-sm font-bold text-gray-500">{i + 1}</span>}
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-800">{p.profiles?.full_name}</td>
+                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{p.profiles?.full_name}</td>
                     <td className="px-4 py-3 text-right">
                       <span className="font-bold text-indigo-600">{p.score || 0}</span>
-                      <span className="text-gray-400 text-xs ml-1">/{qCount}</span>
-                      <span className="text-xs text-gray-400 ml-1">({Math.round(((p.score || 0)/qCount)*100) || 0}%)</span>
+                      <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">/{qCount}</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 ml-1">({Math.round(((p.score || 0)/qCount)*100) || 0}%)</span>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <span className={`font-black ${points > 0 ? "text-emerald-600" : "text-gray-400"}`}>
@@ -303,7 +303,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                 )})}
                 {(!participants || participants.filter(p => p.quiz_id === q.id).length === 0) && (
                   <tr>
-                    <td colSpan={4} className="px-4 py-6 text-center text-gray-400 text-sm">Ishtirokchilar topilmadi</td>
+                    <td colSpan={4} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500 text-sm">Ishtirokchilar topilmadi</td>
                   </tr>
                 )}
                 </tbody>
@@ -341,7 +341,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
           Testlar
           {isPending && <span className="text-xs font-medium text-indigo-500 bg-indigo-50 px-2 py-1 rounded-full animate-pulse">Yuklanmoqda...</span>}
         </h1>
@@ -367,11 +367,11 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
         {/* ================= STATE 1: LIST ================= */}
         {currentState === 'list' && (
           <motion.div key="list" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="space-y-8">
-            <div className="bg-white p-4 rounded-2xl border shadow-sm flex flex-col md:flex-row gap-4 mb-2">
+            <div className="bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col md:flex-row gap-4 mb-2">
               <select 
                 value={filterClub} 
                 onChange={e => setFilterClub(e.target.value)}
-                className="px-4 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-[16px] sm:text-sm font-medium w-full md:w-auto"
+                className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white text-[16px] sm:text-sm font-medium w-full md:w-auto"
               >
                 <option value="all">Barcha to&apos;garaklar</option>
                 {clubs.map(c => (
@@ -379,7 +379,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                 ))}
               </select>
 
-              <div className="flex bg-gray-100 p-1 rounded-xl overflow-x-auto no-scrollbar">
+              <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl overflow-x-auto no-scrollbar">
                  {[
                    { id: 'all', label: 'Barchasi' },
                    { id: 'draft', label: 'Qoralama' },
@@ -388,7 +388,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                    <button
                      key={tab.id}
                      onClick={() => setFilterStatus(tab.id)}
-                     className={`px-4 py-1.5 text-sm font-bold rounded-lg whitespace-nowrap transition-colors ${filterStatus === tab.id ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                     className={`px-4 py-1.5 text-sm font-bold rounded-lg whitespace-nowrap transition-colors ${filterStatus === tab.id ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                    >
                      {tab.label}
                    </button>
@@ -397,10 +397,10 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
             </div>
 
             {filteredQuizzes.length === 0 ? (
-               <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
-                <HelpCircle size={48} className="text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-900">Testlar topilmadi</h3>
-                <p className="text-sm text-gray-500 mt-1 mb-4">Filtrga mos test mavjud emas yoki yangi test yarating</p>
+               <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+                <HelpCircle size={48} className="text-gray-300 dark:text-gray-600 mb-4" />
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Testlar topilmadi</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-4">Filtrga mos test mavjud emas yoki yangi test yarating</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -412,23 +412,23 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
 
         {/* ================= STATE 2: GENERATE ================= */}
         {currentState === 'generate' && (
-          <motion.div key="gen" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="bg-white rounded-2xl border p-6 max-w-2xl mx-auto shadow-sm">
-            <div className="flex justify-between items-center mb-6 pb-4 border-b">
-              <h2 className="text-lg font-bold text-gray-800">Yangi test yaratish</h2>
+          <motion.div key="gen" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 max-w-2xl mx-auto shadow-sm">
+            <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Yangi test yaratish</h2>
               <button disabled={isPending} onClick={() => setCurrentState('list')} className="p-1 hover:bg-gray-100 rounded-lg"><X size={20}/></button>
             </div>
 
             <form onSubmit={handleAIGenerate} className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Qaysi to&apos;garak uchun?</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5">Qaysi to&apos;garak uchun?</label>
                 <select value={selClubId} onChange={e => {
                   const newId = e.target.value
                   setSelClubId(newId)
-                  const targetClub = clubs.find(c => c.id === newId) as Record<string, any> | undefined
+                  const targetClub = clubs.find(c => c.id === newId) as Record<string, unknown> | undefined
                   if (targetClub) {
                     setTopic('')
                   }
-                }} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-sm">
+                }} required className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white text-sm">
                   {clubs.map(c => (
                     <option key={c.id as string} value={c.id as string}>{c.name as string}</option>
                   ))}
@@ -436,8 +436,8 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Mavzu (AI shu bo&apos;yicha test tuzadi)</label>
-                <input value={topic} onChange={e => setTopic(e.target.value)} placeholder={getPlaceholder(selectedClubObj?.category as string | null)} required className="w-full border rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 text-[16px] sm:text-sm"/>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1.5">Mavzu (AI shu bo&apos;yicha test tuzadi)</label>
+                <input value={topic} onChange={e => setTopic(e.target.value)} placeholder={getPlaceholder(selectedClubObj?.category as string | null)} required className="w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-500/50 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white dark:placeholder:text-gray-500 text-[16px] sm:text-sm"/>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -459,7 +459,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                   setEditDurationSecs(15*60)
                   setEditQuestions([])
                   setCurrentState('edit')
-                }} className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
+                }} className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors">
                   Qo&apos;lda tuzish
                 </button>
                 <button type="submit" disabled={isPending || !topic.trim()} className="px-5 py-3 sm:py-2.5 w-full sm:w-auto text-[16px] sm:text-sm font-bold text-white bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
@@ -478,13 +478,13 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
 
         {/* ================= STATE 3: EDIT ================= */}
         {currentState === 'edit' && (
-          <motion.div key="edit" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0}} className="bg-white rounded-2xl border shadow-lg overflow-hidden flex flex-col h-[calc(100vh-140px)]">
+          <motion.div key="edit" initial={{opacity:0, scale:0.95}} animate={{opacity:1, scale:1}} exit={{opacity:0}} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-lg overflow-hidden flex flex-col h-[calc(100vh-140px)]">
             
             {/* Header */}
-            <div className="flex-shrink-0 border-b bg-gray-50/50 p-4 px-6 flex justify-between items-center">
+            <div className="flex-shrink-0 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 p-4 px-6 flex justify-between items-center">
               <div>
-                <h2 className="text-lg font-bold text-gray-900 line-clamp-1">{editTitle || 'Yangi test'}</h2>
-                <p className="text-xs text-gray-500">{editQuestions.length} ta savol | {Math.round(editDurationSecs/60)} daqiqa</p>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1">{editTitle || 'Yangi test'}</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{editQuestions.length} ta savol | {Math.round(editDurationSecs/60)} daqiqa</p>
               </div>
               <div className="flex items-center gap-2">
                 <button disabled={isPending} onClick={() => {if(confirm('Tahrirlashni bekor qilasizmi?')) setCurrentState('list')}} className="px-3 py-1.5 text-xs font-semibold text-gray-600 bg-white border rounded-lg hover:bg-gray-50">Bekor qilish</button>
@@ -498,10 +498,10 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
               <div className="max-w-3xl mx-auto space-y-6">
                 
                 {/* Meta Inputs */}
-                <div className="bg-white border rounded-xl p-5 shadow-sm space-y-4">
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-sm space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Test Sarlavhasi</label>
-                    <input value={editTitle} onChange={e=>setEditTitle(e.target.value)} className="w-full text-base sm:text-lg font-bold text-gray-900 border-b-2 border-transparent focus:border-indigo-500 py-1 outline-none transition-colors" placeholder="Test nomini kiriting..."/>
+                    <label className="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Test Sarlavhasi</label>
+                    <input value={editTitle} onChange={e=>setEditTitle(e.target.value)} className="w-full text-base sm:text-lg font-bold text-gray-900 dark:text-white border-b-2 border-transparent dark:bg-transparent focus:border-indigo-500 py-1 outline-none transition-colors" placeholder="Test nomini kiriting..."/>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
@@ -523,10 +523,10 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
 
                 {/* Questions */}
                 <div className="space-y-4">
-                  <h3 className="text-sm font-bold text-gray-800 uppercase pl-2">Savollar ro&apos;yxati ({editQuestions.length})</h3>
+                  <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200 uppercase pl-2">Savollar ro&apos;yxati ({editQuestions.length})</h3>
                   
                   {editQuestions.map((q, idx) => (
-                    <div key={idx} className="bg-white border border-gray-200 rounded-xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] relative group">
+                    <div key={idx} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] relative group">
                       <div className="absolute top-4 right-4 animate-fade-in group-hover:opacity-100 opacity-0 transition-opacity">
                          <button disabled={isPending} onClick={() => handleDelQuestion(idx)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg"><Trash2 size={16}/></button>
                       </div>
@@ -539,7 +539,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                             onChange={e=>handleUpdateQ(idx, 'question', e.target.value)} 
                             placeholder="Savol matnini kiriting..." 
                             rows={2}
-                            className="w-full text-base font-medium text-gray-900 outline-none resize-none bg-transparent placeholder-gray-300"
+                            className="w-full text-base font-medium text-gray-900 dark:text-white outline-none resize-none bg-transparent dark:bg-transparent placeholder-gray-300 dark:placeholder-gray-600"
                           />
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
@@ -547,10 +547,10 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                               const valKey = `option_${opt.toLowerCase()}` as keyof QuizQuestion;
                               const isCorrect = q.correct_answer === opt;
                               return (
-                                <div key={opt} className={`flex items-center gap-2 border rounded-xl p-2.5 transition-colors ${isCorrect ? 'bg-emerald-50 border-emerald-200' : 'bg-gray-50 border-gray-100 hover:bg-gray-100'}`}>
+                                <div key={opt} className={`flex items-center gap-2 border rounded-xl p-2.5 transition-colors ${isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800' : 'bg-gray-50 dark:bg-gray-700 border-gray-100 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'}`}>
                                   <label className="flex items-center gap-2 shrink-0 cursor-pointer">
                                     <input type="radio" name={`correct-${idx}`} checked={isCorrect} onChange={() => handleUpdateQ(idx, 'correct_answer', opt)} className="w-4 h-4 text-emerald-600"/>
-                                    <span className={`font-bold text-sm ${isCorrect ? 'text-emerald-700' : 'text-gray-500'}`}>{opt}:</span>
+                                    <span className={`font-bold text-sm ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>{opt}:</span>
                                   </label>
                                   <input 
                                     value={q[valKey] as string} 
@@ -582,16 +582,16 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
 
       {deleteConfirmId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl">
-            <h3 className="font-bold text-lg text-gray-900 mb-2">Testni o&apos;chirish</h3>
-            <p className="text-sm text-gray-500 mb-6">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 w-full max-w-sm mx-4 shadow-2xl border border-gray-200 dark:border-gray-800">
+            <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">Testni o&apos;chirish</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
               Bu testni o&apos;chirsangiz, barcha savollar va natijalar ham o&apos;chib ketadi. 
               Tasdiqlaysizmi?
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirmId(null)}
-                className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50"
+                className="flex-1 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
               >
                 Bekor qilish
               </button>

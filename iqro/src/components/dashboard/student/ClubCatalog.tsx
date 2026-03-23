@@ -141,10 +141,10 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
             placeholder="To'garak qidiring..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm outline-none focus:border-indigo-400"
+            className="w-full pl-9 pr-3 py-2 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:border-indigo-400 bg-white dark:bg-gray-800 text-gray-800 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
           />
         </div>
-        <div className="flex overflow-x-auto no-scrollbar gap-1 bg-gray-100 rounded-xl p-1 w-full sm:w-auto">
+        <div className="flex overflow-x-auto no-scrollbar gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 w-full sm:w-auto">
           {([
             { key: 'all', label: 'Hammasi' },
             { key: 'free', label: '🆓 Bepul' },
@@ -155,8 +155,8 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
               onClick={() => setPriceFilter(f.key)}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                 priceFilter === f.key
-                  ? 'bg-white shadow text-indigo-600'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white dark:bg-gray-700 shadow text-indigo-600 dark:text-indigo-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
               {f.label}
@@ -174,7 +174,7 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
             className={`px-4 py-2 flex-shrink-0 rounded-xl text-[16px] sm:text-sm font-medium transition-all whitespace-nowrap ${
               activeCategory === cat.key
                 ? 'bg-indigo-600 text-white'
-                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
             {cat.label}
@@ -182,7 +182,7 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
         ))}
       </div>
 
-      <p className="text-sm text-gray-500 mb-4">{filteredClubs.length} ta to&apos;garak topildi</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{filteredClubs.length} ta to&apos;garak topildi</p>
 
       {/* Club Cards Grid */}
       {filteredClubs.length > 0 ? (
@@ -198,7 +198,7 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
             return (
               <div
                 key={club.id as string}
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-shadow"
               >
                 <div className="p-6">
                   {/* Category Badge */}
@@ -213,7 +213,7 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
                   )}
 
                   {/* Club Name */}
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">{club.name as string}</h3>
+                  <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">{club.name as string}</h3>
 
                   {/* Price & Grade badges */}
                   <div className="flex flex-wrap gap-1.5 mb-3">
@@ -238,30 +238,30 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
                   </div>
 
                   {/* Description */}
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
                     {(club.description as string) || "Ta'rif mavjud emas"}
                   </p>
 
                   {/* Teacher */}
-                  <p className="text-sm text-gray-500 mb-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                     O&apos;qituvchi:{' '}
-                    <span className="font-medium text-gray-700">
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
                       {(teacher?.full_name as string) || 'Belgilanmagan'}
                     </span>
                   </p>
 
                   {/* Schedule */}
-                  <p className="text-sm text-gray-500 mb-3">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
                     📅 {(club.schedule as string) || 'Jadval belgilanmagan'}
                   </p>
 
                   {/* Students progress */}
                   <div className="mb-4">
-                    <div className="flex justify-between text-xs text-gray-400 mb-1">
+                    <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mb-1">
                       <span>O&apos;quvchilar</span>
                       <span>{enrolledCount}/{maxStudents}</span>
                     </div>
-                    <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-indigo-500 rounded-full transition-all"
                         style={{ width: `${progressPct}%` }}
