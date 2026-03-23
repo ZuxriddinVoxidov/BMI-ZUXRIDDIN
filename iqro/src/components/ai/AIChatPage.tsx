@@ -357,21 +357,21 @@ export default function AIChatPage({
 
   const renderMessageContent = (content: string) => {
     return content.split('\n').map((line, i) => {
-      if (line.startsWith('## ')) return <h3 key={i} className="text-base font-bold mt-4 mb-2 text-gray-800">{line.slice(3)}</h3>
-      if (line.startsWith('# ')) return <h2 key={i} className="text-lg font-bold mt-4 mb-2 text-indigo-900">{line.slice(2)}</h2>
+      if (line.startsWith('## ')) return <h3 key={i} className="text-base font-bold mt-4 mb-2 text-gray-800 dark:text-white">{line.slice(3)}</h3>
+      if (line.startsWith('# ')) return <h2 key={i} className="text-lg font-bold mt-4 mb-2 text-indigo-900 dark:text-white">{line.slice(2)}</h2>
       
       const formattedLine = line
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="dark:text-white">$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
 
       if (formattedLine.startsWith('- ') || formattedLine.startsWith('• ')) {
-        return <li key={i} className="ml-5 list-disc mb-1" dangerouslySetInnerHTML={{ __html: formattedLine.slice(2) }} />
+        return <li key={i} className="ml-5 list-disc mb-1 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: formattedLine.slice(2) }} />
       }
       if (/^\d+\.\s/.test(formattedLine)) {
-        return <li key={i} className="ml-5 list-decimal mb-1" dangerouslySetInnerHTML={{ __html: formattedLine.replace(/^\d+\.\s/, '') }} />
+        return <li key={i} className="ml-5 list-decimal mb-1 dark:text-gray-200" dangerouslySetInnerHTML={{ __html: formattedLine.replace(/^\d+\.\s/, '') }} />
       }
       if (formattedLine.trim() === '') return <div key={i} className="h-3" />
-      return <p key={i} className="mb-1 text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: formattedLine }} />
+      return <p key={i} className="mb-1 text-gray-700 dark:text-gray-100 leading-relaxed" dangerouslySetInnerHTML={{ __html: formattedLine }} />
     })
   }
 
@@ -599,7 +599,7 @@ export default function AIChatPage({
                          {msg.role === 'user' ? (
                             <p className="whitespace-pre-wrap">{msg.content}</p>
                          ) : (
-                            <div className="prose prose-sm prose-indigo max-w-none">
+                            <div className="prose prose-sm prose-indigo max-w-none dark:text-gray-100">
                                {renderMessageContent(msg.content)}
                             </div>
                          )}

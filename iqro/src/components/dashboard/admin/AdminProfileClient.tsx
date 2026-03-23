@@ -71,7 +71,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Profil sozlamalari</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Profil sozlamalari</h1>
 
       {/* Toast */}
       {toast && (
@@ -81,7 +81,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
       )}
 
       {/* Profile Card */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
         {/* Banner */}
         <div className="h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative">
           <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"/>
@@ -95,7 +95,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
 
         {/* Profile Row */}
         <div className="pt-12 px-4 pb-6 sm:px-8 sm:pb-8 relative z-10">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{profile.full_name}</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">{profile.full_name}</h2>
           <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 text-sm text-gray-600">
             <span className="font-medium text-indigo-600 flex items-center gap-1 shrink-0">🛡️ {roleLabel}</span>
             {profile.school?.name && (
@@ -111,8 +111,8 @@ export default function AdminProfileClient({ profile, email }: Props) {
         <div className="px-4 pb-6 sm:px-8 sm:pb-8 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Personal Info Card */}
-            <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                 👤 Shaxsiy ma&apos;lumotlar
               </h3>
               <div className="space-y-3">
@@ -122,9 +122,9 @@ export default function AdminProfileClient({ profile, email }: Props) {
                   { label: 'Maktab', value: profile.school?.name || '—' },
                   { label: 'Rol', value: roleLabel, highlight: true },
                 ].map(item => (
-                  <div key={item.label} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 border-b border-gray-100 last:border-0 gap-1 sm:gap-4">
-                    <span className="text-sm text-gray-500 shrink-0">{item.label}</span>
-                    <span className={`text-sm font-medium break-words w-full sm:w-auto sm:text-right ${'highlight' in item && item.highlight ? 'text-indigo-600' : 'text-gray-900'}`}>
+                  <div key={item.label} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 border-b border-gray-100 dark:border-gray-800 last:border-0 gap-1 sm:gap-4">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">{item.label}</span>
+                    <span className={`text-sm font-medium break-words w-full sm:w-auto sm:text-right ${'highlight' in item && item.highlight ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-900 dark:text-white'}`}>
                       {item.value}
                     </span>
                   </div>
@@ -133,19 +133,19 @@ export default function AdminProfileClient({ profile, email }: Props) {
             </div>
 
             {/* Login Info Card */}
-            <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+              <h3 className="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                 🔐 Tizimga kirish
               </h3>
               <div className="space-y-3">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 border-b border-gray-100 gap-1 sm:gap-4">
-                  <span className="text-sm text-gray-500 shrink-0">Email</span>
-                  <span className="text-sm font-medium text-gray-900 break-words w-full sm:w-auto sm:text-right">{email}</span>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 border-b border-gray-100 dark:border-gray-800 gap-1 sm:gap-4">
+                  <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">Email</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white break-words w-full sm:w-auto sm:text-right">{email}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 gap-2 sm:gap-4">
-                  <span className="text-sm text-gray-500 shrink-0">Parol</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">Parol</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm">
+                    <span className="font-mono text-sm dark:text-gray-300">
                       {showPassword ? (profile.plain_password || '—') : '••••••••'}
                     </span>
                     <button onClick={() => setShowPassword(!showPassword)} className="text-gray-400 hover:text-gray-600">

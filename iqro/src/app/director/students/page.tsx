@@ -32,42 +32,42 @@ export default async function DirectorStudentsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900">👥 O&apos;quvchilar</h1>
-        <p className="text-sm text-gray-500 mt-1">{students?.length || 0} ta o&apos;quvchi</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">👥 O&apos;quvchilar</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{students?.length || 0} ta o&apos;quvchi</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-500 mb-1">Jami</p>
-          <p className="text-3xl font-extrabold text-gray-900">{students?.length || 0}</p>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
+          <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">Jami</p>
+          <p className="text-3xl font-extrabold text-gray-900 dark:text-white">{students?.length || 0}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-500 mb-1">✅ Faol</p>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
+          <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">✅ Faol</p>
           <p className="text-3xl font-extrabold text-emerald-600">{activeCount}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-500 mb-1">🚫 Bloklangan</p>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
+          <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">🚫 Bloklangan</p>
           <p className="text-3xl font-extrabold text-red-500">{blockedCount}</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
-        <h3 className="text-sm font-bold text-gray-700 mb-4">📊 Sinf bo&apos;yicha taqsimot</h3>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+        <h3 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-4">📊 Sinf bo&apos;yicha taqsimot</h3>
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
           {gradeData.map(([grade, count]) => (
-            <div key={grade} className="text-center bg-gray-50 rounded-xl p-3">
+            <div key={grade} className="text-center bg-gray-50 dark:bg-gray-800 rounded-xl p-3">
               <p className="text-lg font-bold text-indigo-600">{count}</p>
-              <p className="text-xs text-gray-500">{grade}-sinf</p>
+              <p className="text-xs text-gray-500 dark:text-gray-200">{grade}-sinf</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full min-w-[500px]">
             <thead>
-            <tr className="border-b border-gray-100">
+            <tr className="border-b border-gray-100 dark:border-gray-800">
               <th className="text-left py-4 px-5 text-xs font-semibold text-gray-400 uppercase">O&apos;quvchi</th>
               <th className="text-left py-4 px-5 text-xs font-semibold text-gray-400 uppercase">Sinf</th>
               <th className="text-left py-4 px-5 text-xs font-semibold text-gray-400 uppercase">Holat</th>
@@ -75,18 +75,18 @@ export default async function DirectorStudentsPage() {
           </thead>
           <tbody>
             {students?.slice(0, 20).map(s => (
-              <tr key={s.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50">
+              <tr key={s.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                 <td className="py-3 px-5">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
                       {(s.full_name || '?')[0].toUpperCase()}
                     </div>
-                    <span className="text-sm font-medium text-gray-900">{s.full_name}</span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">{s.full_name}</span>
                   </div>
                 </td>
-                <td className="py-3 px-5 text-sm text-gray-600">{s.grade || '—'}-sinf</td>
+                <td className="py-3 px-5 text-sm text-gray-600 dark:text-gray-300">{s.grade || '—'}-sinf</td>
                 <td className="py-3 px-5">
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${s.is_blocked ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${s.is_blocked ? 'bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'}`}>
                     {s.is_blocked ? '● Bloklangan' : '● Faol'}
                   </span>
                 </td>
