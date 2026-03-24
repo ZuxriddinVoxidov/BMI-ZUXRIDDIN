@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 // Seedling SVG (0-29 points)
 function Seedling() {
   return (
-    <svg viewBox="0 0 200 200" width="200" height="200">
+    <svg viewBox="0 0 200 200" width="100%" height="auto" style={{ maxWidth: '200px' }}>
       {/* Soil */}
       <ellipse cx="100" cy="170" rx="60" ry="12" fill="#92400E" opacity="0.3" />
       <ellipse cx="100" cy="168" rx="50" ry="8" fill="#78350F" />
@@ -41,7 +41,7 @@ function Seedling() {
 // Sapling SVG (30-69 points)
 function Sapling() {
   return (
-    <svg viewBox="0 0 200 200" width="200" height="200">
+    <svg viewBox="0 0 200 200" width="100%" height="auto" style={{ maxWidth: '200px' }}>
       <ellipse cx="100" cy="175" rx="65" ry="12" fill="#92400E" opacity="0.3" />
       <ellipse cx="100" cy="173" rx="55" ry="8" fill="#78350F" />
       <motion.g
@@ -87,7 +87,7 @@ function Sapling() {
 // Young Tree SVG (70-129 points)
 function YoungTree() {
   return (
-    <svg viewBox="0 0 200 200" width="200" height="200">
+    <svg viewBox="0 0 200 200" width="100%" height="auto" style={{ maxWidth: '200px' }}>
       <ellipse cx="100" cy="178" rx="70" ry="12" fill="#92400E" opacity="0.3" />
       <ellipse cx="100" cy="176" rx="60" ry="8" fill="#78350F" />
       <motion.g
@@ -138,7 +138,7 @@ function YoungTree() {
 // Mature Tree SVG (130+ points)
 function MatureTree() {
   return (
-    <svg viewBox="0 0 200 200" width="200" height="200">
+    <svg viewBox="0 0 200 200" width="100%" height="auto" style={{ maxWidth: '200px' }}>
       {/* Golden glow */}
       <motion.circle
         cx="100" cy="70" r="55" fill="url(#goldenGlow)" opacity="0.3"
@@ -213,7 +213,7 @@ export default function GrowingTree({ points, level }: { points: number; level: 
   const nextLevel = LEVELS.find((l) => l.level === level.level + 1)
 
   return (
-    <div className="relative rounded-3xl p-8 flex flex-col items-center bg-white/60 dark:bg-gray-900 outline outline-1 outline-white/80 dark:outline-gray-800 backdrop-blur-md">
+    <div className="relative rounded-3xl p-5 sm:p-8 flex flex-col items-center bg-white/60 dark:bg-gray-900 outline outline-1 outline-white/80 dark:outline-gray-800 backdrop-blur-md">
       {/* Tree */}
       <motion.div
         initial={{ scale: 0.5, opacity: 0 }}

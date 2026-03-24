@@ -54,7 +54,10 @@ export default function Navbar() {
             </div>
 
             {/* Mobile items (Hamburger) */}
-            <div className="flex items-center gap-3 md:pl-3 md:border-l md:border-gray-200 md:dark:border-gray-700">
+            <div className="flex items-center gap-2 md:pl-3 md:border-l md:border-gray-200 md:dark:border-gray-700">
+              <div className="md:hidden">
+                <ThemeToggle />
+              </div>
               <button
                 className="md:hidden w-11 h-11 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onClick={() => setMobileOpen(!mobileOpen)}
@@ -89,10 +92,6 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
-                <div className="flex justify-end p-2 border border-gray-100 dark:border-gray-800 rounded-xl mb-1 bg-gray-50 dark:bg-gray-800/50">
-                   <span className="mr-auto text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center">Mavzu:</span>
-                   <ThemeToggle />
-                </div>
                 <Button
                   variant="outline"
                   className="w-full h-12 border-indigo-500 text-indigo-600 rounded-full text-base font-semibold"

@@ -65,7 +65,7 @@ export default async function StudentHomePage() {
   const pending = pendingClubsCount || 0
 
   return (
-    <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
+    <div className="space-y-6 lg:space-y-8 pb-4 w-full">
       {/* Welcome */}
       <div className="bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400 rounded-2xl p-6">
         <h1 className="text-2xl font-extrabold text-white mb-1">
@@ -114,7 +114,7 @@ export default async function StudentHomePage() {
         {/* RIGHT — Rewards (2/5) */}
         <div className="lg:col-span-2 space-y-4">
           {/* Recent Rewards */}
-          <div className="bg-white dark:bg-gray-950 w-full rounded-2xl p-5 border border-gray-100 dark:border-gray-800 overflow-hidden">
+          <div className="bg-white dark:bg-gray-950 w-full rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-gray-800">
             <PointsHistory transactions={transactions || []} totalPoints={points} />
           </div>
 

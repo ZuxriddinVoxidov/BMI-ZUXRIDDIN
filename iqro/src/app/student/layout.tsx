@@ -46,7 +46,7 @@ export default async function StudentLayout({
   const unreadCount = (notifications || []).filter((n: Record<string, unknown>) => !n.is_read).length
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 overflow-x-hidden">
       <StudentSidebar fullName={fullName} points={points} />
       <div className="lg:ml-[250px] transition-all duration-300">
         <StudentHeader
