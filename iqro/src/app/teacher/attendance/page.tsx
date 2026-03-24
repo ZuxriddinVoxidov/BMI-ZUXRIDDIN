@@ -145,7 +145,7 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
-      <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900">Davomat olish</h1>
+      <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white">Davomat olish</h1>
 
       {/* Controls */}
       <div className="bg-white rounded-2xl p-6 border border-gray-100">

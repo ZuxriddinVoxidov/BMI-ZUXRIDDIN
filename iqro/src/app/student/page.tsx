@@ -80,26 +80,26 @@ export default async function StudentHomePage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white rounded-2xl p-5 border border-gray-100">
-          <p className="text-xs text-gray-500 mb-1">🏆 Mening ballim</p>
-          <p className="text-2xl font-extrabold text-gray-900">{points}</p>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">🏆 Mening ballim</p>
+          <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{points}</p>
           <p className="text-[10px] text-gray-400 mt-0.5">{level.name}</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-gray-100">
-          <p className="text-xs text-gray-500 mb-1">🏫 To&apos;garaklarim</p>
-          <p className="text-2xl font-extrabold text-gray-900">{approved} ta</p>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">🏫 To&apos;garaklarim</p>
+          <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{approved} ta</p>
           <p className="text-[10px] text-gray-400 mt-0.5">
             {pending > 0 ? `${pending} ta kutilmoqda` : "Faol a'zolik"}
           </p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-gray-100">
-          <p className="text-xs text-gray-500 mb-1">📊 Davomat</p>
-          <p className="text-2xl font-extrabold text-gray-900">{attendanceRate}%</p>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">📊 Davomat</p>
+          <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{attendanceRate}%</p>
           <p className="text-[10px] text-gray-400 mt-0.5">{presentDays} / {totalDays} kun</p>
         </div>
-        <div className="bg-white rounded-2xl p-5 border border-gray-100">
-          <p className="text-xs text-gray-500 mb-1">⭐ Bu oy</p>
-          <p className="text-2xl font-extrabold text-gray-900">{thisMonthPresent} kun</p>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">⭐ Bu oy</p>
+          <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{thisMonthPresent} kun</p>
           <p className="text-[10px] text-gray-400 mt-0.5">Darsga qatnashdim</p>
         </div>
       </div>
@@ -114,7 +114,7 @@ export default async function StudentHomePage() {
         {/* RIGHT — Rewards (2/5) */}
         <div className="lg:col-span-2 space-y-4">
           {/* Recent Rewards */}
-          <div className="bg-white rounded-2xl p-5 border border-gray-100">
+          <div className="bg-white dark:bg-gray-950 w-full rounded-2xl p-5 border border-gray-100 dark:border-gray-800 overflow-hidden">
             <PointsHistory transactions={transactions || []} totalPoints={points} />
           </div>
 

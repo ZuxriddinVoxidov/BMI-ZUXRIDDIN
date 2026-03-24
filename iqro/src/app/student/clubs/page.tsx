@@ -31,7 +31,7 @@ export default async function StudentClubsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Mening to&apos;garaklarim</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Mening to&apos;garaklarim</h1>
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <MyClubsWithReview enrollments={(enrollments as any) || []} />
     </div>

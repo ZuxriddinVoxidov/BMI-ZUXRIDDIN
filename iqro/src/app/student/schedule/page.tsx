@@ -29,7 +29,7 @@ export default async function StudentSchedulePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Haftalik jadval</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Haftalik jadval</h1>
       <WeeklySchedule enrollments={(enrollments || []) as Record<string, unknown>[]} />
     </div>
   )

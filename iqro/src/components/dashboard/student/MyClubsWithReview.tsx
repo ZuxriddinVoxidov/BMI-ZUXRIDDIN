@@ -88,7 +88,7 @@ export default function MyClubsWithReview({ enrollments }: Props) {
               
               <Link 
                 href={`/clubs/${club.id}`}
-                className="w-full sm:w-auto text-center px-4 py-3 sm:py-2 sm:px-0 bg-indigo-50 sm:bg-transparent text-indigo-700 sm:text-indigo-600 rounded-xl sm:rounded-none text-[16px] sm:text-sm font-bold sm:hover:text-indigo-800 transition-colors"
+                className="w-full sm:w-auto text-center px-4 py-3 sm:py-2 sm:px-0 bg-indigo-50 dark:bg-indigo-900/30 sm:bg-transparent dark:sm:bg-transparent text-indigo-700 dark:text-indigo-400 sm:text-indigo-600 rounded-xl sm:rounded-none text-[16px] sm:text-sm font-bold sm:hover:text-indigo-800 dark:sm:hover:text-indigo-300 transition-colors"
               >
                 To&apos;garak sahifasi <span className="hidden sm:inline-block leading-none transition-transform group-hover:translate-x-1">→</span>
               </Link>

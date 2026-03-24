@@ -71,8 +71,8 @@ export default async function StudentExplorePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-gray-900">To&apos;garaklar katalogi</h1>
-        <p className="text-gray-500 mt-1">O&apos;zingizga mos to&apos;garakni toping va a&apos;zo bo&apos;ling</p>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">To&apos;garaklar katalogi</h1>
+        <p className="text-gray-500 dark:text-gray-300 mt-1">O&apos;zingizga mos to&apos;garakni toping va a&apos;zo bo&apos;ling</p>
       </div>
 
       {/* No grade warning */}

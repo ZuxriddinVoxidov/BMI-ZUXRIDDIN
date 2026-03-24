@@ -55,7 +55,7 @@ export default async function DirectorStatisticsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">📈 Statistika</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">📈 Statistika</h1>
       <StatisticsClient
         studentsCount={studentsCount || 0} teachersCount={teachersCount || 0} clubsCount={clubsCount || 0}
         userGrowthData={userGrowthData} categoryData={categoryData} attendanceChartData={attendanceChartData}

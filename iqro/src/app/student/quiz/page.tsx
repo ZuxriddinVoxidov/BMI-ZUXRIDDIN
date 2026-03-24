@@ -59,8 +59,8 @@ export default async function StudentQuizPage() {
   return (
     <div className="max-w-7xl mx-auto py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-gray-900 mb-2">Testlar</h1>
-        <p className="text-gray-500 font-medium">To&apos;garaklaringizdagi barcha joriy va yakunlangan testlar</p>
+        <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Testlar</h1>
+        <p className="text-gray-500 dark:text-gray-400 font-medium">To&apos;garaklaringizdagi barcha joriy va yakunlangan testlar</p>
       </div>
       <StudentQuizList 
         studentId={profile.id}

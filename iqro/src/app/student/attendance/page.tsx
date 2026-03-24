@@ -28,7 +28,7 @@ export default async function StudentAttendancePage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900">Davomat hisoboti</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Davomat hisoboti</h1>
       <AttendanceReport records={(attendanceRecords || []) as Record<string, unknown>[]} />
     </div>
   )

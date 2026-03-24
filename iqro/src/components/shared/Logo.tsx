@@ -27,7 +27,7 @@ export function Logo({ collapsed = false, href = '/', className, textClassName, 
 
   return (
     <Link href={href} className={cn("flex flex-col justify-center min-w-0", className)}>
-      <div className={cn("relative flex-shrink-0 transition-all duration-300 mt-1.5", collapsed ? "w-12 h-10" : "w-48 h-16")}>
+      <div className={cn("relative flex-shrink-0 transition-all duration-300 mt-1.5", collapsed ? "w-10 h-8" : "w-32 h-10 lg:w-48 lg:h-16")}>
         {!imgError ? (
           <Image
             src={logoSrc}
