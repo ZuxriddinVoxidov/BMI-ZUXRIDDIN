@@ -60,8 +60,8 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
 
   return (
     <div className="space-y-4 w-full min-w-0">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Ballar tarixi</h3>
+      <div className="flex items-center justify-between gap-2 w-full min-w-0">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">Ballar tarixi</h3>
         <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded-full whitespace-nowrap">
           Jami: {totalPoints} ball
         </span>
@@ -99,7 +99,7 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
         <div className="space-y-2 max-h-[400px] overflow-y-auto no-scrollbar pr-1">
           {filtered.map(t => (
             <div key={t.id} 
-              className="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl px-4 py-3 shadow-sm">
+              className="flex items-center justify-between bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl px-3 sm:px-4 py-3 shadow-sm min-w-0 w-full mb-2">
               <div className="flex items-center gap-3 min-w-0 pr-2">
                 <span className="text-xl flex-shrink-0">{SOURCE_ICONS[t.source] || '🎯'}</span>
                 <div className="min-w-0">
@@ -107,7 +107,7 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
                   <p className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">{formatDate(t.created_at)}</p>
                 </div>
               </div>
-              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
+              <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 sm:px-2.5 py-1 rounded-full whitespace-nowrap flex-shrink-0">
                 +{t.points} ball
               </span>
             </div>
