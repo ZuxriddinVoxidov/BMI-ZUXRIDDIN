@@ -59,7 +59,7 @@ export function PointsHistory({ transactions, totalPoints }: Props) {
   ]
 
   return (
-    <div className="space-y-4 w-full">
+    <div className="space-y-4 w-full min-w-0">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Ballar tarixi</h3>
         <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded-full whitespace-nowrap">

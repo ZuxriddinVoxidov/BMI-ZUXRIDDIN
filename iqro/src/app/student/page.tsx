@@ -80,24 +80,24 @@ export default async function StudentHomePage() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 min-w-0">
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">🏆 Mening ballim</p>
           <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{points}</p>
           <p className="text-[10px] text-gray-400 mt-0.5">{level.name}</p>
         </div>
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 min-w-0">
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">🏫 To&apos;garaklarim</p>
           <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{approved} ta</p>
           <p className="text-[10px] text-gray-400 mt-0.5">
             {pending > 0 ? `${pending} ta kutilmoqda` : "Faol a'zolik"}
           </p>
         </div>
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 min-w-0">
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">📊 Davomat</p>
           <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{attendanceRate}%</p>
           <p className="text-[10px] text-gray-400 mt-0.5">{presentDays} / {totalDays} kun</p>
         </div>
-        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 min-w-0">
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">⭐ Bu oy</p>
           <p className="text-2xl font-extrabold text-gray-900 dark:text-white">{thisMonthPresent} kun</p>
           <p className="text-[10px] text-gray-400 mt-0.5">Darsga qatnashdim</p>
@@ -107,12 +107,12 @@ export default async function StudentHomePage() {
       {/* Main Content — 2 columns */}
       <div className="grid lg:grid-cols-5 gap-4 sm:gap-6">
         {/* LEFT — Growing Tree (3/5) */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 min-w-0">
           <GrowingTree points={points} level={level} />
         </div>
 
         {/* RIGHT — Rewards (2/5) */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-4 min-w-0">
           {/* Recent Rewards */}
           <div className="bg-white dark:bg-gray-950 w-full rounded-2xl p-4 sm:p-5 border border-gray-100 dark:border-gray-800">
             <PointsHistory transactions={transactions || []} totalPoints={points} />
