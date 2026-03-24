@@ -63,7 +63,7 @@ export default async function StudentProfilePage() {
   return (
     <div className="space-y-6">
       {/* SECTION 1 — Profile Card */}
-      <div className="bg-white/80 backdrop-blur-lg rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
         {/* Banner */}
         <div className="h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 relative">
           <div className="absolute -top-6 -right-6 w-32 h-32 bg-white/10 rounded-full"/>
@@ -78,7 +78,7 @@ export default async function StudentProfilePage() {
         <div className="pt-12 px-4 pb-6 sm:px-8 sm:pb-8 relative z-10">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
             <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 mb-2">{profile.full_name}</h1>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white mb-2">{profile.full_name}</h1>
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 text-sm text-gray-600">
                 <span className="font-medium text-emerald-600 flex items-center gap-1 shrink-0">🎓 O&apos;quvchi</span>
                 <span className="flex items-center gap-1 text-gray-500" title={school?.name || undefined}>
@@ -105,10 +105,10 @@ export default async function StudentProfilePage() {
                 { icon: '📊', label: 'Davomat', value: `${attendanceRate}%` },
                 { icon: '📁', label: 'Yuklangan ishlar', value: works?.length || 0 },
               ].map((s, i) => (
-                <div key={i} className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100 flex flex-col justify-center">
+                <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center border border-gray-100 dark:border-gray-700 flex flex-col justify-center">
                   <span className="text-lg">{s.icon}</span>
-                  <p className="text-lg font-bold text-gray-900 mt-1">{s.value}</p>
-                  <p className="text-[11px] text-gray-500">{s.label}</p>
+                  <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{s.value}</p>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -119,8 +119,8 @@ export default async function StudentProfilePage() {
       {/* SECTION 2 — Daraja + Daraxt */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Daraja kartasi */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="font-bold text-gray-800 mb-5">🎖️ Daraja tizimi</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+          <h2 className="font-bold text-gray-800 dark:text-white mb-5">🎖️ Daraja tizimi</h2>
           
           {/* Current level big display */}
           <div className="text-center mb-6">
@@ -128,23 +128,23 @@ export default async function StudentProfilePage() {
               {level.emoji}
             </div>
             <h3 className="text-3xl font-black" style={{ color: level.textColor }}>{level.name}</h3>
-            <p className="text-sm text-gray-500 mt-1">{level.description}</p>
-            <p className="text-sm font-medium text-gray-700 mt-2">
+            <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">{level.description}</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mt-2">
               {points} {nextLevel ? `/ ${nextLevel.minPoints}` : ''} ball
             </p>
           </div>
 
           {/* Progress bar */}
           <div className="mb-4">
-            <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden">
+            <div className="w-full h-4 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-1000 ease-out"
                 style={{ width: `${progress}%`, backgroundColor: level.color }}
               />
             </div>
             {nextLevel && (
-              <p className="text-xs text-gray-500 mt-2 text-center">
-                Keyingi daraja: <span className="font-semibold">{nextLevel.emoji} {nextLevel.name}</span> uchun <span className="font-bold text-indigo-600">{pointsToNext} ball</span> kerak
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+                Keyingi daraja: <span className="font-semibold text-gray-900 dark:text-white">{nextLevel.emoji} {nextLevel.name}</span> uchun <span className="font-bold text-indigo-600 dark:text-indigo-400">{pointsToNext} ball</span> kerak
               </p>
             )}
             {!nextLevel && (
@@ -160,7 +160,7 @@ export default async function StudentProfilePage() {
               const isCurrent = l.level === level.level
               const isPast = l.level < level.level
               return (
-                <div key={l.level} className={`text-center p-3 rounded-xl transition-all ${isCurrent ? 'ring-2 ring-indigo-400 bg-indigo-50' : isPast ? 'bg-emerald-50' : 'bg-gray-50 opacity-50'}`}>
+                <div key={l.level} className={`text-center p-3 rounded-xl transition-all ${isCurrent ? 'ring-2 ring-indigo-400 bg-indigo-50 dark:bg-indigo-900/50' : isPast ? 'bg-emerald-50 dark:bg-emerald-900/30' : 'bg-gray-50 dark:bg-gray-800 opacity-50'}`}>
                   <span className="text-2xl block mb-1">{l.emoji}</span>
                   <p className={`text-xs font-bold ${isCurrent ? 'text-indigo-700' : isPast ? 'text-emerald-700' : 'text-gray-400'}`}>{l.name}</p>
                   <p className="text-[10px] text-gray-400">{l.minPoints}-{l.maxPoints === Infinity ? '∞' : l.maxPoints}</p>
@@ -177,15 +177,15 @@ export default async function StudentProfilePage() {
       </div>
 
       {/* SECTION 3 — Rag'batlar (Ballar tarixi) */}
-      <div className="bg-white rounded-2xl border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
         <PointsHistory transactions={transactions} totalPoints={points} />
       </div>
 
       {/* SECTION 4 — Info + Password */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Shaxsiy ma'lumotlar */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="font-bold text-gray-800 mb-4">👤 Shaxsiy ma&apos;lumotlar</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+          <h2 className="font-bold text-gray-800 dark:text-white mb-4">👤 Shaxsiy ma&apos;lumotlar</h2>
           <div className="space-y-4">
             {[
               { label: "To'liq ism", value: profile.full_name || '-' },
@@ -193,17 +193,17 @@ export default async function StudentProfilePage() {
               { label: 'Maktab', value: school?.name ? `${school.name}-maktab` : '-' },
               { label: "Ro'yxatdan o'tgan", value: regDate },
             ].map((item, i) => (
-              <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-                <span className="text-sm text-gray-500">{item.label}</span>
-                <span className="text-sm font-medium text-gray-900">{item.value}</span>
+              <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50 dark:border-gray-800 last:border-0">
+                <span className="text-sm text-gray-500 dark:text-gray-400">{item.label}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">{item.value}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Parolni o'zgartirish */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <h2 className="font-bold text-gray-800 mb-4">🔐 Parolni o&apos;zgartirish</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+          <h2 className="font-bold text-gray-800 dark:text-white mb-4">🔐 Parolni o&apos;zgartirish</h2>
           <PasswordChangeForm />
         </div>
       </div>

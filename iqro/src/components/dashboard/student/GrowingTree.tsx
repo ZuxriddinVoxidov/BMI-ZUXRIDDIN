@@ -213,14 +213,7 @@ export default function GrowingTree({ points, level }: { points: number; level: 
   const nextLevel = LEVELS.find((l) => l.level === level.level + 1)
 
   return (
-    <div
-      className="relative rounded-3xl p-8 flex flex-col items-center"
-      style={{
-        background: 'rgba(255, 255, 255, 0.6)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.8)',
-      }}
-    >
+    <div className="relative rounded-3xl p-8 flex flex-col items-center bg-white/60 dark:bg-gray-900 outline outline-1 outline-white/80 dark:outline-gray-800 backdrop-blur-md">
       {/* Tree */}
       <motion.div
         initial={{ scale: 0.5, opacity: 0 }}

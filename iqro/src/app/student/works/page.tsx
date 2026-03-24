@@ -145,7 +145,7 @@ export default function StudentWorksPage() {
       )}
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-extrabold text-gray-900">Mening ishlarim</h1>
+        <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">Mening ishlarim</h1>
         <button
           onClick={() => setShowDialog(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors"
@@ -162,11 +162,11 @@ export default function StudentWorksPage() {
             const createdAt = new Date(w.created_at as string).toLocaleDateString('uz-UZ')
 
             return (
-              <div key={w.id as string} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
+              <div key={w.id as string} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-3 mb-3">
                   {getFileIcon(w.file_url as string)}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">{w.title as string}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white truncate">{w.title as string}</h3>
                     {club && (
                       <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 mt-1">
                         {club.name as string}
@@ -206,30 +206,30 @@ export default function StudentWorksPage() {
       {/* Upload Dialog */}
       {showDialog && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4">
-          <div className="bg-white rounded-t-3xl sm:rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl animate-in slide-in-from-bottom duration-300">
+          <div className="bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl border border-transparent dark:border-gray-800 animate-in slide-in-from-bottom duration-300">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="font-bold text-lg text-gray-900">📤 Ish yuklash</h3>
-              <button onClick={() => setShowDialog(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+              <h3 className="font-bold text-lg text-gray-900 dark:text-white">📤 Ish yuklash</h3>
+              <button onClick={() => setShowDialog(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"><X size={20} /></button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ish nomi *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Ish nomi *</label>
                 <input
                   type="text"
                   value={workTitle}
                   onChange={(e) => setWorkTitle(e.target.value)}
                   placeholder="Masalan: Robot loyiha"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-400 text-[16px] sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[16px] sm:text-sm font-medium text-gray-700 mb-1">To&apos;garak *</label>
+                <label className="block text-[16px] sm:text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">To&apos;garak *</label>
                 <select
                   value={selectedClub}
                   onChange={(e) => setSelectedClub(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-[16px] sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 >
                   <option value="">Tanlang...</option>
                   {myClubs.map(c => (
@@ -239,11 +239,11 @@ export default function StudentWorksPage() {
               </div>
 
               <div>
-                <label className="block text-[16px] sm:text-sm font-medium text-gray-700 mb-1">Fayl yuklash</label>
+                <label className="block text-[16px] sm:text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Fayl yuklash</label>
                 <input
                   type="file"
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 text-[16px] sm:text-sm file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[16px] sm:file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-white text-[16px] sm:text-sm file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-[16px] sm:file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700"
                 />
               </div>
 
@@ -262,14 +262,14 @@ export default function StudentWorksPage() {
       {/* Delete Confirm */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4">
-          <div className="bg-white rounded-t-3xl sm:rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center animate-in slide-in-from-bottom duration-300">
+          <div className="bg-white dark:bg-gray-900 border dark:border-gray-800 rounded-t-3xl sm:rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center animate-in slide-in-from-bottom duration-300">
             <p className="text-4xl mb-3">🗑️</p>
-            <h3 className="font-bold text-gray-900 mb-2">Ishni o&apos;chirmoqchimisiz?</h3>
-            <p className="text-sm text-gray-500 mb-5">Bu amalni qaytarib bo&apos;lmaydi</p>
+            <h3 className="font-bold text-gray-900 dark:text-white mb-2">Ishni o&apos;chirmoqchimisiz?</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">Bu amalni qaytarib bo&apos;lmaydi</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 py-3 sm:py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-[16px] sm:text-sm font-medium transition"
+                className="flex-1 py-3 sm:py-2.5 bg-gray-100 border border-transparent dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl text-[16px] sm:text-sm font-medium transition"
               >
                 Bekor qilish
               </button>

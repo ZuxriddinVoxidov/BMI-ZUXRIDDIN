@@ -46,10 +46,10 @@ export default function AttendanceReport({ records }: AttendanceReportProps) {
   })
 
   const stats = [
-    { icon: '✅', label: 'Kelgan', value: `${present} kun`, color: 'bg-emerald-50 text-emerald-700' },
-    { icon: '❌', label: 'Kelmagan', value: `${absent} kun`, color: 'bg-red-50 text-red-700' },
-    { icon: '📝', label: 'Sababli', value: `${excused} kun`, color: 'bg-amber-50 text-amber-700' },
-    { icon: '📊', label: 'Davomat', value: `${rate}%`, color: 'bg-indigo-50 text-indigo-700' },
+    { icon: '✅', label: 'Kelgan', value: `${present} kun`, color: 'bg-emerald-50 text-emerald-700 dark:bg-green-950 dark:text-green-400 border border-transparent dark:border-green-900' },
+    { icon: '❌', label: 'Kelmagan', value: `${absent} kun`, color: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400 border border-transparent dark:border-red-900' },
+    { icon: '📝', label: 'Sababli', value: `${excused} kun`, color: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400 border border-transparent dark:border-amber-900' },
+    { icon: '📊', label: 'Davomat', value: `${rate}%`, color: 'bg-indigo-50 text-indigo-700 dark:bg-blue-950 dark:text-blue-400 border border-transparent dark:border-blue-900' },
   ]
 
   const statusBadge = (status: string) => {
@@ -65,8 +65,8 @@ export default function AttendanceReport({ records }: AttendanceReportProps) {
         {stats.map((s, i) => (
           <div key={i} className={`rounded-2xl p-5 ${s.color}`}>
             <p className="text-2xl mb-1">{s.icon}</p>
-            <p className="text-2xl font-bold">{s.value}</p>
-            <p className="text-sm font-medium opacity-70">{s.label}</p>
+            <p className="text-2xl font-bold dark:text-white">{s.value}</p>
+            <p className="text-sm font-medium opacity-70 dark:opacity-100 dark:text-gray-300">{s.label}</p>
           </div>
         ))}
       </div>

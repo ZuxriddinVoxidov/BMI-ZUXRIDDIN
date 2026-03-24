@@ -60,22 +60,22 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
         className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-700 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
       >
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
             <span className={`text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider
-              ${q.status === 'waiting' ? 'bg-blue-100 text-blue-700' : ''}
-              ${q.status === 'active' ? 'bg-amber-100 text-amber-700' : ''}
-              ${q.status === 'finished' ? 'bg-emerald-100 text-emerald-700' : ''}
+              ${q.status === 'waiting' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : ''}
+              ${q.status === 'active' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : ''}
+              ${q.status === 'finished' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : ''}
             `}>
               {q.status === 'waiting' && 'Boshlanishi kutilmoqda...'}
               {q.status === 'active' && 'Jarayonda!'}
               {q.status === 'finished' && 'Test yakunlangan'}
             </span>
-            {isFinished && <span className="text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider bg-gray-100 text-gray-600">Siz ishlagansiz</span>}
+            {isFinished && <span className="text-[10px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">Siz ishlagansiz</span>}
           </div>
           
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">{q.title}</h3>
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 flex items-center gap-2">
-            <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{q.clubs?.name}</span>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 flex flex-wrap items-center gap-2">
+            <span className="text-xs bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 px-2 py-0.5 rounded-full">{q.clubs?.name}</span>
             <span>O&apos;qituvchi: {q.profiles?.full_name}</span>
           </p>
           

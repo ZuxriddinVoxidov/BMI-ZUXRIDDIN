@@ -11,11 +11,11 @@ const dayMap: Record<string, number> = {
 const dayNames = ['Dushanba', 'Seshanba', 'Chorshanba', 'Payshanba', 'Juma']
 
 const categoryBorders: Record<string, string> = {
-  texnologiya: 'border-t-blue-500 bg-blue-50/50',
-  sport: 'border-t-rose-500 bg-rose-50/50',
-  "san'at": 'border-t-purple-500 bg-purple-50/50',
-  fan: 'border-t-emerald-500 bg-emerald-50/50',
-  til: 'border-t-amber-500 bg-amber-50/50',
+  texnologiya: 'border-t-blue-500 bg-blue-50/50 dark:bg-blue-900/20',
+  sport: 'border-t-rose-500 bg-rose-50/50 dark:bg-rose-900/20',
+  "san'at": 'border-t-purple-500 bg-purple-50/50 dark:bg-purple-900/20',
+  fan: 'border-t-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20',
+  til: 'border-t-amber-500 bg-amber-50/50 dark:bg-amber-900/20',
 }
 
 function getWeekDates(): string[] {
