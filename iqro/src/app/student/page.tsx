@@ -65,7 +65,7 @@ export default async function StudentHomePage() {
   const pending = pendingClubsCount || 0
 
   return (
-    <div className="space-y-6 lg:space-y-8 pb-4 w-full">
+    <div className="space-y-6 lg:space-y-8 pb-4 w-full max-w-full overflow-x-hidden">
       {/* Welcome */}
       <div className="bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-400 rounded-2xl p-6">
         <h1 className="text-2xl font-extrabold text-white mb-1">

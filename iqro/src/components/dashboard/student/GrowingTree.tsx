@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 // Seedling SVG (0-29 points)
 function Seedling() {
   return (
-    <svg viewBox="0 0 200 200" width="100%" height="auto" style={{ maxWidth: '200px' }}>
+    <svg viewBox="0 0 200 200" width="100%" style={{ height: 'auto', maxWidth: '200px' }}>
       {/* Soil */}
       <ellipse cx="100" cy="170" rx="60" ry="12" fill="#92400E" opacity="0.3" />
       <ellipse cx="100" cy="168" rx="50" ry="8" fill="#78350F" />
