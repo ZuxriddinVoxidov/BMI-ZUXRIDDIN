@@ -23,6 +23,12 @@ export default function AttendancePage() {
   const [profileId, setProfileId] = useState('')
   const [rewards, setRewards] = useState<Reward[]>([])
   const [rewardLoading, setRewardLoading] = useState<string | null>(null)
+  
+  const [attendanceExists, setAttendanceExists] = useState(false)
+  const [historyRecords, setHistoryRecords] = useState<AttendanceRecord[]>([])
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
+
+  const todayStr = new Date().toISOString().split('T')[0]
 
   useEffect(() => {
     async function load() {
@@ -60,9 +66,14 @@ export default function AttendancePage() {
       .eq('club_id', selectedClub)
       .eq('date', selectedDate)
 
+    const existingRecords = (existing as AttendanceRecord[]) || []
+    setHistoryRecords(existingRecords)
+    setAttendanceExists(existingRecords.length > 0)
+    setHasLoadedOnce(true)
+
     const statusMap: Record<string, 'present' | 'absent' | 'excused'> = {}
     studentList.forEach((s: Student) => { statusMap[s.id] = 'present' })
-    ;(existing as AttendanceRecord[] || []).forEach((a) => {
+    existingRecords.forEach((a) => {
       statusMap[a.student_id] = a.status as 'present' | 'absent' | 'excused'
     })
     setStatuses(statusMap)
@@ -143,38 +154,48 @@ export default function AttendancePage() {
     }
   }
 
+  const isPastDate = selectedDate < todayStr
+  const canEdit = !isPastDate && !attendanceExists
+
   return (
     <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
       <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white">Davomat olish</h1>
 
       {/* Controls */}
-      <div className="bg-white rounded-2xl p-6 border border-gray-100">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">To&apos;garak</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">To&apos;garak</label>
               <select value={selectedClub} onChange={e => setSelectedClub(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
               <option value="">Tanlang...</option>
               {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">Sana</label>
-            <input type="date" value={selectedDate} onChange={e => {
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Sana</label>
+            <input type="date" value={selectedDate} min={todayStr} onChange={e => {
               setSelectedDate(e.target.value)
               setStudents([]) // Clear students if date changes to avoid invalid saves
+              setHasLoadedOnce(false)
             }}
-              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
             {!isAllowedToTakeAttendance && (
-              <p className="text-xs text-red-500 font-medium mt-1.5 flex items-start gap-1">
+              <p className="text-xs text-red-500 dark:text-red-400 font-medium mt-1.5 flex items-start gap-1">
                 <X size={14} className="mt-0.5 shrink-0" />
                 Dars faqat belgilangan kunlarda olinadi ({restrictionMessage}).
+              </p>
+            )}
+            {isPastDate && (
+              <p className="text-xs text-amber-600 dark:text-amber-500 font-medium mt-1.5 flex items-start gap-1">
+                <Clock size={14} className="mt-0.5 shrink-0" />
+                O&apos;tgan kunlar uchun davomat saqlash taqiqlangan!
               </p>
             )}
           </div>
           <div className="flex items-end">
             <button onClick={loadStudents} disabled={!selectedClub || !isAllowedToTakeAttendance}
-              className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-medium transition-colors">
+              className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400/50 dark:disabled:bg-indigo-900/50 disabled:cursor-not-allowed text-white rounded-xl text-sm font-medium transition-colors">
               Davomatni yuklash
             </button>
           </div>
@@ -184,32 +205,39 @@ export default function AttendancePage() {
       {/* Student List */}
       {students.length > 0 && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
+          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
             O&apos;quvchilar ({students.length} ta)
           </h3>
+          
+          {attendanceExists && (
+            <p className="text-sm font-medium text-red-500 dark:text-red-400 mb-4 bg-red-50 dark:bg-red-500/10 p-3 rounded-lg flex items-center gap-2">
+              <CheckCircle size={16} /> Bu kun uchun davomat allaqachon qilingan
+            </p>
+          )}
+
           <div className="space-y-3">
             {students.map((student, i) => {
               const initials = student.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
               const st = statuses[student.id] || 'present'
               return (
                 <motion.div key={student.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-gray-50 gap-3">
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 gap-3 border border-transparent dark:border-gray-800">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs flex-shrink-0">{initials}</div>
-                    <span className="text-sm font-semibold text-gray-900">{student.full_name}</span>
+                    <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs flex-shrink-0">{initials}</div>
+                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{student.full_name}</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <button onClick={() => setStatus(student.id, 'present')}
-                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors ${st === 'present' ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-emerald-50'}`}>
+                    <button onClick={() => setStatus(student.id, 'present')} disabled={!canEdit}
+                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'present' ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 disabled:opacity-50'}`}>
                       <Check size={14} /> Keldi
                     </button>
-                    <button onClick={() => setStatus(student.id, 'absent')}
-                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors ${st === 'absent' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-red-50'}`}>
+                    <button onClick={() => setStatus(student.id, 'absent')} disabled={!canEdit}
+                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'absent' ? 'bg-red-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-50'}`}>
                       <X size={14} /> Kelmadi
                     </button>
-                    <button onClick={() => setStatus(student.id, 'excused')}
-                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors ${st === 'excused' ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-500 hover:bg-amber-50'}`}>
+                    <button onClick={() => setStatus(student.id, 'excused')} disabled={!canEdit}
+                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'excused' ? 'bg-amber-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 disabled:opacity-50'}`}>
                       <Clock size={14} /> Sababli
                     </button>
                   </div>
@@ -218,8 +246,8 @@ export default function AttendancePage() {
             })}
           </div>
 
-          <button onClick={handleSave} disabled={saving}
-            className="w-full mt-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2">
+          <button onClick={handleSave} disabled={saving || !canEdit}
+            className={`w-full mt-6 py-3 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 ${canEdit ? 'bg-indigo-600 hover:bg-indigo-700 text-white disabled:bg-indigo-400 dark:disabled:bg-indigo-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'}`}>
             {saving ? (
               <div className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full" />
             ) : saved ? (
@@ -231,18 +259,55 @@ export default function AttendancePage() {
         </motion.div>
       )}
 
-      {/* Reward Section */}
-      {saved && presentStudents.length > 0 && (
+      {/* Davomat Tarixi (History) */}
+      {hasLoadedOnce && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-6 border border-gray-100">
+          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Davomat tarixi</h3>
+          
+          {historyRecords.length > 0 ? (
+             <div className="space-y-3">
+                {students.map((student) => {
+                  const record = historyRecords.find(r => r.student_id === student.id)
+                  if (!record) return null
+                  const initials = student.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+                  
+                  let badge = null
+                  if (record.status === 'present') badge = <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md text-xs font-semibold"><Check size={14} /> Keldi</span>
+                  if (record.status === 'absent') badge = <span className="flex items-center gap-1 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-md text-xs font-semibold"><X size={14} /> Kelmadi</span>
+                  if (record.status === 'excused') badge = <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-md text-xs font-semibold"><Clock size={14} /> Sababli</span>
+
+                  return (
+                    <div key={`hist-${student.id}`} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0">{initials}</div>
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{student.full_name}</span>
+                      </div>
+                      <div>{badge}</div>
+                    </div>
+                  )
+                })}
+             </div>
+          ) : (
+            <div className="py-6 text-center text-sm font-medium text-gray-500 dark:text-gray-400">
+              Ushbu sana uchun davomat topilmadi.
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* Reward Section */}
+      {saved && canEdit && presentStudents.length > 0 && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900">⭐ Rag&apos;bat berish (max 7 ta)</h3>
-            <span className={`text-xs font-medium px-3 py-1.5 rounded-full ${rewards.length >= 7 ? 'bg-red-50 text-red-600' : 'bg-indigo-50 text-indigo-600'}`}>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">⭐ Rag&apos;bat berish (max 7 ta)</h3>
+            <span className={`text-xs font-medium px-3 py-1.5 rounded-full ${rewards.length >= 7 ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400' : 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'}`}>
               Berilgan: {rewards.length}/7
             </span>
           </div>
           {rewards.length >= 7 && (
-            <div className="mb-4 p-3 rounded-xl bg-amber-50 text-amber-700 text-sm font-medium text-center">
+            <div className="mb-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm font-medium text-center border border-amber-200 dark:border-amber-500/20">
               ⚠️ Limit tugadi (7/7)
             </div>
           )}
@@ -251,21 +316,21 @@ export default function AttendancePage() {
               const initials = student.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
               const alreadyRewarded = rewardedIds.has(student.id)
               return (
-                <div key={student.id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
+                <div key={student.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 border border-transparent dark:border-gray-800 gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">{initials}</div>
-                    <span className="text-sm font-semibold text-gray-900">{student.full_name}</span>
+                    <div className="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs shrink-0">{initials}</div>
+                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{student.full_name}</span>
                   </div>
                   {alreadyRewarded ? (
-                    <span className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-600 font-medium flex items-center gap-1">
+                    <span className="text-xs px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 w-full sm:w-auto justify-center">
                       <CheckCircle size={14} /> Berildi
                     </span>
                   ) : (
                     <button onClick={() => giveReward(student.id)}
                       disabled={rewards.length >= 7 || rewardLoading === student.id}
-                      className="text-xs px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 disabled:opacity-50 font-medium flex items-center gap-1 transition-colors">
+                      className="w-full sm:w-auto text-xs px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-500/20 disabled:opacity-50 font-medium flex items-center justify-center gap-1 transition-colors border border-transparent dark:border-amber-500/20">
                       {rewardLoading === student.id ? (
-                        <div className="animate-spin w-4 h-4 border-2 border-amber-300 border-t-amber-600 rounded-full" />
+                        <div className="animate-spin w-4 h-4 border-2 border-amber-300 border-t-amber-600 dark:border-amber-700 dark:border-t-amber-400 rounded-full" />
                       ) : (
                         <><Star size={14} /> Rag&apos;bat berish</>
                       )}
