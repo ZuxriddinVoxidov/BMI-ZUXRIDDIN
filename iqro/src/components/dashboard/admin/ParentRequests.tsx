@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { Check, Search, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { approveParentRequest } from '@/app/actions/admin-students'
+import { approveParentRequest, rejectParentRequest } from '@/app/actions/admin-students'
 
 interface RequestRecord {
   id: string
@@ -23,21 +23,30 @@ export default function ParentRequests() {
   const [selectedStudent, setSelectedStudent] = useState('')
   const [processing, setProcessing] = useState(false)
 
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(false)
+
   const supabase = createClient()
 
   useEffect(() => {
     loadRequests()
-  }, [])
+  }, [page])
 
   async function loadRequests() {
     setLoading(true)
-    const { data } = await supabase
+    const limit = 10
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+
+    const { data, count } = await supabase
       .from('parent_registration_requests')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('status', 'pending')
       .order('created_at', { ascending: false })
+      .range(from, to)
     
     setRequests(data || [])
+    if (count !== null) setHasMore(count > to + 1)
     
     // Pre-load students
     const { data: stds } = await supabase
@@ -60,6 +69,26 @@ export default function ParentRequests() {
         setShowModal(null)
         setSelectedStudent('')
         setRequests(reqs => reqs.filter(r => r.id !== showModal.id))
+      } else {
+        alert("Xatolik: " + result.error)
+      }
+    } catch (e) {
+      alert("Xatolik yuz berdi")
+    }
+    setProcessing(false)
+  }
+
+  async function handleReject(requestId: string, chatId: number) {
+    setProcessing(true)
+    try {
+      const result = await rejectParentRequest(requestId, chatId)
+      if (result.success) {
+        setRequests(reqs => reqs.filter(r => r.id !== requestId))
+        if (requests.length === 1 && page > 1) {
+          setPage(p => p - 1)
+        } else {
+          loadRequests() // Reload to fetch the next item filling the 10th spot
+        }
       } else {
         alert("Xatolik: " + result.error)
       }
@@ -102,20 +131,47 @@ export default function ParentRequests() {
                   <div className="text-xs text-gray-400 dark:text-gray-500 font-normal">Chat ID: {req.chat_id}</div>
                 </td>
                 <td className="py-4 px-4 text-gray-600 dark:text-gray-300">{req.child_name}</td>
-                <td className="py-4 px-4 text-right">
+                <td className="py-4 px-4 text-right flex items-center justify-end gap-2">
                   <button 
                     onClick={() => {
                       setSearch(req.child_name)
                       setShowModal(req)
                     }}
-                    className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold rounded-lg text-xs transition">
+                    disabled={processing}
+                    className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold rounded-lg text-xs transition disabled:opacity-50">
                     Biriktirish
+                  </button>
+                  <button 
+                    onClick={() => handleReject(req.id, req.chat_id)}
+                    disabled={processing}
+                    className="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-semibold rounded-lg text-xs transition disabled:opacity-50">
+                    Rad etish
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 pt-4 mt-4">
+        <button
+          onClick={() => setPage(p => Math.max(1, p - 1))}
+          disabled={page === 1 || loading || processing}
+          className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg disabled:opacity-50 transition"
+        >
+          Oldingi
+        </button>
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+          Sahifa: {page}
+        </span>
+        <button
+          onClick={() => setPage(p => p + 1)}
+          disabled={!hasMore || loading || processing}
+          className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 rounded-lg disabled:opacity-50 transition"
+        >
+          Keyingi
+        </button>
       </div>
 
       {showModal && (

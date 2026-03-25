@@ -113,3 +113,26 @@ export async function approveParentRequest(requestId: string, studentId: string,
   revalidatePath('/dashboard/students')
   return { success: true }
 }
+
+export async function rejectParentRequest(requestId: string, chatId: number) {
+  const supabase = createAdminClient()
+
+  // 1. Delete the connection request entirely
+  const { error: requestError } = await supabase
+    .from('parent_registration_requests')
+    .delete()
+    .eq('id', requestId)
+
+  if (requestError) return { success: false, error: requestError.message }
+
+  // 2. Clear telegram conversation state so the parent can start over
+  const { error: telegramError } = await supabase
+    .from('telegram_conversation_state')
+    .delete()
+    .eq('chat_id', chatId)
+
+  if (telegramError) return { success: false, error: telegramError.message }
+
+  revalidatePath('/dashboard')
+  return { success: true }
+}
