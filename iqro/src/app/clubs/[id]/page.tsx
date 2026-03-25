@@ -13,7 +13,7 @@ export default async function ClubDetailPage({ params }: { params: any }) {
     .from('clubs')
     .select(`
       *,
-      teacher:profiles!teacher_id(id, full_name),
+      teacher:profiles!teacher_id(id, full_name, avatar_url),
       enrollments:enrollments(id, status, student_id),
       teacher_resources(id, title, file_url, file_name, file_size),
       reviews:reviews(

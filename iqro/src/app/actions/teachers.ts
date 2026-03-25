@@ -195,6 +195,12 @@ export async function updateTeacherAvatar(profileId: string, formData: FormData)
 
     if (dbError) return { success: false, error: dbError.message }
 
+    // Sync to clubs for backwards compatibility
+    await supabase
+      .from('clubs')
+      .update({ teacher_image_url: publicUrl })
+      .eq('teacher_id', profileId)
+
     revalidatePath('/dashboard/teachers')
     revalidatePath('/dashboard')
     

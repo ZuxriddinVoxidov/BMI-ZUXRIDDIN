@@ -1,8 +1,8 @@
 'use client'
 
-import { updateAdminProfile } from '@/app/actions/profile'
-import { Copy, Eye, EyeOff, X } from 'lucide-react'
-import { useState, useTransition } from 'react'
+import { updateAdminProfile, updateProfileAvatar } from '@/app/actions/profile'
+import { Copy, Eye, EyeOff, X, Camera } from 'lucide-react'
+import { useRef, useState, useTransition } from 'react'
 import { UserAvatar } from '@/components/shared/UserAvatar'
 
 interface Props {
@@ -24,6 +24,8 @@ export default function AdminProfileClient({ profile, email }: Props) {
   const [copied, setCopied] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [toast, setToast] = useState<string | null>(null)
+  const [avatarLoading, setAvatarLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [form, setForm] = useState({
     full_name: profile.full_name || '',
     email: email || '',
@@ -90,9 +92,43 @@ export default function AdminProfileClient({ profile, email }: Props) {
           <div className="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"/>
           <div className="absolute top-4 right-20 w-12 h-12 bg-white/10 rounded-full"/>
           
-          <div className="absolute -bottom-10 left-4 sm:left-8 z-20 shadow-lg rounded-2xl overflow-hidden border-4 border-white dark:border-gray-900">
+          <div 
+            className="absolute -bottom-10 left-4 sm:left-8 z-20 shadow-lg rounded-2xl border-4 border-white dark:border-gray-900 group cursor-pointer relative overflow-hidden" 
+            onClick={() => fileInputRef.current?.click()}
+          >
             <UserAvatar avatarUrl={profile.avatar_url} fullName={profile.full_name} size="xl" />
+            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              {avatarLoading ? (
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <Camera className="text-white mb-1" size={24} />
+                  <span className="text-white text-[10px] font-medium uppercase tracking-wider">O&apos;zgartirish</span>
+                </>
+              )}
+            </div>
           </div>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept="image/png, image/jpeg, image/webp"
+            onChange={async (e) => {
+              const file = e.target.files?.[0]
+              if (file) {
+                setAvatarLoading(true)
+                const fd = new FormData()
+                fd.append('avatar', file)
+                const res = await updateProfileAvatar(fd)
+                setAvatarLoading(false)
+                if (res.success) {
+                  showToast('Rasm yangilandi ✅')
+                } else {
+                  showToast('Xatolik: ' + res.error)
+                }
+              }
+            }}
+          />
         </div>
 
         {/* Profile Row */}
