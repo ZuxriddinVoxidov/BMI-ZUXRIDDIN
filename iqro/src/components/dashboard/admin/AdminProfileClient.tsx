@@ -177,55 +177,55 @@ export default function AdminProfileClient({ profile, email }: Props) {
       {/* Edit Modal */}
       {isEditing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={() => setIsEditing(false)}>
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-transparent dark:border-gray-800" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
-              <h3 className="text-lg font-bold text-gray-900">✏️ Profilni tahrirlash</h3>
-              <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">✏️ Profilni tahrirlash</h3>
+              <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"><X size={18} /></button>
             </div>
-            {error && <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl mb-4">{error}</div>}
+            {error && <div className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-sm p-3 rounded-xl mb-4 border border-red-100 dark:border-red-500/20">{error}</div>}
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">To&apos;liq ism</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">To&apos;liq ism</label>
                 <input value={form.full_name} onChange={e => setForm(p => ({ ...p, full_name: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                  className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Email</label>
                 <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                  className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Hozirgi parol</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Hozirgi parol</label>
                 <div className="relative">
                   <input type={showCurrentPassword ? "text" : "password"} value={profile.plain_password || ''} readOnly
-                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono outline-none focus:border-indigo-400" />
-                  <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                    className="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950/50 text-gray-900 dark:text-gray-300 rounded-xl px-4 py-2.5 pr-10 text-sm font-mono outline-none focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 cursor-default" />
+                  <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                     {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Telefon</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Telefon</label>
                 <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
                   placeholder="+998 90 123 45 67"
                   autoComplete="tel"
-                  className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                  className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20" />
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Yangi parol</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Yangi parol</label>
                 <input type="password" value={form.new_password} onChange={e => setForm(p => ({ ...p, new_password: e.target.value }))}
                   autoComplete="new-password"
-                  placeholder="O'zgartirmasangiz bo'sh qoldiring" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400" />
+                  placeholder="O'zgartirmasangiz bo'sh qoldiring" className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 placeholder-gray-400 dark:placeholder-gray-600" />
               </div>
               {form.new_password && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Parolni tasdiqlang</label>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Parolni tasdiqlang</label>
                   <input type="password" value={form.confirm_password} onChange={e => setForm(p => ({ ...p, confirm_password: e.target.value }))}
-                    placeholder="Parolni qayta kiriting" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400" />
+                    placeholder="Parolni qayta kiriting" className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 placeholder-gray-400 dark:placeholder-gray-600" />
                 </div>
               )}
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setIsEditing(false)} className="flex-1 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Bekor qilish</button>
+                <button onClick={() => setIsEditing(false)} className="flex-1 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">Bekor qilish</button>
                 <button onClick={handleSave} disabled={isPending}
                   className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition disabled:opacity-50">
                   {isPending ? '⏳ Saqlanmoqda...' : '💾 Saqlash'}

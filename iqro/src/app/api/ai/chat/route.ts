@@ -48,7 +48,7 @@ IQRO haqida:
 - O'qituvchilar davomat oladi
 - Ota-onalar Telegram orqali xabarnoma oladi
 - O'quvchilar ball yig'ib daraja oshiradi
-- Daraja tizimi: Nihol → Daraxtcha → Navqiron → Yetuk
+- Daraja tizimi: Nihol → Novda → Navqiron → Chinor
 
 Mavjud to'garaklar:
 ${clubsInfo}

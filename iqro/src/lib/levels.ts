@@ -28,8 +28,8 @@ export const LEVELS: StudentLevel[] = [
   },
   {
     level: 2,
-    name: 'Daraxtcha',
-    nameUz: 'Daraxtcha',
+    name: 'Novda',
+    nameUz: 'Novda',
     minPoints: 100,
     maxPoints: 229,
     color: '#4ADE80',
