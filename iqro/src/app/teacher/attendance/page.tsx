@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 
 interface Club { id: string; name: string; schedule: string }
 interface Student { id: string; full_name: string }
-interface AttendanceRecord { student_id: string; status: string }
+interface AttendanceRecord { student_id: string; status: string; full_name?: string }
 interface Reward { student_id: string }
 
 export default function AttendancePage() {
@@ -26,7 +26,7 @@ export default function AttendancePage() {
   
   const [attendanceExists, setAttendanceExists] = useState(false)
   const [historyRecords, setHistoryRecords] = useState<AttendanceRecord[]>([])
-  const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
+  const [showHistoryDetails, setShowHistoryDetails] = useState(false)
 
   const todayStr = new Date().toISOString().split('T')[0]
 
@@ -47,6 +47,42 @@ export default function AttendancePage() {
     load()
   }, [])
 
+  // 🔹 Fetch history immediately when club and date change
+  useEffect(() => {
+    async function fetchHistory() {
+      setShowHistoryDetails(false)
+      setStudents([]) // Formani tozalaymiz
+      
+      if (!selectedClub || !selectedDate) {
+        setHistoryRecords([])
+        setAttendanceExists(false)
+        return
+      }
+      
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('attendance')
+        .select(`
+          student_id,
+          status,
+          profiles:student_id (full_name)
+        `)
+        .eq('club_id', selectedClub)
+        .eq('date', selectedDate)
+
+      const formattedHistory = (data || []).map((row: any) => ({
+        student_id: row.student_id,
+        status: row.status,
+        full_name: row.profiles?.full_name || "Noma'lum"
+      }))
+
+      setHistoryRecords(formattedHistory)
+      setAttendanceExists(formattedHistory.length > 0)
+    }
+
+    fetchHistory()
+  }, [selectedClub, selectedDate])
+
   async function loadStudents() {
     if (!selectedClub) return
     const supabase = createClient()
@@ -59,21 +95,9 @@ export default function AttendancePage() {
     const studentList = (enrollments || []).map((e: Record<string, unknown>) => e.student as unknown as Student).filter(Boolean)
     setStudents(studentList)
 
-    // Load existing attendance
-    const { data: existing } = await supabase
-      .from('attendance')
-      .select('student_id, status')
-      .eq('club_id', selectedClub)
-      .eq('date', selectedDate)
-
-    const existingRecords = (existing as AttendanceRecord[]) || []
-    setHistoryRecords(existingRecords)
-    setAttendanceExists(existingRecords.length > 0)
-    setHasLoadedOnce(true)
-
     const statusMap: Record<string, 'present' | 'absent' | 'excused'> = {}
     studentList.forEach((s: Student) => { statusMap[s.id] = 'present' })
-    existingRecords.forEach((a) => {
+    historyRecords.forEach((a) => {
       statusMap[a.student_id] = a.status as 'present' | 'absent' | 'excused'
     })
     setStatuses(statusMap)
@@ -177,7 +201,6 @@ export default function AttendancePage() {
             <input type="date" value={selectedDate} min={todayStr} onChange={e => {
               setSelectedDate(e.target.value)
               setStudents([]) // Clear students if date changes to avoid invalid saves
-              setHasLoadedOnce(false)
             }}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20" />
             {!isAllowedToTakeAttendance && (
@@ -194,13 +217,61 @@ export default function AttendancePage() {
             )}
           </div>
           <div className="flex items-end">
-            <button onClick={loadStudents} disabled={!selectedClub || !isAllowedToTakeAttendance}
+            <button onClick={loadStudents} disabled={!selectedClub || !isAllowedToTakeAttendance || attendanceExists}
               className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400/50 dark:disabled:bg-indigo-900/50 disabled:cursor-not-allowed text-white rounded-xl text-sm font-medium transition-colors">
               Davomatni yuklash
             </button>
           </div>
         </div>
       </div>
+
+      {/* Davomat Olingan qatori (Single Row History Toggle) */}
+      {attendanceExists && (
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-gray-900 rounded-2xl p-4 lg:p-5 border border-emerald-100 dark:border-emerald-900/30 flex flex-col gap-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <CheckCircle size={20} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Davomat olingan</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{selectedDate} sanasi uchun davomat olingan.</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowHistoryDetails(!showHistoryDetails)} 
+              className="px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-semibold rounded-xl text-xs transition duration-200">
+              {showHistoryDetails ? 'Yopish' : "Ko'rish"}
+            </button>
+          </div>
+
+          {showHistoryDetails && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="border-t border-gray-100 dark:border-gray-800 pt-4 mt-2">
+              <div className="space-y-2">
+                {historyRecords.map((record) => {
+                  const initials = (record.full_name || 'UU').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+                  
+                  let badge = null
+                  if (record.status === 'present') badge = <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><Check size={14} /> Keldi</span>
+                  if (record.status === 'absent') badge = <span className="flex items-center gap-1 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><X size={14} /> Kelmadi</span>
+                  if (record.status === 'excused') badge = <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><Clock size={14} /> Sababli</span>
+
+                  return (
+                    <div key={`hist-${record.student_id}`} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950/50 border border-gray-100 dark:border-gray-800/50 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0 shadow-sm">{initials}</div>
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{record.full_name}</span>
+                      </div>
+                      <div>{badge}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+        </motion.div>
+      )}
 
       {/* Student List */}
       {students.length > 0 && (
@@ -259,42 +330,6 @@ export default function AttendancePage() {
         </motion.div>
       )}
 
-      {/* Davomat Tarixi (History) */}
-      {hasLoadedOnce && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Davomat tarixi</h3>
-          
-          {historyRecords.length > 0 ? (
-             <div className="space-y-3">
-                {students.map((student) => {
-                  const record = historyRecords.find(r => r.student_id === student.id)
-                  if (!record) return null
-                  const initials = student.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-                  
-                  let badge = null
-                  if (record.status === 'present') badge = <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md text-xs font-semibold"><Check size={14} /> Keldi</span>
-                  if (record.status === 'absent') badge = <span className="flex items-center gap-1 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2 py-1 rounded-md text-xs font-semibold"><X size={14} /> Kelmadi</span>
-                  if (record.status === 'excused') badge = <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2 py-1 rounded-md text-xs font-semibold"><Clock size={14} /> Sababli</span>
-
-                  return (
-                    <div key={`hist-${student.id}`} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-950 border border-gray-100 dark:border-gray-800">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0">{initials}</div>
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{student.full_name}</span>
-                      </div>
-                      <div>{badge}</div>
-                    </div>
-                  )
-                })}
-             </div>
-          ) : (
-            <div className="py-6 text-center text-sm font-medium text-gray-500 dark:text-gray-400">
-              Ushbu sana uchun davomat topilmadi.
-            </div>
-          )}
-        </motion.div>
-      )}
 
       {/* Reward Section */}
       {saved && canEdit && presentStudents.length > 0 && (
