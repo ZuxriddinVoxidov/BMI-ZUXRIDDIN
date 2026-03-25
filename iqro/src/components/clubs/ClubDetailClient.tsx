@@ -611,12 +611,9 @@ export default function ClubDetailClient({
                 <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 dark:bg-indigo-950/30 rounded-bl-full -mr-10 -mt-10" />
 
                 {/* Teacher info */}
-                {(() => {
-                  const avatar = club.teacher?.avatar_url || club.teacher_image_url
-                  return (
                 <div className="relative text-center mb-6">
-                  {avatar ? (
-                    <img src={avatar} alt={club.teacher?.full_name || ''}
+                  {club.teacher_image_url ? (
+                    <img src={club.teacher_image_url} alt={club.teacher?.full_name || ''}
                       className="w-24 h-24 rounded-full object-cover mx-auto ring-4 ring-indigo-600 ring-offset-4" />
                   ) : (
                     <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-black text-2xl mx-auto ring-4 ring-indigo-600 ring-offset-4">
@@ -629,8 +626,6 @@ export default function ClubDetailClient({
                     <p className="text-sm text-gray-500 dark:text-gray-400 italic mt-3 leading-relaxed">{club.teacher_bio}</p>
                   )}
                 </div>
-                  )
-                })()}
 
                 <hr className="border-gray-100 dark:border-gray-800 my-5" />
 

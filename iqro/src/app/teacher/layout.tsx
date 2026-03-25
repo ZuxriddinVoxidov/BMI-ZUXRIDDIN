@@ -1,7 +1,6 @@
 import TeacherSidebar from '@/components/dashboard/teacher/TeacherSidebar'
 import NotificationBell from '@/components/shared/NotificationBell'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
-import { UserAvatar } from '@/components/shared/UserAvatar'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -28,7 +27,6 @@ export default async function TeacherLayout({ children }: { children: React.Reac
       <TeacherSidebar
         fullName={profile.full_name || 'O\'qituvchi'}
         clubCount={myClubs?.length || 0}
-        avatarUrl={profile.avatar_url}
       />
       <div className="lg:ml-[250px] transition-all duration-300">
         <div className="h-14 sm:h-16 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
@@ -39,7 +37,9 @@ export default async function TeacherLayout({ children }: { children: React.Reac
             <ThemeToggle />
             <NotificationBell userId={profile.id} />
             <div className="hidden sm:flex items-center gap-2">
-              <UserAvatar avatarUrl={profile.avatar_url} fullName={profile.full_name} size="md" />
+              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                {(profile.full_name?.split(' ')[0] || '?').charAt(0).toUpperCase()}
+              </div>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 {profile.full_name?.split(' ')[0]}
               </span>

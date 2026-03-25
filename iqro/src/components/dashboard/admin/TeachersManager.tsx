@@ -1,12 +1,11 @@
 'use client'
 
-import { addTeacher, toggleBlockTeacher, updateTeacherInfo, deleteTeacher, updateTeacherAvatar } from '@/app/actions/teachers'
+import { addTeacher, toggleBlockTeacher, updateTeacherInfo, deleteTeacher } from '@/app/actions/teachers'
 
 import DataLoader from '@/components/ui/DataLoader'
 import { motion } from 'framer-motion'
-import { Copy, Eye, EyeOff, Search, UserPlus, Users, Upload, Camera } from 'lucide-react'
-import { useEffect, useState, useRef } from 'react'
-import { UserAvatar } from '@/components/shared/UserAvatar'
+import { Copy, Eye, EyeOff, Search, UserPlus, Users } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface Teacher {
   id: string
@@ -20,7 +19,6 @@ interface Teacher {
   created_at: string
   school_id?: string
   clubs: { id: string; name: string }[]
-  avatar_url?: string | null
 }
 
 export default function TeachersManager({ teachers, schoolId }: { teachers: Teacher[]; schoolId: string }) {
@@ -31,8 +29,6 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
 
   // Add teacher form
   const [form, setForm] = useState({ full_name: '', email: '', password: '' })
-  const [addAvatarFile, setAddAvatarFile] = useState<File | null>(null)
-  const [addAvatarPreview, setAddAvatarPreview] = useState<string | null>(null)
   const [formError, setFormError] = useState('')
   const [formLoading, setFormLoading] = useState(false)
   const [dataReady, setDataReady] = useState(false)
@@ -40,14 +36,10 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
   // Edit modal states
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null)
   const [teacherForm, setTeacherForm] = useState({ full_name: '', phone: '', teacher_bio: '', email: '', new_password: '' })
-  const [editAvatarFile, setEditAvatarFile] = useState<File | null>(null)
-  const [editAvatarPreview, setEditAvatarPreview] = useState<string | null>(null)
   const [showTeacherModal, setShowTeacherModal] = useState(false)
   const [showTeacherPwd, setShowTeacherPwd] = useState(false)
   const [showNewTeacherPwd, setShowNewTeacherPwd] = useState(false)
   const [savingTeacher, setSavingTeacher] = useState(false)
-  const editFileInputRef = useRef<HTMLInputElement>(null)
-  const addFileInputRef = useRef<HTMLInputElement>(null)
   const [modalBlockingTeacher, setModalBlockingTeacher] = useState(false)
   const [teacherToast, setTeacherToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
@@ -66,8 +58,6 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
       email: teacher.email || '',
       new_password: '',
     })
-    setEditAvatarFile(null)
-    setEditAvatarPreview(teacher.avatar_url || null)
     setShowTeacherPwd(false)
     setShowNewTeacherPwd(false)
     setModalBlockingTeacher(false)
@@ -90,12 +80,6 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
     })
     
     if (result.success) {
-      if (editAvatarFile) {
-        const fd = new FormData()
-        fd.append('avatar', editAvatarFile)
-        await updateTeacherAvatar(editingTeacher.id, fd)
-      }
-      
       setShowTeacherModal(false)
       setTeacherToast({ message: 'Saqlandi ✅', type: 'success' })
       setTeachersList(prev => prev.map(t => 
@@ -103,7 +87,6 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
           ...t, 
           full_name: teacherForm.full_name, 
           email: teacherForm.email || t.email,
-          avatar_url: editAvatarPreview !== (t.avatar_url || null) ? editAvatarPreview : t.avatar_url // Best effort local update, page matches DB on eventual refresh
         } : t
       ))
     } else {
@@ -151,16 +134,8 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
     const result = await addTeacher({ ...form, school_id: schoolId })
     
     if (result.success) {
-      if (addAvatarFile && result.profileId) {
-        const fd = new FormData()
-        fd.append('avatar', addAvatarFile)
-        await updateTeacherAvatar(result.profileId, fd)
-      }
-      
       setShowAddModal(false)
       setForm({ full_name: '', email: '', password: '' })
-      setAddAvatarFile(null)
-      setAddAvatarPreview(null)
       // Hard reload not necessary, app router will trigger refresh since Server Action revalidates path
     } else {
       setFormError(result.error || 'Xatolik yuz berdi')
@@ -238,7 +213,9 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                   <tr key={teacher.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="py-4 px-5">
                       <div className="flex items-center gap-3">
-                        <UserAvatar avatarUrl={teacher.avatar_url} fullName={teacher.full_name} size="md" />
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm shrink-0">
+                          {initials}
+                        </div>
                         <p className="text-sm font-semibold text-gray-900 dark:text-white">{teacher.full_name}</p>
                       </div>
                     </td>
@@ -315,36 +292,6 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
             </div>
             {formError && <div className="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-sm p-3 rounded-xl mb-4">{formError}</div>}
             <form onSubmit={handleAddTeacher} className="space-y-4">
-              <div className="flex flex-col items-center justify-center mb-6">
-                <div 
-                  onClick={() => addFileInputRef.current?.click()}
-                  className="relative w-24 h-24 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-indigo-500 transition-colors cursor-pointer group overflow-hidden bg-gray-50 dark:bg-gray-800 flex items-center justify-center shadow-inner"
-                >
-                  {addAvatarPreview ? (
-                    <img src={addAvatarPreview} alt="Avatar" className="w-full h-full object-cover" />
-                  ) : (
-                    <Camera className="text-gray-400 group-hover:text-indigo-500 transition-colors" size={28} />
-                  )}
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Upload className="text-white" size={20} />
-                  </div>
-                </div>
-                <input 
-                  type="file" 
-                  accept="image/png, image/jpeg, image/webp" 
-                  ref={addFileInputRef}
-                  className="hidden" 
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      setAddAvatarFile(file)
-                      setAddAvatarPreview(URL.createObjectURL(file))
-                    }
-                  }} 
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 font-medium">Rasm yuklash (ixtiyoriy)</p>
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">To&apos;liq ism *</label>
                 <input value={form.full_name} onChange={e => setForm(p => ({ ...p, full_name: e.target.value }))}
@@ -383,28 +330,9 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
             <div className="flex-1 pb-24 sm:pb-0">
             {/* Header */}
             <div className="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
-              <div 
-                onClick={() => editFileInputRef.current?.click()}
-                className="relative cursor-pointer group"
-              >
-                <UserAvatar avatarUrl={editAvatarPreview} fullName={editingTeacher.full_name} size="lg" />
-                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="text-white" size={20} />
-                </div>
+              <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl shrink-0">
+                {(editingTeacher.full_name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
               </div>
-              <input 
-                type="file" 
-                ref={editFileInputRef}
-                className="hidden" 
-                accept="image/png, image/jpeg, image/webp"
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) {
-                    setEditAvatarFile(file)
-                    setEditAvatarPreview(URL.createObjectURL(file))
-                  }
-                }}
-              />
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1">{editingTeacher.full_name}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">O&apos;qituvchi ma&apos;lumotlarini tahrirlash</p>

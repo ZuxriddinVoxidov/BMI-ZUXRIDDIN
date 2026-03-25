@@ -6,8 +6,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, ChevronDown, MapPin, Users, Upload, Trash2, Download, FileText, Plus, X, MessageSquare, Send } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { useToast } from '@/hooks/use-toast'
-import { UserAvatar } from '@/components/shared/UserAvatar'
-
 interface Club extends Record<string, unknown> {
   id: string
   name: string
@@ -453,10 +451,12 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                               return (
                                 <tr key={e.id as string} className="border-t border-gray-50 dark:border-gray-800">
                                   <td className="py-3">
-                                    <div className="flex items-center gap-3">
-                                      <UserAvatar avatarUrl={student?.avatar_url as string || null} fullName={student?.full_name as string || '?'} size="sm" />
-                                      <span className="text-sm font-medium text-gray-900 dark:text-white">{student?.full_name as string}</span>
-                                    </div>
+                                      <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                                          {(student?.full_name as string || '?').charAt(0).toUpperCase()}
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-900 dark:text-white">{student?.full_name as string}</span>
+                                      </div>
                                   </td>
                                   <td className="py-3">
                                     <span className="text-xs px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 font-medium">
