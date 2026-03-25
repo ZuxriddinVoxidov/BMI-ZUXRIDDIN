@@ -21,6 +21,20 @@ export const metadata: Metadata = {
     template: '%s | IQRO',
   },
   description: "Maktab to'garaklari va davomatni boshqarish platformasi",
+  icons: {
+    icon: [
+      {
+        media: '(prefers-color-scheme: light)',
+        url: '/logo.png',
+        href: '/logo.png',
+      },
+      {
+        media: '(prefers-color-scheme: dark)',
+        url: '/logo-dark.png',
+        href: '/logo-dark.png',
+      },
+    ],
+  },
 };
 
 export default function RootLayout({
