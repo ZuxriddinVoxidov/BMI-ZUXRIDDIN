@@ -123,7 +123,7 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
               if (rankIndex !== -1) {
                 const r = rankIndex + 1
                 rankText = r.toString()
-                const pts = r === 1 ? 15 : r === 2 ? 12 : r === 3 ? 9 : r === 4 ? 6 : r === 5 ? 3 : 0
+                const pts = r === 1 ? 15 : r === 2 ? 12 : r === 3 ? 9 : r === 4 ? 6 : r === 5 ? 3 : r === 6 ? 1 : 0
                 if (pts > 0) {
                   pointsText = `+${pts}`
                   pointsColor = 'text-emerald-600'

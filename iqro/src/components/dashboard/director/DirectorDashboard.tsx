@@ -3,6 +3,7 @@
 import { exportDirectorExcel, exportDirectorPDF } from '@/lib/export'
 import { getStudentLevel } from '@/lib/levels'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { UserAvatar } from '@/components/shared/UserAvatar'
 
 const categoryColors: Record<string, string> = {
   Texnologiya: '#6366f1',
@@ -176,11 +177,7 @@ export default function DirectorDashboard({
                   <tr key={t.id} className="border-b border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="px-4 sm:px-6 py-3">
                       <div className="flex items-center gap-2">
-                        {t.avatar_url ? (
-                          <img src={t.avatar_url} alt={t.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold flex-shrink-0">{initials}</div>
-                        )}
+                        <UserAvatar avatarUrl={t.avatar_url} fullName={t.name} size="sm" />
                         <span className="font-medium text-gray-700 dark:text-gray-200 truncate max-w-[100px]">{t.name}</span>
                       </div>
                     </td>

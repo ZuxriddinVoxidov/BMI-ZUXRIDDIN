@@ -135,10 +135,10 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
     .eq('quiz_id', quizId)
     .order('score', { ascending: false })
 
-  // Award points: 1st=15, 2nd=12, 3rd=9, 4th=6, 5th=3
-  const pointsMap = [15, 12, 9, 6, 3]
+  // Award points: 1st=15, 2nd=12, 3rd=9, 4th=6, 5th=3, 6th=1
+  const pointsMap = [15, 12, 9, 6, 3, 1]
 
-  for (let i = 0; i < Math.min(5, (participants || []).length); i++) {
+  for (let i = 0; i < Math.min(6, (participants || []).length); i++) {
     const p = participants![i]
     if (!p.student_id || p.score === 0) continue
     const pointsToAdd = pointsMap[i]
@@ -166,7 +166,7 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
         })
     }
 
-    const rankLabels = ['1-o\'rin', '2-o\'rin', '3-o\'rin', '4-o\'rin', '5-o\'rin']
+    const rankLabels = ['1-o\'rin', '2-o\'rin', '3-o\'rin', '4-o\'rin', '5-o\'rin', '6-o\'rin']
     await admin.from('point_transactions').insert({
       student_id: p.student_id,
       points: pointsToAdd,

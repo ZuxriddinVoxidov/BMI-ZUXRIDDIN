@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Calendar, ChevronDown, MapPin, Users, Upload, Trash2, Download, FileText, Plus, X, MessageSquare, Send } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { useToast } from '@/hooks/use-toast'
+import { UserAvatar } from '@/components/shared/UserAvatar'
 
 interface Club extends Record<string, unknown> {
   id: string
@@ -447,14 +448,13 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                               const student = e.student as Record<string, unknown>
                               const totalPts = ((student?.student_points as Record<string, unknown>)?.total_points) as number || 0
                               const level = getStudentLevel(totalPts)
-                              const initials = ((student?.full_name as string) || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
                               const date = new Date(e.created_at as string)
                               const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`
                               return (
                                 <tr key={e.id as string} className="border-t border-gray-50 dark:border-gray-800">
                                   <td className="py-3">
                                     <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">{initials}</div>
+                                      <UserAvatar avatarUrl={student?.avatar_url as string || null} fullName={student?.full_name as string || '?'} size="sm" />
                                       <span className="text-sm font-medium text-gray-900 dark:text-white">{student?.full_name as string}</span>
                                     </div>
                                   </td>

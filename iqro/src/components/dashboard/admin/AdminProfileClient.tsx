@@ -3,11 +3,13 @@
 import { updateAdminProfile } from '@/app/actions/profile'
 import { Copy, Eye, EyeOff, X } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import { UserAvatar } from '@/components/shared/UserAvatar'
 
 interface Props {
   profile: {
     id: string
     full_name: string
+    avatar_url?: string | null
     phone?: string | null
     plain_password?: string | null
     role: string
@@ -88,8 +90,8 @@ export default function AdminProfileClient({ profile, email }: Props) {
           <div className="absolute -bottom-8 -left-4 w-24 h-24 bg-white/10 rounded-full"/>
           <div className="absolute top-4 right-20 w-12 h-12 bg-white/10 rounded-full"/>
           
-          <div className="absolute -bottom-10 left-4 sm:left-8 w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-black border-4 border-white shadow-lg z-20">
-            {initials}
+          <div className="absolute -bottom-10 left-4 sm:left-8 z-20 shadow-lg rounded-2xl overflow-hidden border-4 border-white dark:border-gray-900">
+            <UserAvatar avatarUrl={profile.avatar_url} fullName={profile.full_name} size="xl" />
           </div>
         </div>
 

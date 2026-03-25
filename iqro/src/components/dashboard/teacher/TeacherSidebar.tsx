@@ -21,6 +21,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Logo } from '@/components/shared/Logo'
+import { UserAvatar } from '@/components/shared/UserAvatar'
 
 const navItems = [
   { label: 'Bosh sahifa', href: '/teacher', icon: Home },
@@ -92,13 +93,7 @@ export default function TeacherSidebar({
 
       <div className={cn('px-4 py-4 border-b border-gray-100 dark:border-gray-800', collapsed && 'px-2')}>
         <div className="flex items-center gap-3">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt={firstName} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
-              {initials}
-            </div>
-          )}
+          <UserAvatar avatarUrl={avatarUrl} fullName={fullName} size="md" />
           {!collapsed && (
             <div>
               <p className="font-semibold text-sm text-gray-900 dark:text-white">

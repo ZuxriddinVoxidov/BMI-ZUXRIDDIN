@@ -49,8 +49,10 @@ export async function addTeacher(data: {
     .eq('user_id', userId)
     .single()
 
+  let profileId = existingProfile?.id
+
   if (existingProfile) {
-    await supabase
+    const { data: updatedProfile, error: updateErr } = await supabase
       .from('profiles')
       .update({
         role: 'teacher',
@@ -58,20 +60,24 @@ export async function addTeacher(data: {
         school_id: data.school_id,
         plain_password: data.password,
       })
-      .eq('user_id', userId)
+      .eq('id', profileId)
+      .select('id')
+      .single()
+    if (!updateErr && updatedProfile) profileId = updatedProfile.id
   } else {
-    await supabase.from('profiles').insert({
+    const { data: insertedProfile, error: insertErr } = await supabase.from('profiles').insert({
       user_id: userId,
       role: 'teacher',
       full_name: data.full_name,
       school_id: data.school_id,
       plain_password: data.password,
-    })
+    }).select('id').single()
+    if (!insertErr && insertedProfile) profileId = insertedProfile.id
   }
 
   revalidatePath('/dashboard/teachers')
   revalidatePath('/dashboard')
-  return { success: true }
+  return { success: true, profileId }
 }
 
 export async function toggleBlockTeacher(profileId: string, block: boolean) {
@@ -153,6 +159,48 @@ export async function deleteTeacher(teacherId: string, userId: string) {
     return { success: true }
   } catch (err: unknown) {
     console.error('deleteTeacher crash:', err)
+    return { success: false, error: String(err) }
+  }
+}
+
+export async function updateTeacherAvatar(profileId: string, formData: FormData) {
+  try {
+    const file = formData.get('avatar') as File | null
+    if (!file) return { success: false, error: 'Fayl topilmadi' }
+
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    
+    const supabase = createAdminClient()
+    const fileExt = file.name.split('.').pop()
+    const filename = `teacher-${profileId}-${Date.now()}.${fileExt}`
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filename, buffer, {
+        upsert: true,
+        contentType: file.type,
+      })
+
+    if (uploadError) return { success: false, error: uploadError.message }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(uploadData.path)
+
+    const { error: dbError } = await supabase
+      .from('profiles')
+      .update({ avatar_url: publicUrl })
+      .eq('id', profileId)
+
+    if (dbError) return { success: false, error: dbError.message }
+
+    revalidatePath('/dashboard/teachers')
+    revalidatePath('/dashboard')
+    
+    return { success: true, avatarUrl: publicUrl }
+  } catch (err: unknown) {
+    console.error('updateTeacherAvatar crash:', err)
     return { success: false, error: String(err) }
   }
 }

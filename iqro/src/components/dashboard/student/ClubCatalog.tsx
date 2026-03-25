@@ -198,19 +198,31 @@ export default function ClubCatalog({ clubs, myEnrollments }: ClubCatalogProps) 
             return (
               <div
                 key={club.id as string}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-shadow"
+                className="bg-white dark:bg-gray-900 rounded-2xl flex flex-col border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/50 transition-shadow"
               >
-                <div className="p-6">
+                {/* Image Section */}
+                <div className="relative w-full aspect-video shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                  {club.cover_image_url ? (
+                    <>
+                      <img src={club.cover_image_url as string} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/20" />
+                    </>
+                  ) : (
+                    <span className="text-5xl relative z-10">{club.emoji as string || '📌'}</span>
+                  )}
                   {/* Category Badge */}
                   {Boolean(club.category) && (
                     <span
-                      className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
+                      className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold z-10 shadow-sm ${
                         categoryColors[club.category as string] || 'bg-gray-100 text-gray-700'
                       }`}
                     >
                       {String(club.category)}
                     </span>
                   )}
+                </div>
+
+                <div className="p-6 flex flex-col flex-1">
 
                   {/* Club Name */}
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-2">{club.name as string}</h3>

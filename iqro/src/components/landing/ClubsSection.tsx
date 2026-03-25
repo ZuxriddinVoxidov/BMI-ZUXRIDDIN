@@ -44,7 +44,7 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
     const cardContent = (
       <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-300 h-full flex flex-col">
         {/* Card Header */}
-        <div className="relative h-36 shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
+        <div className="relative w-full aspect-video shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
           {club.cover_image_url ? (
             <>
               <img src={club.cover_image_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
