@@ -2,6 +2,7 @@
 
 import NotificationBell from '@/components/shared/NotificationBell'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
+import { Logo } from '@/components/shared/Logo'
 
 export default function StudentHeader({
   fullName,
@@ -19,9 +20,19 @@ export default function StudentHeader({
 
   return (
     <header className="h-14 sm:h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
-      <p className="text-sm font-semibold text-gray-900 dark:text-white truncate pl-10 sm:pl-0">
-        Salom, {firstName}! 👋
-      </p>
+      {/* Mobile: left spacer for hamburger + logo center */}
+      <div className="flex items-center gap-3 min-w-0">
+        {/* Spacer for the hamburger button (fixed positioned in sidebar) */}
+        <div className="w-8 lg:hidden shrink-0" />
+        {/* Logo — mobile only */}
+        <div className="lg:hidden">
+          <Logo href="/student" className="!flex-row !flex-col-none" />
+        </div>
+        {/* Desktop greeting */}
+        <p className="hidden lg:block text-sm font-semibold text-gray-900 dark:text-white truncate">
+          Salom, {firstName}! 👋
+        </p>
+      </div>
       <div className="flex items-center gap-3 sm:gap-4">
         <ThemeToggle />
         <NotificationBell userId={profileId} />
