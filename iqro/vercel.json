@@ -1,7 +1,3 @@
 {
-  "functions": {
-    "app/api/ai/student/route": { "maxDuration": 60 },
-    "app/api/ai/teacher/route": { "maxDuration": 60 },
-    "app/api/ai/director/route": { "maxDuration": 60 }
-  }
+  "regions": ["sin1"]
 }
