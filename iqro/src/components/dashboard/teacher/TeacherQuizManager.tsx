@@ -552,11 +552,16 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                                     <input type="radio" name={`correct-${idx}`} checked={isCorrect} onChange={() => handleUpdateQ(idx, 'correct_answer', opt)} className="w-4 h-4 text-emerald-600"/>
                                     <span className={`font-bold text-sm ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>{opt}:</span>
                                   </label>
-                                  <input 
+                                  <textarea 
+                                    rows={1}
                                     value={q[valKey] as string} 
                                     onChange={e=>handleUpdateQ(idx, valKey, e.target.value)} 
-                                    className="flex-1 min-w-0 bg-transparent text-sm text-gray-800 dark:text-gray-200 outline-none placeholder-gray-400 dark:placeholder-gray-500" 
+                                    className="flex-1 min-w-0 bg-transparent text-sm text-gray-800 dark:text-gray-200 outline-none placeholder-gray-400 dark:placeholder-gray-500 whitespace-normal break-words py-1 resize-none overflow-hidden h-auto min-h-[32px] sm:min-h-[24px]" 
                                     placeholder="Variant matni..."
+                                    onInput={(e) => {
+                                      e.currentTarget.style.height = 'auto';
+                                      e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+                                    }}
                                   />
                                 </div>
                               )

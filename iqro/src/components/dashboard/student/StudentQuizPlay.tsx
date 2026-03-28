@@ -399,7 +399,7 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                           return (
                             <div key={opt} className={cls}>
                               <span className={dotCls}>{opt}</span>
-                              <span className={isThisCorrect ? 'text-emerald-700 dark:text-emerald-300' : isWrongPick ? 'text-red-700 dark:text-red-300' : 'text-gray-700 dark:text-gray-300'}>
+                              <span className={`whitespace-normal break-words flex-1 min-w-0 leading-snug ${isThisCorrect ? 'text-emerald-700 dark:text-emerald-300' : isWrongPick ? 'text-red-700 dark:text-red-300' : 'text-gray-700 dark:text-gray-300'}`}>
                                 {text}
                               </span>
                               {isThisCorrect && <span className="ml-auto text-emerald-500 text-lg">✅</span>}
