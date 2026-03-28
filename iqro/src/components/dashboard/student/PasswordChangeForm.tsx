@@ -56,7 +56,7 @@ export default function PasswordChangeForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="text-sm text-gray-600 mb-1 block">Joriy parol</label>
+          <label className="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Joriy parol</label>
           <div className="relative">
             <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -64,13 +64,13 @@ export default function PasswordChangeForm() {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300"
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 dark:focus:border-indigo-500 placeholder:text-gray-400 dark:placeholder:text-gray-600"
             />
           </div>
         </div>
 
         <div>
-          <label className="text-sm text-gray-600 mb-1 block">Yangi parol</label>
+          <label className="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Yangi parol</label>
           <div className="relative">
             <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -78,7 +78,7 @@ export default function PasswordChangeForm() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Kamida 8 belgi"
-              className="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300"
+              className="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 dark:focus:border-indigo-500 placeholder:text-gray-400 dark:placeholder:text-gray-600"
             />
             <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
               {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -90,7 +90,7 @@ export default function PasswordChangeForm() {
         </div>
 
         <div>
-          <label className="text-sm text-gray-600 mb-1 block">Yangi parolni tasdiqlang</label>
+          <label className="text-sm text-gray-600 dark:text-gray-400 mb-1 block">Yangi parolni tasdiqlang</label>
           <div className="relative">
             <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
@@ -98,7 +98,7 @@ export default function PasswordChangeForm() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Parolni qayta kiriting"
-              className="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300"
+              className="w-full pl-10 pr-10 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 dark:focus:border-indigo-500 placeholder:text-gray-400 dark:placeholder:text-gray-600"
             />
             <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
               {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}

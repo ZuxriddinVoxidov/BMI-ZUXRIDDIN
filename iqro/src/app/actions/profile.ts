@@ -92,3 +92,39 @@ export async function updateAdminProfile(data: {
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function updateStudentProfile(data: {
+  full_name: string
+  phone: string
+  grade: string
+}): Promise<{ success: boolean; error?: string }> {
+  const supabase = createClient()
+  const admin = createAdminClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Tizimga kirish talab qilinadi' }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('user_id', user.id)
+    .single()
+
+  if (!profile) return { success: false, error: 'Profil topilmadi' }
+
+  const { error } = await admin
+    .from('profiles')
+    .update({
+      full_name: data.full_name.trim(),
+      phone: data.phone.trim() || null,
+      grade: data.grade.trim() || null,
+    })
+    .eq('id', profile.id)
+
+  if (error) return { success: false, error: error.message }
+
+  revalidatePath('/student/profile')
+  revalidatePath('/student')
+
+  return { success: true }
+}
