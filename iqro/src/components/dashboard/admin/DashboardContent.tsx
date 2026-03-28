@@ -6,10 +6,11 @@ import {
     FileText,
     GraduationCap,
     TrendingUp,
-    Users
+    Users,
+    X
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ParentRequests from './ParentRequests'
 
 interface Props {
@@ -40,6 +41,26 @@ export default function DashboardContent({
 }: Props) {
   const [showAllMissed, setShowAllMissed] = useState(false)
   const [showAllApps, setShowAllApps] = useState(false)
+  const [dismissedClubIds, setDismissedClubIds] = useState<string[]>([])
+
+  useEffect(() => {
+    const todayStr = new Date().toISOString().split('T')[0]
+    const saved = localStorage.getItem(`dismissed_attendance_${todayStr}`)
+    if (saved) {
+      try {
+        setDismissedClubIds(JSON.parse(saved))
+      } catch (e) {}
+    }
+  }, [])
+
+  const handleDismiss = (clubId: string) => {
+    const todayStr = new Date().toISOString().split('T')[0]
+    const updated = [...dismissedClubIds, clubId]
+    setDismissedClubIds(updated)
+    localStorage.setItem(`dismissed_attendance_${todayStr}`, JSON.stringify(updated))
+  }
+
+  const visibleMissedClubs = missedAttendanceClubs.filter(c => !dismissedClubIds.includes(c.id))
 
   const today = new Date().toISOString().split('T')[0]
   const stats = [
@@ -118,7 +139,7 @@ export default function DashboardContent({
       </div>
 
       {/* Missed Attendance Alerts */}
-      {missedAttendanceClubs.length > 0 && (
+      {visibleMissedClubs.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -134,20 +155,27 @@ export default function DashboardContent({
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {(showAllMissed ? missedAttendanceClubs : missedAttendanceClubs.slice(0, 3)).map(club => (
-              <div key={club.id} className="bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-red-100 flex flex-col">
-                <span className="font-semibold text-gray-900 text-sm">{club.name}</span>
+            {(showAllMissed ? visibleMissedClubs : visibleMissedClubs.slice(0, 3)).map(club => (
+              <div key={club.id} className="relative group bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-red-100 flex flex-col">
+                <button 
+                  onClick={() => handleDismiss(club.id)}
+                  className="absolute top-2 right-2 text-red-300 hover:text-red-600 bg-red-50 hover:bg-red-100 rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-all focus:opacity-100"
+                  title="O'chirish"
+                >
+                  <X size={14} />
+                </button>
+                <span className="font-semibold text-gray-900 text-sm pr-6">{club.name}</span>
                 <span className="text-xs text-gray-600 mt-1">👨‍🏫 {club.teacher_name}</span>
                 <span className="text-[10px] text-red-500 font-medium mt-1">🕒 {club.schedule}</span>
               </div>
             ))}
           </div>
-          {missedAttendanceClubs.length > 3 && (
+          {visibleMissedClubs.length > 3 && (
             <button 
               onClick={() => setShowAllMissed(!showAllMissed)}
               className="mt-4 text-sm font-medium text-red-700 hover:text-red-800 underline transition-colors"
             >
-              {showAllMissed ? 'Yashirish' : `Barchasini ko'rish (${missedAttendanceClubs.length})`}
+              {showAllMissed ? 'Yashirish' : `Barchasini ko'rish (${visibleMissedClubs.length})`}
             </button>
           )}
         </motion.div>
