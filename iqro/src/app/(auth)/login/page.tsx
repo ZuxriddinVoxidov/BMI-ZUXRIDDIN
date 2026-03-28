@@ -142,67 +142,33 @@ export default function LoginPage() {
       setLoginErrors({})
       setLoginLoading(true)
 
-      const { error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
-        password: loginPassword,
-      })
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: loginEmail,
+            password: loginPassword,
+            remember: loginRemember,
+            role: loginRole,
+          }),
+        })
 
-      if (error) {
+        const data = await res.json()
+
+        if (!res.ok) {
+          setLoginLoading(false)
+          setLoginError(data.error || "Tizim xatosi yuz berdi. Qayta urinib ko'ring.")
+          return
+        }
+
+        router.push(data.redirect || '/student')
+      } catch (err) {
         setLoginLoading(false)
-        setLoginError("Email yoki parol noto'g'ri. Qayta urinib ko'ring.")
-        return
+        setLoginError("Tarmoq xatosi yuz berdi. Qayta urinib ko'ring.")
       }
-
-      // Fetch profile role
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      if (!user) {
-        setLoginLoading(false)
-        setLoginError('Foydalanuvchi topilmadi')
-        return
-      }
-
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role, is_blocked')
-        .eq('user_id', user.id)
-        .single()
-
-      if (profile?.is_blocked) {
-        await supabase.auth.signOut()
-        setLoginLoading(false)
-        setLoginError('Akkauntingiz faollashtirilmagan yoki bloklangan. Iltimos admin bilan bog\'laning.')
-        return
-      }
-
-      const role = profile?.role || 'student'
-
-      const ALLOWED_ROLES: Record<string, string[]> = {
-        student: ['student'],
-        teacher: ['teacher', 'school_admin', 'director'],
-      }
-
-      if (!ALLOWED_ROLES[loginRole]?.includes(role)) {
-        await supabase.auth.signOut()
-        setLoginLoading(false)
-        const message = loginRole === 'student'
-          ? "Bu kirish o'quvchilar uchun. O'qituvchi sifatida kiring."
-          : "Bu kirish o'qituvchilar uchun. O'quvchi sifatida kiring."
-        setLoginError(message)
-        return
-      }
-
-      const routes: Record<string, string> = {
-        super_admin: '/dashboard',
-        school_admin: '/dashboard',
-        student: '/student',
-        teacher: '/teacher',
-        director: '/director',
-      }
-      router.push(routes[role] || '/student')
     },
-    [loginEmail, loginPassword, router, supabase, loginRole]
+    [loginEmail, loginPassword, loginRemember, loginRole, router]
   )
 
   // ══════════════════════════════════════════════════════════
