@@ -63,13 +63,18 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
   const [leaderboard, setLeaderboard] = useState<Participant[]>([])
   const [reviewQuestions, setReviewQuestions] = useState<AnsweredQuestion[]>([])
 
-  const [status, setStatus] = useState(quiz.status)
+  // Bug 2 fix: if student already submitted (has score) but quiz is still active,
+  // start in 'submitting' state so they wait for teacher to end it
+  const alreadySubmitted = participation?.score !== null && participation?.score !== undefined && quiz.status === 'active'
+  const [status, setStatus] = useState(alreadySubmitted ? 'submitting' : quiz.status)
   const [timeLeft, setTimeLeft] = useState(quiz.duration_seconds)
 
   const [currQIdx, setCurrQIdx] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
 
-  const [finalScore, setFinalScore] = useState<number | null>(participation?.score ?? null)
+  const [finalScore, setFinalScore] = useState<number | null>(
+    participation?.score !== null && participation?.score !== undefined ? participation.score : null
+  )
 
   const fetchResultsData = useCallback(async () => {
     try {
@@ -216,7 +221,7 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
         )}
 
         {/* ================= ACTIVE PLAY ================= */}
-        {status === 'active' && finalScore === null && quiz.quiz_questions.length > 0 && (
+        {status === 'active' && quiz.quiz_questions.length > 0 && (
           <motion.div key="active" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="w-full max-w-4xl space-y-6">
             <div className="flex flex-col justify-between items-center gap-4 bg-white dark:bg-gray-900 p-4 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm">
               <div className="flex items-center justify-center w-full sm:w-auto gap-2 px-6 py-3 bg-amber-50 dark:bg-amber-950/50 text-amber-600 font-bold font-mono text-2xl sm:text-xl rounded-2xl border border-amber-100 dark:border-amber-900/50 shrink-0">
@@ -254,10 +259,10 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                     <button
                       key={opt}
                       onClick={() => handleSelect(opt)}
-                      className={`w-full min-h-[48px] text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-center gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 shadow-md' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                      className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-start sm:items-center gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 shadow-md' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                     >
                       <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-300 group-hover:bg-gray-200'}`}>{opt}</div>
-                      <span className={`font-semibold text-[16px] sm:text-lg ${isSelected ? 'text-emerald-900 dark:text-emerald-100' : 'text-gray-700 dark:text-gray-200'}`}>{optText}</span>
+                      <span className={`font-semibold text-base sm:text-lg whitespace-normal break-words min-w-0 flex-1 leading-snug ${isSelected ? 'text-emerald-900 dark:text-emerald-100' : 'text-gray-700 dark:text-gray-200'}`}>{optText}</span>
                     </button>
                   )
                 })}

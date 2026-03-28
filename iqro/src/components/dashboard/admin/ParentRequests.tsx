@@ -62,7 +62,7 @@ export default function ParentRequests() {
     if (!showModal || !selectedStudent) return
     setProcessing(true)
     try {
-      const result = await approveParentRequest(showModal.id, selectedStudent, showModal.chat_id)
+      const result = await approveParentRequest(showModal.id, selectedStudent, showModal.chat_id, showModal.parent_name)
       
       if (result.success) {
         alert("Muvaffaqiyatli biriktirildi!")
