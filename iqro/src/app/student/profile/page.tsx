@@ -4,7 +4,6 @@ import PasswordChangeForm from '@/components/dashboard/student/PasswordChangeFor
 import StudentProfileClient from '@/components/dashboard/student/StudentProfileClient'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { getStudentLevel } from '@/lib/levels'
 
 export default async function StudentProfilePage() {
   const supabase = createClient()
@@ -20,49 +19,9 @@ export default async function StudentProfilePage() {
   if (!profile) redirect('/login')
 
   const school = profile.school as { name: string; district?: string } | null
-
-  // Stats: points
-  const { data: pointsData } = await supabase
-    .from('student_points')
-    .select('total_points')
-    .eq('student_id', profile.id)
-    .maybeSingle()
-  const points = pointsData?.total_points ?? 0
-
-  // Stats: enrollments
-  const { data: enrollments } = await supabase
-    .from('enrollments')
-    .select('id')
-    .eq('student_id', profile.id)
-    .eq('status', 'approved')
-
-  // Stats: works
-  const { data: works } = await supabase
-    .from('student_works')
-    .select('id')
-    .eq('student_id', profile.id)
-
-  // Stats: attendance
-  const { data: attendanceData } = await supabase
-    .from('attendance')
-    .select('status')
-    .eq('student_id', profile.id)
-
-  const presentCount = attendanceData?.filter((a: Record<string, unknown>) => a.status === 'present').length ?? 0
-  const totalCount = attendanceData?.length ?? 0
-  const attendanceRate = totalCount > 0 ? Math.round((presentCount / totalCount) * 100) : 0
-
-  const level = getStudentLevel(points)
   const initials = (profile.full_name || '?').split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
   const regDate = new Date(profile.created_at).toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' })
   const schoolName = school?.name ? `${school.name}-maktab` : "Maktab ko'rsatilmagan"
-
-  const stats = [
-    { icon: '🏫', label: "To'garaklar", value: enrollments?.length || 0 },
-    { icon: '🏆', label: 'Jami ball', value: points },
-    { icon: '📊', label: 'Davomat', value: `${attendanceRate}%` },
-    { icon: '📁', label: 'Yuklangan ishlar', value: works?.length || 0 },
-  ]
 
   return (
     <div className="space-y-5 sm:space-y-6 max-w-4xl">
@@ -91,26 +50,15 @@ export default async function StudentProfilePage() {
               🏫 {schoolName}
             </span>
             {profile.grade && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full font-medium border text-xs" style={{ backgroundColor: level.bgColor, color: level.textColor, borderColor: level.color + '40' }}>
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full font-medium border text-xs bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-500/20">
                 📚 {profile.grade}-sinf
               </span>
             )}
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full font-medium text-xs" style={{ backgroundColor: level.bgColor, color: level.textColor }}>
-              {level.emoji} {level.name} • {points} ball
-            </span>
+
           </div>
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 px-5 sm:px-8 pb-5 sm:pb-6">
-          {stats.map((s, i) => (
-            <div key={i} className="bg-gray-50 dark:bg-gray-950/60 rounded-xl p-3.5 text-center border border-gray-100 dark:border-gray-800">
-              <span className="text-xl block mb-1">{s.icon}</span>
-              <p className="text-xl font-bold text-gray-900 dark:text-white">{s.value}</p>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{s.label}</p>
-            </div>
-          ))}
-        </div>
+
       </div>
 
       {/* === PERSONAL INFO + PASSWORD === */}

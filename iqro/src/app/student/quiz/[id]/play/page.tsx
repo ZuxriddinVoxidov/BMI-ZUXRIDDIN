@@ -4,9 +4,34 @@ import StudentQuizPlay from '@/components/dashboard/student/StudentQuizPlay'
 
 export const dynamic = 'force-dynamic'
 
+interface QuizQuestion {
+  id: string
+  question: string
+  option_a: string
+  option_b: string
+  option_c: string
+  option_d: string
+}
+
+interface QuizWithQuestions {
+  id: string
+  title: string
+  status: string
+  duration_seconds: number
+  clubs: { name: string }
+  quiz_questions: QuizQuestion[]
+}
+
+interface Participation {
+  id: string
+  student_id: string
+  score: number | null
+  finished_at: string | null
+}
+
 export default async function StudentQuizPlayPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
@@ -18,7 +43,6 @@ export default async function StudentQuizPlayPage({ params }: { params: { id: st
 
   if (!profile || profile.role !== 'student') redirect('/')
 
-  // Fetch quiz with questions
   const { data: quiz } = await supabase
     .from('quizzes')
     .select(`
@@ -31,7 +55,6 @@ export default async function StudentQuizPlayPage({ params }: { params: { id: st
 
   if (!quiz) redirect('/student/quiz')
 
-  // Verify participation
   const { data: participation } = await supabase
     .from('quiz_participants')
     .select('*')
@@ -40,15 +63,14 @@ export default async function StudentQuizPlayPage({ params }: { params: { id: st
     .single()
 
   if (!participation && quiz.status !== 'waiting') {
-    // If not joined and it's already active/finished, can't play
     redirect('/student/quiz')
   }
 
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <StudentQuizPlay 
-        quiz={quiz as any} 
-        participation={participation as any} 
+      <StudentQuizPlay
+        quiz={quiz as QuizWithQuestions}
+        participation={participation as Participation | null}
       />
     </div>
   )

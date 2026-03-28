@@ -22,7 +22,6 @@ export default function StudentProfileClient({ profile, email, school, regDate }
   const [form, setForm] = useState({
     full_name: profile.full_name || '',
     phone: profile.phone || '',
-    grade: profile.grade || '',
   })
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -39,7 +38,7 @@ export default function StudentProfileClient({ profile, email, school, regDate }
       return
     }
     startTransition(async () => {
-      const result = await updateStudentProfile(form)
+      const result = await updateStudentProfile({ ...form, grade: profile.grade || '' })
       if (result.success) {
         showToast("Ma'lumotlar muvaffaqiyatli saqlandi ✅", 'success')
         setIsEditing(false)
@@ -54,7 +53,6 @@ export default function StudentProfileClient({ profile, email, school, regDate }
     setForm({
       full_name: profile.full_name || '',
       phone: profile.phone || '',
-      grade: profile.grade || '',
     })
     setIsEditing(false)
   }
@@ -124,18 +122,13 @@ export default function StudentProfileClient({ profile, email, school, regDate }
                 className={inputClass}
               />
             </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">Sinf</label>
-              <input
-                value={form.grade}
-                onChange={e => setForm(p => ({ ...p, grade: e.target.value }))}
-                placeholder="Masalan: 9-A"
-                className={inputClass}
-              />
-            </div>
 
             {/* Read-only fields */}
             <div className="pt-1 border-t border-gray-100 dark:border-gray-800">
+              <div className="flex justify-between items-center py-2">
+                <span className="text-sm text-gray-500 dark:text-gray-400">Sinf</span>
+                <span className="text-sm text-gray-500 dark:text-gray-500">{profile.grade || '—'}</span>
+              </div>
               <div className="flex justify-between items-center py-2">
                 <span className="text-sm text-gray-500 dark:text-gray-400">Email</span>
                 <span className="text-sm text-gray-500 dark:text-gray-500">{email}</span>
