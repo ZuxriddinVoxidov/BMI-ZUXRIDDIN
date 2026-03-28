@@ -36,17 +36,46 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  // Public routes — never redirect these
+  // Redirect logged-in users away from public landing/auth pages
+  const isLandingOrAuth = pathname === '/' || pathname === '/login' || pathname === '/register'
+
+  if (isLandingOrAuth && user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+
+    const role = profile?.role || user.user_metadata?.role || 'student'
+    
+    let redirectPath = '/student'
+    switch (role) {
+      case 'teacher':
+        redirectPath = '/teacher'
+        break
+      case 'director':
+        redirectPath = '/director'
+        break
+      case 'super_admin':
+      case 'school_admin':
+      case 'admin':
+        redirectPath = '/dashboard'
+        break
+    }
+
+    const url = request.nextUrl.clone()
+    url.pathname = redirectPath
+    return NextResponse.redirect(url)
+  }
+
+  // Other Public routes — never redirect these
   const isPublicRoute =
-    pathname === '/' ||
-    pathname === '/login' ||
-    pathname === '/register' ||
     pathname === '/contact' ||
     pathname.startsWith('/clubs') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/auth')
 
-  if (isPublicRoute) {
+  if (isLandingOrAuth || isPublicRoute) {
     return supabaseResponse
   }
 
