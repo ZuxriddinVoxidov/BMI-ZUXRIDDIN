@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useLayoutEffect, useRef } from 'react'
 import { Plus, X, List, Calendar, HelpCircle, Save, CheckCircle, Clock, Trash2, ArrowRight, Play } from 'lucide-react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -34,6 +34,17 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
   const [editDesc, setEditDesc] = useState('')
   const [editDurationSecs, setEditDurationSecs] = useState<number>(900)
   const [editQuestions, setEditQuestions] = useState<QuizQuestion[]>([])
+  const editBodyRef = useRef<HTMLDivElement>(null)
+
+  // Auto-resize ALL textareas in the edit panel whenever questions change
+  useLayoutEffect(() => {
+    if (!editBodyRef.current) return
+    const textareas = editBodyRef.current.querySelectorAll('textarea')
+    textareas.forEach(ta => {
+      ta.style.height = 'auto'
+      ta.style.height = ta.scrollHeight + 'px'
+    })
+  }, [editQuestions])
 
   // Filter State Variables
   const [filterClub, setFilterClub] = useState('all')
@@ -498,7 +509,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
             </div>
 
             {/* Content body Scrollable */}
-            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/30 dark:bg-gray-950/30">
+            <div ref={editBodyRef} className="flex-1 overflow-y-auto p-6 bg-gray-50/30 dark:bg-gray-950/30">
               <div className="max-w-3xl mx-auto space-y-6">
                 
                 {/* Meta Inputs */}
@@ -543,7 +554,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                             onChange={e=>handleUpdateQ(idx, 'question', e.target.value)} 
                             placeholder="Savol matnini kiriting..." 
                             rows={2}
-                            className="w-full text-base font-medium text-gray-900 dark:text-white outline-none resize-none bg-transparent dark:bg-transparent placeholder-gray-300 dark:placeholder-gray-600 whitespace-normal break-words h-auto overflow-hidden"
+                            className="w-full text-base font-medium text-gray-900 dark:text-white outline-none resize-none bg-transparent dark:bg-transparent placeholder-gray-300 dark:placeholder-gray-600 whitespace-normal break-words overflow-visible"
                             onInput={(e) => {
                               e.currentTarget.style.height = 'auto';
                               e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
@@ -561,10 +572,9 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                                     <span className={`font-bold text-sm ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>{opt}:</span>
                                   </label>
                                   <textarea 
-                                    rows={1}
                                     value={q[valKey] as string} 
                                     onChange={e=>handleUpdateQ(idx, valKey, e.target.value)} 
-                                    className="flex-1 min-w-0 bg-transparent text-sm text-gray-800 dark:text-gray-200 outline-none placeholder-gray-400 dark:placeholder-gray-500 whitespace-normal break-words py-1 resize-none overflow-hidden h-auto min-h-[32px] sm:min-h-[24px]" 
+                                    className="flex-1 min-w-0 bg-transparent text-sm text-gray-800 dark:text-gray-200 outline-none placeholder-gray-400 dark:placeholder-gray-500 whitespace-normal break-words py-1 resize-none overflow-visible min-h-[48px]" 
                                     placeholder="Variant matni..."
                                     onInput={(e) => {
                                       e.currentTarget.style.height = 'auto';
