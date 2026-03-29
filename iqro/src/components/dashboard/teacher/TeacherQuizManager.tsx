@@ -10,7 +10,7 @@ import { Quiz, QuizQuestion, createQuiz, updateQuiz, publishQuiz, startQuiz, fin
 interface TeacherQuizManagerProps {
   clubs: Record<string, unknown>[]
   quizzes: Quiz[]
-  participants?: any[]
+  participants?: { quiz_id: string; student_id: string; score: number | null; finished_at: string | null; profiles?: { full_name: string } }[]
   sessions?: { quiz_id: string, started_at: string, finished_at: string | null }[]
 }
 
@@ -242,10 +242,14 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
             <>
               <button disabled={isPending} onClick={() => openEdit(q)} className="flex-1 sm:flex-none px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg transition-colors">Tahrirlash</button>
               <button disabled={isPending} onClick={() => handleActionClick(q, 'publish')} className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors">Nashr qilish</button>
+              <button disabled={isPending || isDeleting} onClick={() => setDeleteConfirmId(q.id)} className="flex-1 sm:flex-none px-3 py-1.5 bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1"><Trash2 size={14} /> O&apos;chirish</button>
             </>
           )}
           {q.status === 'waiting' && (
-            <Link href={`/teacher/quiz/${q.id}/live`} className="w-full sm:w-auto px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors animate-pulse flex items-center justify-center gap-1.5"><Play size={14}/> Boshlash</Link>
+            <>
+              <Link href={`/teacher/quiz/${q.id}/live`} className="w-full sm:w-auto px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors animate-pulse flex items-center justify-center gap-1.5"><Play size={14}/> Boshlash</Link>
+              <button disabled={isPending || isDeleting} onClick={() => setDeleteConfirmId(q.id)} className="flex-1 sm:flex-none px-3 py-1.5 bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1"><Trash2 size={14} /> O&apos;chirish</button>
+            </>
           )}
           {q.status === 'active' && (
             <Link href={`/teacher/quiz/${q.id}/live`} className="w-full sm:w-auto px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5">Davom etish <ArrowRight size={14}/></Link>
@@ -267,7 +271,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
       </div>
       
       {q.status === 'finished' && expandedQuizId === q.id && (
-        <motion.div initial={{opacity:0, height:0}} animate={{opacity:1, height:'auto'}} className="bg-gray-50 border-x border-b rounded-b-xl p-4 -mt-2 mb-2">
+        <motion.div initial={{opacity:0, height:0}} animate={{opacity:1, height:'auto'}} className="bg-gray-50 dark:bg-gray-900/50 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-xl p-4 -mt-2 mb-2">
           <h4 className="text-sm font-bold text-gray-700 dark:text-gray-200 mb-3">Ishtirokchilar natijalari ({new Date(q.created_at).toLocaleDateString()})</h4>
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div className="overflow-x-auto no-scrollbar">
@@ -343,7 +347,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
           Testlar
-          {isPending && <span className="text-xs font-medium text-indigo-500 bg-indigo-50 px-2 py-1 rounded-full animate-pulse">Yuklanmoqda...</span>}
+          {isPending && <span className="text-xs font-medium text-indigo-500 bg-indigo-50 dark:bg-indigo-950/50 dark:text-indigo-400 px-2 py-1 rounded-full animate-pulse">Yuklanmoqda...</span>}
         </h1>
         {currentState === 'list' && (
           <button 
@@ -415,7 +419,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
           <motion.div key="gen" initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:-20}} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 max-w-2xl mx-auto shadow-sm">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">Yangi test yaratish</h2>
-              <button disabled={isPending} onClick={() => setCurrentState('list')} className="p-1 hover:bg-gray-100 rounded-lg"><X size={20}/></button>
+              <button disabled={isPending} onClick={() => setCurrentState('list')} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 dark:text-gray-400"><X size={20}/></button>
             </div>
 
             <form onSubmit={handleAIGenerate} className="space-y-5">
@@ -494,7 +498,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
             </div>
 
             {/* Content body Scrollable */}
-            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/30">
+            <div className="flex-1 overflow-y-auto p-6 bg-gray-50/30 dark:bg-gray-950/30">
               <div className="max-w-3xl mx-auto space-y-6">
                 
                 {/* Meta Inputs */}
@@ -528,18 +532,22 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                   {editQuestions.map((q, idx) => (
                     <div key={idx} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] relative group">
                       <div className="absolute top-4 right-4 animate-fade-in group-hover:opacity-100 opacity-0 transition-opacity">
-                         <button disabled={isPending} onClick={() => handleDelQuestion(idx)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg"><Trash2 size={16}/></button>
+                         <button disabled={isPending} onClick={() => handleDelQuestion(idx)} className="text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 p-1.5 rounded-lg"><Trash2 size={16}/></button>
                       </div>
                       
                       <div className="flex gap-3 pr-10">
-                        <span className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm flex-shrink-0">{idx + 1}</span>
+                        <span className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm flex-shrink-0">{idx + 1}</span>
                         <div className="flex-1 space-y-4">
                           <textarea 
                             value={q.question} 
                             onChange={e=>handleUpdateQ(idx, 'question', e.target.value)} 
                             placeholder="Savol matnini kiriting..." 
                             rows={2}
-                            className="w-full text-base font-medium text-gray-900 dark:text-white outline-none resize-none bg-transparent dark:bg-transparent placeholder-gray-300 dark:placeholder-gray-600"
+                            className="w-full text-base font-medium text-gray-900 dark:text-white outline-none resize-none bg-transparent dark:bg-transparent placeholder-gray-300 dark:placeholder-gray-600 whitespace-normal break-words h-auto overflow-hidden"
+                            onInput={(e) => {
+                              e.currentTarget.style.height = 'auto';
+                              e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+                            }}
                           />
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
@@ -547,8 +555,8 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                               const valKey = `option_${opt.toLowerCase()}` as keyof QuizQuestion;
                               const isCorrect = q.correct_answer === opt;
                               return (
-                                <div key={opt} className={`flex items-center gap-2 border rounded-xl p-2.5 transition-colors ${isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800' : 'bg-gray-50 dark:bg-gray-700 border-gray-100 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'}`}>
-                                  <label className="flex items-center gap-2 shrink-0 cursor-pointer">
+                                <div key={opt} className={`flex items-start gap-2 border rounded-xl p-2.5 transition-colors ${isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800' : 'bg-gray-50 dark:bg-gray-700 border-gray-100 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'}`}>
+                                  <label className="flex items-center gap-2 shrink-0 cursor-pointer mt-1">
                                     <input type="radio" name={`correct-${idx}`} checked={isCorrect} onChange={() => handleUpdateQ(idx, 'correct_answer', opt)} className="w-4 h-4 text-emerald-600"/>
                                     <span className={`font-bold text-sm ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>{opt}:</span>
                                   </label>
@@ -572,7 +580,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                     </div>
                   ))}
 
-                  <button disabled={isPending} onClick={handleAddEmptyQuestion} className="w-full py-4 border-2 border-dashed border-indigo-200 text-indigo-500 font-bold rounded-xl hover:bg-indigo-50 hover:border-indigo-300 transition-colors flex items-center justify-center gap-2">
+                  <button disabled={isPending} onClick={handleAddEmptyQuestion} className="w-full py-4 border-2 border-dashed border-indigo-200 dark:border-indigo-800 text-indigo-500 dark:text-indigo-400 font-bold rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-950/30 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors flex items-center justify-center gap-2">
                     <Plus size={18} /> Yangi savol qo&apos;shish
                   </button>
                 </div>

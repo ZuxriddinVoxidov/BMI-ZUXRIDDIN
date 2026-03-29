@@ -259,10 +259,10 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                     <button
                       key={opt}
                       onClick={() => handleSelect(opt)}
-                      className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-start sm:items-center gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 shadow-md' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                      className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-start gap-4 group ${isSelected ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/50 shadow-md' : 'border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
                     >
-                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-300 group-hover:bg-gray-200'}`}>{opt}</div>
-                      <span className={`font-semibold text-base sm:text-lg whitespace-normal break-words min-w-0 flex-1 leading-snug ${isSelected ? 'text-emerald-900 dark:text-emerald-100' : 'text-gray-700 dark:text-gray-200'}`}>{optText}</span>
+                      <div className={`mt-1 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black shrink-0 transition-colors ${isSelected ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-300 group-hover:bg-gray-200'}`}>{opt}</div>
+                      <span className={`font-semibold text-base sm:text-lg whitespace-normal break-words min-w-0 flex-1 leading-snug pt-1 ${isSelected ? 'text-emerald-900 dark:text-emerald-100' : 'text-gray-700 dark:text-gray-200'}`}>{optText}</span>
                     </button>
                   )
                 })}
@@ -382,8 +382,8 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                           const isStudentPick = opt === studentAns
                           const isWrongPick = isStudentPick && !isThisCorrect
 
-                          let cls = 'w-full text-left p-3 rounded-xl flex items-center gap-3 text-sm font-medium transition-colors '
-                          let dotCls = 'w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 '
+                          let cls = 'w-full text-left p-3 rounded-xl flex items-start gap-3 text-sm font-medium transition-colors '
+                          let dotCls = 'w-6 h-6 rounded-full flex items-center justify-center text-xs font-black shrink-0 mt-0.5 '
 
                           if (isThisCorrect) {
                             cls += 'bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700'
@@ -402,8 +402,8 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                               <span className={`whitespace-normal break-words flex-1 min-w-0 leading-snug ${isThisCorrect ? 'text-emerald-700 dark:text-emerald-300' : isWrongPick ? 'text-red-700 dark:text-red-300' : 'text-gray-700 dark:text-gray-300'}`}>
                                 {text}
                               </span>
-                              {isThisCorrect && <span className="ml-auto text-emerald-500 text-lg">✅</span>}
-                              {isWrongPick && <span className="ml-auto text-red-500 text-lg">❌</span>}
+                              {isThisCorrect && <span className="ml-auto text-emerald-500 text-lg shrink-0">✅</span>}
+                              {isWrongPick && <span className="ml-auto text-red-500 text-lg shrink-0">❌</span>}
                             </div>
                           )
                         })}

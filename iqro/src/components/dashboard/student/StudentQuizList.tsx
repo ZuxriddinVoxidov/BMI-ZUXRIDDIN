@@ -24,7 +24,13 @@ interface Participation {
   finished_at: string | null
 }
 
-export default function StudentQuizList({ quizzes, participations, studentId, allParticipants }: { quizzes: any[], participations: any[], studentId?: string, allParticipants?: any[] }) {
+interface AllParticipant {
+  quiz_id: string
+  student_id: string
+  score: number | null
+}
+
+export default function StudentQuizList({ quizzes, participations, studentId, allParticipants }: { quizzes: Quiz[], participations: Participation[], studentId?: string, allParticipants?: AllParticipant[] }) {
   const router = useRouter()
   const { toast } = useToast()
   const [isPending, startTransition] = useTransition()
@@ -117,7 +123,7 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
             let pointsText = '0'
             let pointsColor = 'text-gray-400'
             if (q.status === 'finished' && allParticipants && studentId) {
-              const quizParts = allParticipants.filter(p => p.quiz_id === q.id).sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+              const quizParts = allParticipants.filter(p => p.quiz_id === q.id).sort((a, b) => (b.score || 0) - (a.score || 0))
               totalP = quizParts.length
               const rankIndex = quizParts.findIndex(p => p.student_id === studentId)
               if (rankIndex !== -1) {
@@ -126,7 +132,7 @@ export default function StudentQuizList({ quizzes, participations, studentId, al
                 const pts = r === 1 ? 15 : r === 2 ? 12 : r === 3 ? 9 : r === 4 ? 6 : r === 5 ? 3 : r === 6 ? 1 : 0
                 if (pts > 0) {
                   pointsText = `+${pts}`
-                  pointsColor = 'text-emerald-600'
+                  pointsColor = 'text-emerald-600 dark:text-emerald-400'
                 }
               }
             }

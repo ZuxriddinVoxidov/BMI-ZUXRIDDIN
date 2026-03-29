@@ -22,7 +22,7 @@ import {
 import Link from 'next/link'
 import { Logo } from '@/components/shared/Logo'
 import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 
 // ─── Password Strength ──────────────────────────────────────
 function getPasswordStrength(p: string) {
@@ -101,6 +101,16 @@ export default function LoginPage() {
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginError, setLoginError] = useState('')
   const [loginErrors, setLoginErrors] = useState<{ email?: string; password?: string }>({})
+  const [confirmedMsg, setConfirmedMsg] = useState('')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const sp = new URLSearchParams(window.location.search)
+      if (sp.get('confirmed') === 'true') {
+        setConfirmedMsg('✅ Email tasdiqlandi! Endi tizimga kirishingiz mumkin.')
+      }
+    }
+  }, [])
 
   // ── Register state ──────────────────────────────────────
   const [regName, setRegName] = useState('')
@@ -335,6 +345,21 @@ export default function LoginPage() {
                       onClick={() => setLoginRole('teacher')}
                     />
                   </div>
+
+                  {/* Success alert */}
+                  <AnimatePresence>
+                    {confirmedMsg && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="flex items-center gap-2 bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-900/50 text-green-700 dark:text-green-400 text-sm rounded-lg px-4 py-3 mb-5"
+                      >
+                        <CheckCircle2 size={16} />
+                        {confirmedMsg}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   {/* Error alert */}
                   <AnimatePresence>
