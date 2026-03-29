@@ -29,6 +29,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
     phone: profile.phone || '',
     new_password: '',
     confirm_password: '',
+    secret_word: '',
   })
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [error, setError] = useState('')
@@ -47,7 +48,11 @@ export default function AdminProfileClient({ profile, email }: Props) {
     setTimeout(() => setToast(null), 3000)
   }
 
+  const isAdmin = ['admin', 'school_admin', 'super_admin'].includes(profile.role || '')
+  const changingSensitive = !!form.new_password || (!!form.email && form.email !== email)
+
   function handleSave() {
+    setError('')
     if (form.new_password && form.new_password.length < 8) {
       setError('Parol kamida 8 ta belgi bo\'lishi kerak')
       return
@@ -57,14 +62,21 @@ export default function AdminProfileClient({ profile, email }: Props) {
       return
     }
     startTransition(async () => {
-      await updateAdminProfile({
+      const res = await updateAdminProfile({
         full_name: form.full_name,
         email: form.email || undefined,
         phone: form.phone || undefined,
         new_password: form.new_password || undefined,
+        secret_word: (isAdmin && changingSensitive) ? form.secret_word : undefined
       })
+      
+      if (!res.success) {
+        setError(res.error || 'Server xatosi')
+        return
+      }
+
       setIsEditing(false)
-      setForm(p => ({ ...p, new_password: '', confirm_password: '' }))
+      setForm(p => ({ ...p, new_password: '', confirm_password: '', secret_word: '' }))
       showToast('Saqlandi ✅')
     })
   }
@@ -222,6 +234,14 @@ export default function AdminProfileClient({ profile, email }: Props) {
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Parolni tasdiqlang</label>
                   <input type="password" value={form.confirm_password} onChange={e => setForm(p => ({ ...p, confirm_password: e.target.value }))}
                     placeholder="Parolni qayta kiriting" className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-indigo-400 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 placeholder-gray-400 dark:placeholder-gray-600" />
+                </div>
+              )}
+              {isAdmin && changingSensitive && (
+                <div>
+                  <label className="text-sm font-bold text-red-600 dark:text-red-400 mb-1 block">Maxfiy so&apos;z (Faqat adminlar uchun)</label>
+                  <input type="password" value={form.secret_word} onChange={e => setForm(p => ({ ...p, secret_word: e.target.value }))}
+                    placeholder="Maxfiy so'zni kiriting" className="w-full border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/20 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 text-sm font-mono outline-none focus:border-red-400 dark:focus:border-red-500 focus:ring-2 focus:ring-red-500/20 placeholder-gray-400 dark:placeholder-gray-600" />
+                  <p className="text-xs text-red-500 mt-1">Siz email yoki parolni o&apos;zgartirayapsiz. Buni davom ettirish uchun maxfiy so&apos;z talab qilinadi.</p>
                 </div>
               )}
               <div className="flex gap-3 pt-2">

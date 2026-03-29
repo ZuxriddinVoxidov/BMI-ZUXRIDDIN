@@ -90,7 +90,7 @@ export async function deleteStudent(studentId: string, userId: string) {
   }
 }
 
-export async function approveParentRequest(requestId: string, studentId: string, chatId: number, parentName?: string) {
+export async function approveParentRequest(requestId: string, childName: string, chatId: number, parentName?: string) {
   const supabase = createAdminClient()
 
   // 1. Update Student profile — save BOTH parent_telegram_id AND parent_name
@@ -98,9 +98,10 @@ export async function approveParentRequest(requestId: string, studentId: string,
     .from('profiles')
     .update({
       parent_telegram_id: chatId.toString(),
-      ...(parentName ? { parent_name: parentName } : {}),
+      parent_name: parentName || null,
     })
-    .eq('id', studentId)
+    .eq('full_name', childName)
+    .eq('role', 'student')
 
   if (profileError) return { success: false, error: profileError.message }
 

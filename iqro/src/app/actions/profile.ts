@@ -60,12 +60,23 @@ export async function updateAdminProfile(data: {
   email?: string
   phone?: string
   new_password?: string
+  secret_word?: string
 }) {
   const supabase = createClient()
   const admin = createAdminClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { success: false, error: 'Not authenticated' }
+
+  const { data: profile } = await admin.from('profiles').select('role').eq('user_id', user.id).single()
+  const isAdmin = ['admin', 'school_admin', 'super_admin'].includes(profile?.role || '')
+  const changingSensitive = !!data.new_password || (!!data.email && data.email !== user.email)
+
+  if (isAdmin && changingSensitive) {
+    if (!data.secret_word || data.secret_word !== process.env.ADMIN_SECRET_WORD) {
+      return { success: false, error: "Maxfiy so'z noto'g'ri" }
+    }
+  }
 
   await admin
     .from('profiles')
