@@ -106,7 +106,11 @@ export default function QuizResults({ participants }: QuizResultsProps) {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {sorted.map((p, i) => {
-              const points = i === 0 ? 15 : i === 1 ? 12 : i === 2 ? 9 : i === 3 ? 6 : i === 4 ? 3 : 0;
+              let points = 3; // Base 3 points
+              if (p.score > 0 && i < 6) {
+                points += i === 0 ? 15 : i === 1 ? 12 : i === 2 ? 9 : i === 3 ? 6 : i === 4 ? 3 : i === 5 ? 1 : 0;
+              }
+              
               return (
                 <tr key={p.student_id} className={`transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50 ${i < 3 ? 'bg-amber-50/30 dark:bg-amber-950/20' : ''}`}>
                   <td className="px-6 py-4 text-center text-lg">

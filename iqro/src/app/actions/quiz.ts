@@ -114,70 +114,90 @@ export async function publishQuiz(quizId: string): Promise<{ success: boolean; e
 
 // Start quiz (waiting -> active)
 export async function startQuiz(quizId: string): Promise<{ success: boolean; error?: string }> {
-  const admin = createAdminClient()
-  await admin.from('quizzes').update({ status: 'active' }).eq('id', quizId)
-  await admin.from('quiz_sessions').insert({ quiz_id: quizId, started_at: new Date().toISOString() })
-  revalidatePath('/teacher/quiz')
-  return { success: true }
+  try {
+    const admin = createAdminClient()
+    const { error } = await admin.from('quizzes').update({ status: 'active' }).eq('id', quizId)
+    if (error) return { success: false, error: 'Boshlashda xatolik' }
+    
+    // Allow duplicate sessions or update existing to not crash
+    await admin.from('quiz_sessions').upsert({ quiz_id: quizId, started_at: new Date().toISOString() }, { onConflict: 'quiz_id' })
+    
+    revalidatePath('/teacher/quiz')
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Xatolik yuz berdi' }
+  }
 }
 
 // Finish quiz (active -> finished) and award points
 export async function finishQuiz(quizId: string): Promise<{ success: boolean; error?: string }> {
-  const admin = createAdminClient()
+  try {
+    const admin = createAdminClient()
 
-  await admin.from('quizzes').update({ status: 'finished' }).eq('id', quizId)
-  await admin.from('quiz_sessions').update({ finished_at: new Date().toISOString() }).eq('quiz_id', quizId).is('finished_at', null)
+    await admin.from('quizzes').update({ status: 'finished' }).eq('id', quizId)
+    await admin.from('quiz_sessions').update({ finished_at: new Date().toISOString() }).eq('quiz_id', quizId).is('finished_at', null)
 
-  // Get top participants sorted by score
-  const { data: participants } = await admin
-    .from('quiz_participants')
-    .select('student_id, score')
-    .eq('quiz_id', quizId)
-    .order('score', { ascending: false })
+    // Fetch participants who actually finished and have a score
+    const { data: participants } = await admin
+      .from('quiz_participants')
+      .select('student_id, score')
+      .eq('quiz_id', quizId)
+      .not('score', 'is', null) // Only count players who submitted
+      .order('score', { ascending: false })
 
-  // Award points: 1st=15, 2nd=12, 3rd=9, 4th=6, 5th=3, 6th=1
-  const pointsMap = [15, 12, 9, 6, 3, 1]
+    const placePointsMap = [15, 12, 9, 6, 3, 1]
+    const basePoints = 3
 
-  for (let i = 0; i < Math.min(6, (participants || []).length); i++) {
-    const p = participants![i]
-    if (!p.student_id || p.score === 0) continue
-    const pointsToAdd = pointsMap[i]
-    
-    const { data: existing } = await admin
-      .from('student_points')
-      .select('id, total_points')
-      .eq('student_id', p.student_id)
-      .single()
+    for (let i = 0; i < (participants || []).length; i++) {
+      const p = participants![i]
+      if (!p.student_id) continue
+      
+      let pointsToAdd = basePoints
+      let reason = "Testda qatnashgani uchun"
 
-    if (existing) {
-      await admin
+      if (p.score > 0 && i < 6) {
+        pointsToAdd += placePointsMap[i]
+        const rankLabels = ['1-o\'rin', '2-o\'rin', '3-o\'rin', '4-o\'rin', '5-o\'rin', '6-o\'rin']
+        reason = `Test natijasi — ${rankLabels[i]} va qatnashgani uchun: ${p.score} to'g'ri javob`
+      }
+      
+      const { data: existing } = await admin
         .from('student_points')
-        .update({ 
-          total_points: (existing.total_points || 0) + pointsToAdd,
-          updated_at: new Date().toISOString()
-        })
+        .select('id, total_points')
         .eq('student_id', p.student_id)
-    } else {
-      await admin
-        .from('student_points')
-        .insert({ 
-          student_id: p.student_id, 
-          total_points: pointsToAdd 
-        })
+        .single()
+
+      if (existing) {
+        await admin
+          .from('student_points')
+          .update({ 
+            total_points: (existing.total_points || 0) + pointsToAdd,
+            updated_at: new Date().toISOString()
+          })
+          .eq('student_id', p.student_id)
+      } else {
+        await admin
+          .from('student_points')
+          .insert({ 
+            student_id: p.student_id, 
+            total_points: pointsToAdd 
+          })
+      }
+
+      await admin.from('point_transactions').insert({
+        student_id: p.student_id,
+        points: pointsToAdd,
+        reason: reason,
+        source: 'quiz',
+        source_id: quizId
+      })
     }
 
-    const rankLabels = ['1-o\'rin', '2-o\'rin', '3-o\'rin', '4-o\'rin', '5-o\'rin', '6-o\'rin']
-    await admin.from('point_transactions').insert({
-      student_id: p.student_id,
-      points: pointsToAdd,
-      reason: `Test natijasi — ${rankLabels[i]}: ${p.score} to\'g\'ri javob`,
-      source: 'quiz',
-      source_id: quizId
-    })
+    revalidatePath('/teacher/quiz')
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message || 'Xatolik' }
   }
-
-  revalidatePath('/teacher/quiz')
-  return { success: true }
 }
 
 export async function deleteQuiz(quizId: string): Promise<{ success: boolean; error?: string }> {

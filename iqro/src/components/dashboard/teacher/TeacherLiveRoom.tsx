@@ -170,13 +170,13 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
         {/* ================= WAITING ROOM ================= */}
         {status === 'waiting' && (
           <motion.div key="waiting" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="space-y-6">
-            <div className="flex justify-between items-center bg-blue-50 border border-blue-100 p-4 rounded-xl">
-              <div className="flex items-center gap-3 text-blue-800 font-medium">
-                <Loader2 size={20} className="animate-spin" />
-                O&apos;quvchilar testga qo&apos;shilishi kutilmoqda...
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 p-4 rounded-xl gap-4">
+              <div className="flex items-start sm:items-center gap-3 text-blue-800 dark:text-blue-300 font-medium">
+                <Loader2 size={20} className="animate-spin shrink-0 mt-0.5 sm:mt-0" />
+                <span className="leading-snug break-words">O&apos;quvchilar testga qo&apos;shilishi kutilmoqda...</span>
               </div>
-              <button disabled={isPending || totalCount === 0} onClick={handleStart} className="flex w-full sm:w-auto justify-center items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold rounded-xl shadow-md transition-all mt-4 sm:mt-0">
-                <Play size={18} /> Testni Boshlash
+              <button disabled={isPending || totalCount === 0} onClick={handleStart} className="flex w-full sm:w-auto justify-center items-center gap-2 px-6 py-3 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white font-bold rounded-xl shadow-md transition-all shrink-0">
+                {isPending ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} />} Testni Boshlash
               </button>
             </div>
 
