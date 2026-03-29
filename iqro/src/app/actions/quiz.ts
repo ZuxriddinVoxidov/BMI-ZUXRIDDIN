@@ -137,41 +137,54 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
     await admin.from('quizzes').update({ status: 'finished' }).eq('id', quizId)
     await admin.from('quiz_sessions').update({ finished_at: new Date().toISOString() }).eq('quiz_id', quizId).is('finished_at', null)
 
+    const { data: quizData } = await admin.from('quizzes').select('title').eq('id', quizId).single()
+    const quizTitle = quizData?.title || 'Noma\'lum test'
+
     // Fetch participants who actually finished and have a score
     const { data: participants } = await admin
       .from('quiz_participants')
       .select('student_id, score')
       .eq('quiz_id', quizId)
-      .not('score', 'is', null) // Only count players who submitted
-      .order('score', { ascending: false })
+      .not('score', 'is', null)
 
-    const placePointsMap = [15, 12, 9, 6, 3, 1]
-    const basePoints = 3
-
-    for (let i = 0; i < (participants || []).length; i++) {
-      const p = participants![i]
+    for (const p of participants || []) {
       if (!p.student_id) continue
       
-      let pointsToAdd = basePoints
-      let reason = "Testda qatnashgani uchun"
-
-      if (p.score > 0 && i < 6) {
-        pointsToAdd += placePointsMap[i]
-        const rankLabels = ['1-o\'rin', '2-o\'rin', '3-o\'rin', '4-o\'rin', '5-o\'rin', '6-o\'rin']
-        reason = `Test natijasi — ${rankLabels[i]} va qatnashgani uchun: ${p.score} to'g'ri javob`
-      }
+      const pointsToAdd = p.score || 0
+      if (pointsToAdd <= 0) continue // Skip if score is 0, since no points are awarded
       
-      const { data: existing } = await admin
+      // Check if transaction already exists
+      const { data: existingTx } = await admin
+        .from('point_transactions')
+        .select('id')
+        .eq('student_id', p.student_id)
+        .eq('source', 'quiz')
+        .eq('source_id', quizId)
+        .single()
+        
+      if (existingTx) continue // Already processed
+
+      // Insert transaction
+      await admin.from('point_transactions').insert({
+        student_id: p.student_id,
+        points: pointsToAdd,
+        reason: `Test natijalari: ${quizTitle}`,
+        source: 'quiz',
+        source_id: quizId
+      })
+
+      // Update total points
+      const { data: existingPts } = await admin
         .from('student_points')
         .select('id, total_points')
         .eq('student_id', p.student_id)
         .single()
 
-      if (existing) {
+      if (existingPts) {
         await admin
           .from('student_points')
           .update({ 
-            total_points: (existing.total_points || 0) + pointsToAdd,
+            total_points: (existingPts.total_points || 0) + pointsToAdd,
             updated_at: new Date().toISOString()
           })
           .eq('student_id', p.student_id)
@@ -183,14 +196,6 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
             total_points: pointsToAdd 
           })
       }
-
-      await admin.from('point_transactions').insert({
-        student_id: p.student_id,
-        points: pointsToAdd,
-        reason: reason,
-        source: 'quiz',
-        source_id: quizId
-      })
     }
 
     revalidatePath('/teacher/quiz')

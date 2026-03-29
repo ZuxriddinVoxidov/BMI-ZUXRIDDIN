@@ -95,44 +95,49 @@ export default function QuizResults({ participants }: QuizResultsProps) {
       {/* Unified Leaderboard Table */}
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto no-scrollbar pb-2">
-          <table className="w-full text-left text-sm md:text-base min-w-[400px]">
+          <table className="w-full text-left text-sm md:text-base min-w-[500px]">
             <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               <tr>
               <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase w-20 text-center">O&apos;rin</th>
               <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">O&apos;quvchi</th>
-              <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Natija</th>
-              <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase w-24 text-right">Ball</th>
+              <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-center">Natija</th>
+              <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-center">Ball</th>
+              <th className="px-6 py-4 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase text-right">Vaqt</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {sorted.map((p, i) => {
-              let points = 3; // Base 3 points
-              if (p.score > 0 && i < 6) {
-                points += i === 0 ? 15 : i === 1 ? 12 : i === 2 ? 9 : i === 3 ? 6 : i === 4 ? 3 : i === 5 ? 1 : 0;
+              const points = p.score || 0;
+              const formatTime = (iso?: string) => {
+                if (!iso) return '-';
+                const d = new Date(iso);
+                return d.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
               }
               
               return (
-                <tr key={p.student_id} className={`transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50 ${i < 3 ? 'bg-amber-50/30 dark:bg-amber-950/20' : ''}`}>
+                <tr key={p.student_id} className={`transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50 ${i < 3 && points > 0 ? 'bg-amber-50/30 dark:bg-amber-950/20' : ''}`}>
                   <td className="px-6 py-4 text-center text-lg">
-                    {i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{i + 1}</span>}
+                    {i === 0 && points > 0 ? '🥇 1' : i === 1 && points > 0 ? '🥈 2' : i === 2 && points > 0 ? '🥉 3' : <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{i + 1}</span>}
                   </td>
                   <td className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200">{p.full_name}</td>
-                  <td className="px-6 py-4 font-bold text-gray-600 dark:text-gray-300 text-right">
+                  <td className="px-6 py-4 font-bold text-gray-600 dark:text-gray-300 text-center">
                     <span className="text-indigo-600 dark:text-indigo-400">{p.score}</span>
                     <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">/{p.total_questions}</span>
-                    <span className="text-xs text-gray-400 dark:text-gray-500 ml-1">({Math.round((p.score / p.total_questions) * 100) || 0}%)</span>
                   </td>
-                  <td className="px-6 py-4 font-black text-right">
+                  <td className="px-6 py-4 font-black text-center">
                     <span className={points > 0 ? "text-emerald-600" : "text-gray-400"}>
-                      {points > 0 ? `+${points}` : '-'}
+                      {points > 0 ? `+${points}` : '0'}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 font-medium text-gray-500 dark:text-gray-400 text-right text-xs">
+                    {formatTime((p as any).finished_at)}
                   </td>
                 </tr>
               )
             })}
             {sorted.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500 italic">
+                <td colSpan={5} className="px-6 py-8 text-center text-gray-500 italic">
                   Hech kim testda ishtirok etmadi.
                 </td>
               </tr>
