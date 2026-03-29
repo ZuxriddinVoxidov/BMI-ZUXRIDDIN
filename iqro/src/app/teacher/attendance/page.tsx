@@ -14,6 +14,8 @@ interface Reward { student_id: string }
 export default function AttendancePage() {
   const [clubs, setClubs] = useState<Club[]>([])
   const [selectedClub, setSelectedClub] = useState('')
+  const [selectedGrade, setSelectedGrade] = useState('')
+  const [availableGrades, setAvailableGrades] = useState<string[]>([])
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0])
   const [students, setStudents] = useState<Student[]>([])
   const [statuses, setStatuses] = useState<Record<string, 'present' | 'absent' | 'excused'>>({})
@@ -47,13 +49,45 @@ export default function AttendancePage() {
     load()
   }, [])
 
-  // 🔹 Fetch history immediately when club and date change
+  // Load available grades when club changes
+  useEffect(() => {
+    async function loadGrades() {
+      setSelectedGrade('')
+      setAvailableGrades([])
+      setStudents([])
+      setHistoryRecords([])
+      setAttendanceExists(false)
+      
+      if (!selectedClub) return
+      
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('enrollments')
+        .select('student:profiles!student_id(grade)')
+        .eq('club_id', selectedClub)
+        .eq('status', 'approved')
+        
+      if (data) {
+        const gradesSet = new Set<string>()
+        data.forEach((row: any) => {
+           const g = row.student?.grade
+           if (g) gradesSet.add(g)
+           else gradesSet.add("Boshqa")
+        })
+        const gradesArray = Array.from(gradesSet).sort()
+        setAvailableGrades(gradesArray)
+      }
+    }
+    loadGrades()
+  }, [selectedClub])
+
+  // 🔹 Fetch history immediately when club, grade and date change
   useEffect(() => {
     async function fetchHistory() {
       setShowHistoryDetails(false)
       setStudents([]) // Formani tozalaymiz
       
-      if (!selectedClub || !selectedDate) {
+      if (!selectedClub || !selectedGrade || !selectedDate) {
         setHistoryRecords([])
         setAttendanceExists(false)
         return
@@ -70,22 +104,24 @@ export default function AttendancePage() {
         .eq('club_id', selectedClub)
         .eq('date', selectedDate)
 
-      const formattedHistory = (data || []).map((row: any) => ({
-        student_id: row.student_id,
-        status: row.status,
-        full_name: row.profiles?.full_name || "Noma'lum",
-        grade: row.profiles?.grade || null
-      }))
+      const formattedHistory = (data || [])
+        .map((row: any) => ({
+          student_id: row.student_id,
+          status: row.status,
+          full_name: row.profiles?.full_name || "Noma'lum",
+          grade: row.profiles?.grade || null
+        }))
+        .filter((r: { grade: string | null }) => (r.grade || 'Boshqa') === selectedGrade)
 
       setHistoryRecords(formattedHistory)
       setAttendanceExists(formattedHistory.length > 0)
     }
 
     fetchHistory()
-  }, [selectedClub, selectedDate])
+  }, [selectedClub, selectedGrade, selectedDate])
 
   async function loadStudents() {
-    if (!selectedClub) return
+    if (!selectedClub || !selectedGrade) return
     const supabase = createClient()
     const { data: enrollments } = await supabase
       .from('enrollments')
@@ -93,7 +129,11 @@ export default function AttendancePage() {
       .eq('club_id', selectedClub)
       .eq('status', 'approved')
 
-    const studentList = (enrollments || []).map((e: any) => e.student as Student).filter(Boolean)
+    const studentList = (enrollments || [])
+      .map((e: any) => e.student as Student)
+      .filter(Boolean)
+      .filter((s: Student) => (s.grade || 'Boshqa') === selectedGrade)
+      
     setStudents(studentList)
 
     const statusMap: Record<string, 'present' | 'absent' | 'excused'> = {}
@@ -121,7 +161,7 @@ export default function AttendancePage() {
 
   async function handleSave() {
     setSaving(true)
-    const records = students.map((s) => ({
+    const records = students.map((s: Student) => ({
       club_id: selectedClub,
       student_id: s.id,
       date: selectedDate,
@@ -188,13 +228,23 @@ export default function AttendancePage() {
 
       {/* Controls */}
       <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">To&apos;garak</label>
               <select value={selectedClub} onChange={e => setSelectedClub(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
               <option value="">Tanlang...</option>
               {clubs.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Sinf</label>
+            <select value={selectedGrade} onChange={e => setSelectedGrade(e.target.value)} disabled={!selectedClub || availableGrades.length === 0}
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-[16px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+              <option value="">Tanlang...</option>
+              {availableGrades.map(g => (
+                <option key={g} value={g}>{g === 'Boshqa' ? "Sinfi aniqlanmaganlar" : `${g} sinf`}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -218,7 +268,7 @@ export default function AttendancePage() {
             )}
           </div>
           <div className="flex items-end">
-            <button onClick={loadStudents} disabled={!selectedClub || !isAllowedToTakeAttendance || attendanceExists}
+            <button onClick={loadStudents} disabled={!selectedClub || !selectedGrade || !isAllowedToTakeAttendance || attendanceExists}
               className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400/50 dark:disabled:bg-indigo-900/50 disabled:cursor-not-allowed text-white rounded-xl text-sm font-medium transition-colors">
               Davomatni yuklash
             </button>
