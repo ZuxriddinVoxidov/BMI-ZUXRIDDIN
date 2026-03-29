@@ -30,6 +30,8 @@ interface Props {
     name: string
     schedule: string
     teacher_name: string
+    missed_date?: string
+    day_name?: string
   }[]
 }
 
@@ -43,9 +45,17 @@ export default function DashboardContent({
   const [showAllApps, setShowAllApps] = useState(false)
   const [dismissedClubIds, setDismissedClubIds] = useState<string[]>([])
 
+  // Calculate the Monday of the current week for the localStorage key
+  const getMondayStr = () => {
+    const d = new Date()
+    const diff = d.getDay() === 0 ? 6 : d.getDay() - 1
+    d.setDate(d.getDate() - diff)
+    return d.toISOString().split('T')[0]
+  }
+
   useEffect(() => {
-    const todayStr = new Date().toISOString().split('T')[0]
-    const saved = localStorage.getItem(`dismissed_attendance_${todayStr}`)
+    const mondayStr = getMondayStr()
+    const saved = localStorage.getItem(`dismissed_attendance_${mondayStr}`)
     if (saved) {
       try {
         setDismissedClubIds(JSON.parse(saved))
@@ -54,10 +64,10 @@ export default function DashboardContent({
   }, [])
 
   const handleDismiss = (clubId: string) => {
-    const todayStr = new Date().toISOString().split('T')[0]
+    const mondayStr = getMondayStr()
     const updated = [...dismissedClubIds, clubId]
     setDismissedClubIds(updated)
-    localStorage.setItem(`dismissed_attendance_${todayStr}`, JSON.stringify(updated))
+    localStorage.setItem(`dismissed_attendance_${mondayStr}`, JSON.stringify(updated))
   }
 
   const visibleMissedClubs = missedAttendanceClubs.filter(c => !dismissedClubIds.includes(c.id))
@@ -151,7 +161,7 @@ export default function DashboardContent({
             </div>
             <div>
               <h3 className="text-lg font-bold text-red-900">Davomat olinmagan to&apos;garaklar</h3>
-              <p className="text-sm text-red-700">Quyidagi to&apos;garaklar bugun dars o&apos;tishi kerak edi, lekin davomat kiritilmadi:</p>
+              <p className="text-sm text-red-700">Quyidagi to&apos;garaklar joriy haftada dars o&apos;tishi kerak edi, lekin davomat kiritilmadi:</p>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -164,9 +174,15 @@ export default function DashboardContent({
                 >
                   <X size={14} />
                 </button>
-                <span className="font-semibold text-gray-900 text-sm pr-6">{club.name}</span>
-                <span className="text-xs text-gray-600 mt-1">👨‍🏫 {club.teacher_name}</span>
-                <span className="text-[10px] text-red-500 font-medium mt-1">🕒 {club.schedule}</span>
+                <div className="flex justify-between items-start pr-6">
+                  <span className="font-semibold text-gray-900 text-sm leading-tight">{club.name}</span>
+                </div>
+                {club.day_name && (
+                  <span className="text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded flex items-center w-max mt-1.5 font-bold">
+                    📅 {club.day_name} ({club.missed_date})
+                  </span>
+                )}
+                <span className="text-xs text-gray-600 mt-1.5">👨‍🏫 {club.teacher_name}</span>
               </div>
             ))}
           </div>
