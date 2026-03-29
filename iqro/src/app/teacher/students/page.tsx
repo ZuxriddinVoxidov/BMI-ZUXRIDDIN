@@ -1,5 +1,5 @@
 export const dynamic = 'force-dynamic'
-import TeacherStudents from '@/components/dashboard/teacher/TeacherStudents'
+import TeacherStudents, { type EnrollmentItem } from '@/components/dashboard/teacher/TeacherStudents'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -13,22 +13,28 @@ export default async function TeacherStudentsPage() {
   if (!profile) redirect('/login')
 
   const { data: myClubs } = await supabase
-    .from('clubs').select('id, name').eq('teacher_id', profile.id)
+    .from('clubs')
+    .select('id, name')
+    .eq('teacher_id', profile.id)
+    .order('name')
+
   const myClubIds = myClubs?.map(c => c.id) || []
 
   if (myClubIds.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <span className="text-5xl mb-4">👨‍🎓</span>
-        <h3 className="text-lg font-bold text-gray-900">O&apos;quvchilar yo&apos;q</h3>
-        <p className="text-sm text-gray-500 mt-1">Sizga to&apos;garak biriktirilgach o&apos;quvchilar ko&apos;rinadi</p>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">O&apos;quvchilar yo&apos;q</h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Sizga to&apos;garak biriktirilgach o&apos;quvchilar ko&apos;rinadi
+        </p>
       </div>
     )
   }
 
   const { data: enrollments } = await supabase
     .from('enrollments')
-    .select('student:profiles!student_id(id, full_name, student_points(total_points)), club:clubs(name)')
+    .select('club_id, student:profiles!student_id(id, full_name, grade, student_points(total_points))')
     .in('club_id', myClubIds)
     .eq('status', 'approved')
 
@@ -37,5 +43,11 @@ export default async function TeacherStudentsPage() {
     .select('student_id, status')
     .in('club_id', myClubIds)
 
-  return <TeacherStudents enrollments={(enrollments || []) as unknown as { student: Record<string, unknown>; club: Record<string, unknown> }[]} attendanceData={attendanceData || []} />
+  return (
+    <TeacherStudents
+      clubs={myClubs || []}
+      enrollments={(enrollments || []) as unknown as EnrollmentItem[]}
+      attendanceData={attendanceData || []}
+    />
+  )
 }
