@@ -201,14 +201,12 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr)
-    return date.toLocaleString('uz-UZ', { 
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'Asia/Tashkent'
-    })
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const year = date.getFullYear()
+    const hours = date.getHours().toString().padStart(2, '0')
+    const mins = date.getMinutes().toString().padStart(2, '0')
+    return `${day}.${month}.${year} ${hours}:${mins}`
   }
 
   const renderQuizCard = (q: Quiz) => {
@@ -224,9 +222,9 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
       <div key={q.id}>
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-indigo-200 dark:hover:border-indigo-700 transition-colors">
         <div>
-          <h4 className="font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-            {q.title}
-            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide
+          <h4 className="font-bold text-gray-800 dark:text-gray-100 flex flex-wrap items-center gap-2">
+            <span className="break-words">{q.title}</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide shrink-0
               ${q.status === 'draft' ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300' : ''}
               ${q.status === 'waiting' ? 'bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400' : ''}
               ${q.status === 'active' ? 'bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400' : ''}
@@ -238,23 +236,25 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
               {q.status === 'finished' && 'Yakunlangan'}
             </span>
           </h4>
-          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
-            <span>{clubName}</span>
-            <span className="flex items-center gap-1"><HelpCircle size={12}/>{qCount} ta savol</span>
-            <span className="flex items-center gap-1"><Clock size={12}/>{Math.round(q.duration_seconds/60)} daq</span>
-            <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
-              🗓 {formatDate(displayDate)}
-            </span>
+          {/* Row 1: club name */}
+          <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1 truncate max-w-full">{clubName}</p>
+          {/* Row 2: stats + date */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-400 dark:text-gray-500 mt-1">
+            <span className="flex items-center gap-1 shrink-0"><HelpCircle size={12}/>{qCount} ta savol</span>
+            <span className="flex items-center gap-1 shrink-0"><Clock size={12}/>{Math.round(q.duration_seconds/60)} daq</span>
+            <span className="flex items-center gap-1 shrink-0">🗓 {formatDate(displayDate)}</span>
           </div>
         </div>
         
         <div className="flex flex-wrap gap-2 w-full sm:w-auto mt-4 sm:mt-0">
           {q.status === 'draft' && (
-            <>
-              <button disabled={isPending} onClick={() => openEdit(q)} className="flex-1 sm:flex-none px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg transition-colors">Tahrirlash</button>
-              <button disabled={isPending} onClick={() => handleActionClick(q, 'publish')} className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors">Nashr qilish</button>
-              <button disabled={isPending || isDeleting} onClick={() => setDeleteConfirmId(q.id)} className="flex-1 sm:flex-none px-3 py-1.5 bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1"><Trash2 size={14} /> O&apos;chirish</button>
-            </>
+            <div className="flex flex-col gap-2 w-full sm:w-auto">
+              <div className="flex gap-2">
+                <button disabled={isPending} onClick={() => openEdit(q)} className="flex-1 sm:flex-none px-3 py-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">Tahrirlash</button>
+                <button disabled={isPending} onClick={() => handleActionClick(q, 'publish')} className="flex-1 sm:flex-none px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">Nashr qilish</button>
+              </div>
+              <button disabled={isPending || isDeleting} onClick={() => setDeleteConfirmId(q.id)} className="w-full sm:w-auto px-3 py-1.5 bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1"><Trash2 size={14} /> O&apos;chirish</button>
+            </div>
           )}
           {q.status === 'waiting' && (
             <>
@@ -561,12 +561,12 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                             }}
                           />
                           
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 w-full">
                             {['A','B','C','D'].map(opt => {
                               const valKey = `option_${opt.toLowerCase()}` as keyof QuizQuestion;
                               const isCorrect = q.correct_answer === opt;
                               return (
-                                <div key={opt} className={`flex items-start gap-2 border rounded-xl p-2.5 transition-colors ${isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800' : 'bg-gray-50 dark:bg-gray-700 border-gray-100 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'}`}>
+                                <div key={opt} className={`flex items-start gap-2 border rounded-xl p-2.5 transition-colors w-full ${isCorrect ? 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800' : 'bg-gray-50 dark:bg-gray-700 border-gray-100 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'}`}>
                                   <label className="flex items-center gap-2 shrink-0 cursor-pointer mt-1">
                                     <input type="radio" name={`correct-${idx}`} checked={isCorrect} onChange={() => handleUpdateQ(idx, 'correct_answer', opt)} className="w-4 h-4 text-emerald-600"/>
                                     <span className={`font-bold text-sm ${isCorrect ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'}`}>{opt}:</span>
@@ -574,7 +574,7 @@ export default function TeacherQuizManager({ clubs, quizzes: initialQuizzes, par
                                   <textarea 
                                     value={q[valKey] as string} 
                                     onChange={e=>handleUpdateQ(idx, valKey, e.target.value)} 
-                                    className="flex-1 min-w-0 bg-transparent text-sm text-gray-800 dark:text-gray-200 outline-none placeholder-gray-400 dark:placeholder-gray-500 whitespace-normal break-words py-1 resize-none overflow-visible min-h-[48px]" 
+                                    className="flex-1 w-full min-w-0 bg-transparent text-sm text-gray-800 dark:text-gray-200 outline-none placeholder-gray-400 dark:placeholder-gray-500 whitespace-normal break-words py-1 resize-none overflow-visible min-h-[48px]" 
                                     placeholder="Variant matni..."
                                     onInput={(e) => {
                                       e.currentTarget.style.height = 'auto';

@@ -7,8 +7,8 @@ import { Check, CheckCircle, Clock, Star, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 interface Club { id: string; name: string; schedule: string }
-interface Student { id: string; full_name: string }
-interface AttendanceRecord { student_id: string; status: string; full_name?: string }
+interface Student { id: string; full_name: string; grade: string | null }
+interface AttendanceRecord { student_id: string; status: string; full_name?: string; grade: string | null }
 interface Reward { student_id: string }
 
 export default function AttendancePage() {
@@ -65,7 +65,7 @@ export default function AttendancePage() {
         .select(`
           student_id,
           status,
-          profiles:student_id (full_name)
+          profiles:student_id (full_name, grade)
         `)
         .eq('club_id', selectedClub)
         .eq('date', selectedDate)
@@ -73,7 +73,8 @@ export default function AttendancePage() {
       const formattedHistory = (data || []).map((row: any) => ({
         student_id: row.student_id,
         status: row.status,
-        full_name: row.profiles?.full_name || "Noma'lum"
+        full_name: row.profiles?.full_name || "Noma'lum",
+        grade: row.profiles?.grade || null
       }))
 
       setHistoryRecords(formattedHistory)
@@ -88,11 +89,11 @@ export default function AttendancePage() {
     const supabase = createClient()
     const { data: enrollments } = await supabase
       .from('enrollments')
-      .select('student:profiles!student_id(id, full_name)')
+      .select('student:profiles!student_id(id, full_name, grade)')
       .eq('club_id', selectedClub)
       .eq('status', 'approved')
 
-    const studentList = (enrollments || []).map((e: Record<string, unknown>) => e.student as unknown as Student).filter(Boolean)
+    const studentList = (enrollments || []).map((e: any) => e.student as Student).filter(Boolean)
     setStudents(studentList)
 
     const statusMap: Record<string, 'present' | 'absent' | 'excused'> = {}
@@ -248,25 +249,41 @@ export default function AttendancePage() {
 
           {showHistoryDetails && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="border-t border-gray-100 dark:border-gray-800 pt-4 mt-2">
-              <div className="space-y-2">
-                {historyRecords.map((record) => {
-                  const initials = (record.full_name || 'UU').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-                  
-                  let badge = null
-                  if (record.status === 'present') badge = <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><Check size={14} /> Keldi</span>
-                  if (record.status === 'absent') badge = <span className="flex items-center gap-1 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><X size={14} /> Kelmadi</span>
-                  if (record.status === 'excused') badge = <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><Clock size={14} /> Sababli</span>
-
-                  return (
-                    <div key={`hist-${record.student_id}`} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950/50 border border-gray-100 dark:border-gray-800/50 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0 shadow-sm">{initials}</div>
-                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{record.full_name}</span>
-                      </div>
-                      <div>{badge}</div>
+              <div className="space-y-6">
+                {Object.entries(
+                  historyRecords.reduce((acc, record) => {
+                    const g = record.grade || 'Boshqa';
+                    if (!acc[g]) acc[g] = [];
+                    acc[g].push(record);
+                    return acc;
+                  }, {} as Record<string, AttendanceRecord[]>)
+                ).sort(([a], [b]) => a.localeCompare(b)).map(([gradeStr, groupRecords]) => (
+                  <div key={`hist-group-${gradeStr}`} className="space-y-2">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-3 py-1 rounded-xl font-bold text-sm tracking-wide">
+                        {gradeStr === 'Boshqa' ? "Sinfi ko'rsatilmagan" : `${gradeStr} sinf`} ({groupRecords.length})
+                      </span>
                     </div>
-                  )
-                })}
+                    {groupRecords.map((record) => {
+                      const initials = (record.full_name || 'UU').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+                      
+                      let badge = null
+                      if (record.status === 'present') badge = <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><Check size={14} /> Keldi</span>
+                      if (record.status === 'absent') badge = <span className="flex items-center gap-1 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><X size={14} /> Kelmadi</span>
+                      if (record.status === 'excused') badge = <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 px-2.5 py-1.5 rounded-lg text-xs font-semibold"><Clock size={14} /> Sababli</span>
+
+                      return (
+                        <div key={`hist-${record.student_id}`} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950/50 border border-gray-100 dark:border-gray-800/50 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0 shadow-sm">{initials}</div>
+                            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{record.full_name}</span>
+                          </div>
+                          <div>{badge}</div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ))}
               </div>
             </motion.div>
           )}
@@ -287,34 +304,50 @@ export default function AttendancePage() {
             </p>
           )}
 
-          <div className="space-y-3">
-            {students.map((student, i) => {
-              const initials = student.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-              const st = statuses[student.id] || 'present'
-              return (
-                <motion.div key={student.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 gap-3 border border-transparent dark:border-gray-800">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs flex-shrink-0">{initials}</div>
-                    <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{student.full_name}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <button onClick={() => setStatus(student.id, 'present')} disabled={!canEdit}
-                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'present' ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 disabled:opacity-50'}`}>
-                      <Check size={14} /> Keldi
-                    </button>
-                    <button onClick={() => setStatus(student.id, 'absent')} disabled={!canEdit}
-                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'absent' ? 'bg-red-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-50'}`}>
-                      <X size={14} /> Kelmadi
-                    </button>
-                    <button onClick={() => setStatus(student.id, 'excused')} disabled={!canEdit}
-                      className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'excused' ? 'bg-amber-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 disabled:opacity-50'}`}>
-                      <Clock size={14} /> Sababli
-                    </button>
-                  </div>
-                </motion.div>
-              )
-            })}
+          <div className="space-y-8 mt-4">
+            {Object.entries(
+              students.reduce((acc, student) => {
+                const g = student.grade || 'Boshqa';
+                if (!acc[g]) acc[g] = [];
+                acc[g].push(student);
+                return acc;
+              }, {} as Record<string, Student[]>)
+            ).sort(([a], [b]) => a.localeCompare(b)).map(([gradeStr, groupStudents]) => (
+              <div key={`group-${gradeStr}`} className="space-y-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 px-3 py-1 rounded-xl font-bold text-sm tracking-wide shadow-sm">
+                    {gradeStr === 'Boshqa' ? "Sinfi ko'rsatilmagan" : `${gradeStr} sinf`} ({groupStudents.length})
+                  </span>
+                </div>
+                {groupStudents.map((student, i) => {
+                  const initials = student.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+                  const st = statuses[student.id] || 'present'
+                  return (
+                    <motion.div key={student.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 gap-3 border border-transparent dark:border-gray-800">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs flex-shrink-0">{initials}</div>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{student.full_name}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <button onClick={() => setStatus(student.id, 'present')} disabled={!canEdit}
+                          className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'present' ? 'bg-emerald-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 disabled:opacity-50'}`}>
+                          <Check size={14} /> Keldi
+                        </button>
+                        <button onClick={() => setStatus(student.id, 'absent')} disabled={!canEdit}
+                          className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'absent' ? 'bg-red-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-500/10 disabled:opacity-50'}`}>
+                          <X size={14} /> Kelmadi
+                        </button>
+                        <button onClick={() => setStatus(student.id, 'excused')} disabled={!canEdit}
+                          className={`flex-1 sm:flex-none min-h-[40px] px-3 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors disabled:cursor-not-allowed ${st === 'excused' ? 'bg-amber-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-amber-50 dark:hover:bg-amber-500/10 disabled:opacity-50'}`}>
+                          <Clock size={14} /> Sababli
+                        </button>
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </div>
+            ))}
           </div>
 
           <button onClick={handleSave} disabled={saving || !canEdit}
