@@ -141,17 +141,30 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
     const quizTitle = quizData?.title || 'Noma\'lum test'
 
     // Fetch participants who actually finished and have a score
-    const { data: participants } = await admin
+    const { data } = await admin
       .from('quiz_participants')
-      .select('student_id, score')
+      .select('student_id, score, finished_at')
       .eq('quiz_id', quizId)
       .not('score', 'is', null)
 
-    for (const p of participants || []) {
+    const participants = (data || []).sort((a: any, b: any) => {
+      if ((b.score || 0) !== (a.score || 0)) {
+        return (b.score || 0) - (a.score || 0)
+      }
+      const tA = a.finished_at ? new Date(a.finished_at).getTime() : Infinity
+      const tB = b.finished_at ? new Date(b.finished_at).getTime() : Infinity
+      return tA - tB
+    })
+
+    const rankBonusMap = [15, 12, 10, 8, 6, 4, 3] // 1st to 7th
+
+    for (let i = 0; i < participants.length; i++) {
+      const p = participants[i]
       if (!p.student_id) continue
       
-      const pointsToAdd = p.score || 0
-      if (pointsToAdd <= 0) continue // Skip if score is 0, since no points are awarded
+      const rank = i + 1
+      const rankBonus = rank <= 7 ? rankBonusMap[rank - 1] : 1
+      const pointsToAdd = rankBonus + 2 // +2 participation bonus
       
       // Check if transaction already exists
       const { data: existingTx } = await admin
@@ -168,7 +181,7 @@ export async function finishQuiz(quizId: string): Promise<{ success: boolean; er
       await admin.from('point_transactions').insert({
         student_id: p.student_id,
         points: pointsToAdd,
-        reason: `Test natijalari: ${quizTitle}`,
+        reason: `Test: ${quizTitle} — ${rank}-o'rin`,
         source: 'quiz',
         source_id: quizId
       })

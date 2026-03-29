@@ -10,6 +10,7 @@ interface Participant {
   score: number
   full_name: string
   total_questions: number
+  finished_at?: string
 }
 
 interface QuizResultsProps {
@@ -30,48 +31,13 @@ export default function QuizResults({ participants }: QuizResultsProps) {
     }
   }, [countdown])
 
-  // Sort by score descending
-  const sorted = [...participants].sort((a, b) => b.score - a.score)
-  const top5 = sorted.slice(0, 5)
-  const rest = sorted.slice(5)
-
-  const getMedalColor = (index: number) => {
-    switch(index) {
-      case 0: return 'bg-yellow-100 text-yellow-600 border-yellow-300 shadow-[0_0_20px_rgba(234,179,8,0.3)]'
-      case 1: return 'bg-slate-100 text-slate-500 border-slate-300'
-      case 2: return 'bg-amber-100 text-amber-700 border-amber-300'
-      default: return 'bg-white border-gray-200 text-gray-700'
-    }
-  }
-
-  const getPointsInfo = (index: number) => {
-    switch(index) {
-      case 0: return '+50 ball 🎉'
-      case 1: return '+40 ball'
-      case 2: return '+30 ball'
-      case 3: return '+20 ball'
-      case 4: return '+10 ball'
-      default: return null
-    }
-  }
-
-  if (!showResults) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 space-y-6">
-        <motion.div 
-          key={countdown}
-          initial={{ scale: 0.5, opacity: 0 }}
-          animate={{ scale: 1.5, opacity: 1 }}
-          exit={{ scale: 2, opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-8xl font-black text-indigo-600"
-        >
-          {countdown}
-        </motion.div>
-        <p className="text-xl font-bold text-gray-500 dark:text-gray-400 animate-pulse">Natijalar hisoblanmoqda...</p>
-      </div>
-    )
-  }
+  // Sort by score descending, then finish time ascending
+  const sorted = [...participants].sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score
+    const tA = a.finished_at ? new Date(a.finished_at).getTime() : Infinity
+    const tB = b.finished_at ? new Date(b.finished_at).getTime() : Infinity
+    return tA - tB
+  })
 
   return (
     <motion.div 
@@ -107,7 +73,10 @@ export default function QuizResults({ participants }: QuizResultsProps) {
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {sorted.map((p, i) => {
-              const points = p.score || 0;
+              const rankBonusMap = [15, 12, 10, 8, 6, 4, 3] // 1st to 7th
+              const rankBonus = (i < 7) ? rankBonusMap[i] : 1
+              const points = rankBonus + 2 // +2 participation bonus
+
               const formatTime = (iso?: string) => {
                 if (!iso) return '-';
                 const d = new Date(iso);
@@ -115,9 +84,9 @@ export default function QuizResults({ participants }: QuizResultsProps) {
               }
               
               return (
-                <tr key={p.student_id} className={`transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50 ${i < 3 && points > 0 ? 'bg-amber-50/30 dark:bg-amber-950/20' : ''}`}>
+                <tr key={p.student_id} className={`transition-colors hover:bg-gray-50/50 dark:hover:bg-gray-800/50 ${i < 3 ? 'bg-amber-50/30 dark:bg-amber-950/20' : ''}`}>
                   <td className="px-6 py-4 text-center text-lg">
-                    {i === 0 && points > 0 ? '🥇 1' : i === 1 && points > 0 ? '🥈 2' : i === 2 && points > 0 ? '🥉 3' : <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{i + 1}</span>}
+                    {i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{i + 1}</span>}
                   </td>
                   <td className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200">{p.full_name}</td>
                   <td className="px-6 py-4 font-bold text-gray-600 dark:text-gray-300 text-center">
@@ -125,8 +94,8 @@ export default function QuizResults({ participants }: QuizResultsProps) {
                     <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">/{p.total_questions}</span>
                   </td>
                   <td className="px-6 py-4 font-black text-center">
-                    <span className={points > 0 ? "text-emerald-600" : "text-gray-400"}>
-                      {points > 0 ? `+${points}` : '0'}
+                    <span className="text-emerald-600">
+                      +{points}
                     </span>
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-500 dark:text-gray-400 text-right text-xs">
