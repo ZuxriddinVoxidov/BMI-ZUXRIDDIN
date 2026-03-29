@@ -198,6 +198,7 @@ export default function LoginPage() {
         email: regEmail,
         password: regPassword,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: { full_name: regName, role: 'student', grade: regGrade || undefined, school_id: '00000000-0000-0000-0000-000000000001' },
         },
       })
@@ -218,13 +219,7 @@ export default function LoginPage() {
         setRegError(uzMessage ? uzMessage[1] : `Xatolik yuz berdi: ${error.message}`)
         return
       }
-      setRegSuccess("Muvaffaqiyatli ro'yxatdan o'tdingiz! Endi hisobingizga kirishingiz mumkin.")
-      setRegName('')
-      setRegEmail('')
-      setRegPassword('')
-      setRegConfirm('')
-      setRegGrade('')
-      setTimeout(() => setActiveTab('login'), 2000)
+      setRegSuccess("success")
     },
     [regName, regEmail, regPassword, regConfirm, regGrade, supabase]
   )
@@ -481,187 +476,205 @@ export default function LoginPage() {
                   transition={{ duration: 0.25 }}
                 >
 
-                  {/* Success message */}
-                  <AnimatePresence>
-                    {regSuccess && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="flex items-center gap-2 bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-900/50 text-green-700 dark:text-green-400 text-sm rounded-lg px-4 py-3 mb-5"
-                      >
-                        <CheckCircle2 size={16} />
-                        {regSuccess}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Error message */}
-                  <AnimatePresence>
-                    {regError && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="flex items-center gap-2 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 text-sm rounded-lg px-4 py-3 mb-5"
-                      >
-                        <AlertCircle size={16} />
-                        {regError}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    {/* Hidden input for server action validation if needed */}
-                    <input type="hidden" name="selectedRole" value="student" />
-
-                    {/* Full name */}
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">
-                        To&apos;liq ism sharif
-                      </Label>
-                      <div className="relative">
-                        <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <Input
-                          value={regName}
-                          onChange={(e) => {
-                            setRegName(e.target.value)
-                            setRegErrors((p) => ({ ...p, name: undefined }))
-                          }}
-                          placeholder="Ismingiz Familiyangiz"
-                          className={`h-12 pl-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.name ? 'border-red-400 dark:border-red-500' : ''}`}
-                        />
+                  {regSuccess ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="flex flex-col items-center justify-center text-center p-8 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-2xl"
+                    >
+                      <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mb-4">
+                        <CheckCircle2 size={32} className="text-green-600 dark:text-green-400" />
                       </div>
-                      {regErrors.name && <p className="text-red-500 text-xs mt-1">{regErrors.name}</p>}
-                    </motion.div>
-
-                    {/* Grade Selector */}
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }}>
-                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">
-                        📚 Sinf
-                      </Label>
-                      <select
-                        value={regGrade}
-                        onChange={(e) => setRegGrade(e.target.value)}
-                        className="w-full h-12 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none"
-                      >
-                        <option value="">Sinfni tanlang</option>
-                        {GRADES.map(g => (
-                          <option key={g} value={g}>{g}-sinf</option>
-                        ))}
-                      </select>
-                    </motion.div>
-
-                    {/* Email */}
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Email</Label>
-                      <div className="relative">
-                        <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <Input
-                          type="email"
-                          value={regEmail}
-                          onChange={(e) => {
-                            setRegEmail(e.target.value)
-                            setRegErrors((p) => ({ ...p, email: undefined }))
-                          }}
-                          placeholder="sizning@email.uz"
-                          className={`h-12 pl-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.email ? 'border-red-400 dark:border-red-500' : ''}`}
-                        />
-                      </div>
-                      {regErrors.email && <p className="text-red-500 text-xs mt-1">{regErrors.email}</p>}
-                    </motion.div>
-
-                    {/* Password */}
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Parol</Label>
-                      <div className="relative">
-                        <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <Input
-                          type={regShowPw ? 'text' : 'password'}
-                          value={regPassword}
-                          onChange={(e) => {
-                            setRegPassword(e.target.value)
-                            setRegErrors((p) => ({ ...p, password: undefined }))
-                          }}
-                          placeholder="Kamida 8 ta belgi"
-                          className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.password ? 'border-red-400 dark:border-red-500' : ''}`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setRegShowPw(!regShowPw)}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-                        >
-                          {regShowPw ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                      </div>
-                      {regErrors.password && <p className="text-red-500 text-xs mt-1">{regErrors.password}</p>}
-                      {/* Strength bar */}
-                      {regPassword.length > 0 && (
-                        <div className="mt-2">
-                          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <motion.div
-                              className={`h-full rounded-full ${pwStrength.color}`}
-                              initial={{ width: 0 }}
-                              animate={{ width: pwStrength.width }}
-                              transition={{ duration: 0.3 }}
-                            />
-                          </div>
-                          <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
-                            Parol kuchi:{' '}
-                            <span
-                              className={
-                                pwStrength.color === 'bg-red-500'
-                                  ? 'text-red-500'
-                                  : pwStrength.color === 'bg-yellow-500'
-                                  ? 'text-yellow-600'
-                                  : 'text-green-600'
-                              }
-                            >
-                              {pwStrength.label}
-                            </span>
-                          </p>
-                        </div>
-                      )}
-                    </motion.div>
-
-                    {/* Confirm password */}
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                      <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Parolni takrorlash</Label>
-                      <div className="relative">
-                        <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                        <Input
-                          type={regShowConfirm ? 'text' : 'password'}
-                          value={regConfirm}
-                          onChange={(e) => {
-                            setRegConfirm(e.target.value)
-                            setRegErrors((p) => ({ ...p, confirm: undefined }))
-                          }}
-                          placeholder="Parolni qayta kiriting"
-                          className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.confirm ? 'border-red-400 dark:border-red-500' : ''}`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setRegShowConfirm(!regShowConfirm)}
-                          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-                        >
-                          {regShowConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-                        </button>
-                      </div>
-                      {regErrors.confirm && <p className="text-red-500 text-xs mt-1">{regErrors.confirm}</p>}
-                    </motion.div>
-
-                    {/* Submit */}
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                        ✅ Ro&apos;yxatdan o&apos;tdingiz!
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-4">
+                        Emailingizga tasdiqlash xati yuborildi. Iltimos, emailingizni tekshiring va linkni bosing.
+                      </p>
+                      <p className="text-sm font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-4 py-2 rounded-lg">
+                        ⚠️ Spam papkasini ham tekshiring
+                      </p>
                       <Button
-                        type="submit"
-                        disabled={regLoading}
-                        className="w-full h-12 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-lg text-base font-semibold shadow-lg shadow-indigo-200 transition-all"
+                        onClick={() => {
+                          setRegSuccess('')
+                          setActiveTab('login')
+                        }}
+                        variant="outline"
+                        className="mt-6 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50"
                       >
-                        {regLoading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
-                        {regLoading ? 'Yaratilmoqda...' : "Ro'yxatdan o'tish"}
+                        Tizimga kirish sahifasiga o&apos;tish
                       </Button>
                     </motion.div>
-                  </form>
+                  ) : (
+                    <>
+                      {/* Error message */}
+                      <AnimatePresence>
+                        {regError && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="flex items-center gap-2 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 text-sm rounded-lg px-4 py-3 mb-5"
+                          >
+                            <AlertCircle size={16} />
+                            {regError}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      <form onSubmit={handleRegister} className="space-y-4">
+                        {/* Hidden input for server action validation if needed */}
+                        <input type="hidden" name="selectedRole" value="student" />
+
+                        {/* Full name */}
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+                          <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">
+                            To&apos;liq ism sharif
+                          </Label>
+                          <div className="relative">
+                            <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Input
+                              value={regName}
+                              onChange={(e) => {
+                                setRegName(e.target.value)
+                                setRegErrors((p) => ({ ...p, name: undefined }))
+                              }}
+                              placeholder="Ismingiz Familiyangiz"
+                              className={`h-12 pl-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.name ? 'border-red-400 dark:border-red-500' : ''}`}
+                            />
+                          </div>
+                          {regErrors.name && <p className="text-red-500 text-xs mt-1">{regErrors.name}</p>}
+                        </motion.div>
+
+                        {/* Grade Selector */}
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }}>
+                          <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">
+                            📚 Sinf
+                          </Label>
+                          <select
+                            value={regGrade}
+                            onChange={(e) => setRegGrade(e.target.value)}
+                            className="w-full h-12 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 text-sm focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none"
+                          >
+                            <option value="">Sinfni tanlang</option>
+                            {GRADES.map(g => (
+                              <option key={g} value={g}>{g}-sinf</option>
+                            ))}
+                          </select>
+                        </motion.div>
+
+                        {/* Email */}
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                          <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Email</Label>
+                          <div className="relative">
+                            <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Input
+                              type="email"
+                              value={regEmail}
+                              onChange={(e) => {
+                                setRegEmail(e.target.value)
+                                setRegErrors((p) => ({ ...p, email: undefined }))
+                              }}
+                              placeholder="sizning@email.uz"
+                              className={`h-12 pl-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.email ? 'border-red-400 dark:border-red-500' : ''}`}
+                            />
+                          </div>
+                          {regErrors.email && <p className="text-red-500 text-xs mt-1">{regErrors.email}</p>}
+                        </motion.div>
+
+                        {/* Password */}
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+                          <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Parol</Label>
+                          <div className="relative">
+                            <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Input
+                              type={regShowPw ? 'text' : 'password'}
+                              value={regPassword}
+                              onChange={(e) => {
+                                setRegPassword(e.target.value)
+                                setRegErrors((p) => ({ ...p, password: undefined }))
+                              }}
+                              placeholder="Kamida 8 ta belgi"
+                              className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.password ? 'border-red-400 dark:border-red-500' : ''}`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setRegShowPw(!regShowPw)}
+                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                            >
+                              {regShowPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
+                          {regErrors.password && <p className="text-red-500 text-xs mt-1">{regErrors.password}</p>}
+                          {/* Strength bar */}
+                          {regPassword.length > 0 && (
+                            <div className="mt-2">
+                              <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <motion.div
+                                  className={`h-full rounded-full ${pwStrength.color}`}
+                                  initial={{ width: 0 }}
+                                  animate={{ width: pwStrength.width }}
+                                  transition={{ duration: 0.3 }}
+                                />
+                              </div>
+                              <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
+                                Parol kuchi:{' '}
+                                <span
+                                  className={
+                                    pwStrength.color === 'bg-red-500'
+                                      ? 'text-red-500'
+                                      : pwStrength.color === 'bg-yellow-500'
+                                      ? 'text-yellow-600'
+                                      : 'text-green-600'
+                                  }
+                                >
+                                  {pwStrength.label}
+                                </span>
+                              </p>
+                            </div>
+                          )}
+                        </motion.div>
+
+                        {/* Confirm password */}
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                          <Label className="text-gray-700 dark:text-gray-200 font-medium text-sm mb-1.5 block">Parolni takrorlash</Label>
+                          <div className="relative">
+                            <Lock size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <Input
+                              type={regShowConfirm ? 'text' : 'password'}
+                              value={regConfirm}
+                              onChange={(e) => {
+                                setRegConfirm(e.target.value)
+                                setRegErrors((p) => ({ ...p, confirm: undefined }))
+                              }}
+                              placeholder="Parolni qayta kiriting"
+                              className={`h-12 pl-11 pr-11 rounded-lg border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 outline-none ${regErrors.confirm ? 'border-red-400 dark:border-red-500' : ''}`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setRegShowConfirm(!regShowConfirm)}
+                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                            >
+                              {regShowConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                          </div>
+                          {regErrors.confirm && <p className="text-red-500 text-xs mt-1">{regErrors.confirm}</p>}
+                        </motion.div>
+
+                        {/* Submit */}
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+                          <Button
+                            type="submit"
+                            disabled={regLoading}
+                            className="w-full h-12 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-lg text-base font-semibold shadow-lg shadow-indigo-200 transition-all"
+                          >
+                            {regLoading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
+                            {regLoading ? 'Yaratilmoqda...' : "Ro'yxatdan o'tish"}
+                          </Button>
+                        </motion.div>
+                      </form>
+                    </>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </TabsContent>
