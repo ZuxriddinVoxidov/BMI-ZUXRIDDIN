@@ -44,14 +44,25 @@ export default function AboutPage() {
 
       <main className="flex-grow">
         {/* SECTION 1 — Hero banner */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-800 to-blue-900 min-h-[calc(100vh-4rem)] flex items-center">
-          {/* Dot texture */}
-          <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-          {/* Diagonal gradient overlay for depth */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/60 via-transparent to-blue-900/80" />
-          {/* Glow accents */}
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl" />
+        <section className="relative overflow-hidden bg-indigo-950 min-h-[calc(100vh-4rem)] flex items-center">
+          {/* Real school background photo */}
+          <div className="absolute inset-0">
+            <Image
+              src="/school-bg-new.jpg"
+              alt="Maktab"
+              fill
+              className="object-cover object-center"
+              priority
+              quality={80}
+            />
+            {/* Strong dark overlay so text is readable */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/85 via-indigo-900/80 to-blue-950/85" />
+            {/* Dot texture on top */}
+            <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+          </div>
+          {/* Side glow accents */}
+          <div className="absolute top-1/3 -left-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-1/4 -right-24 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
           
           <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
