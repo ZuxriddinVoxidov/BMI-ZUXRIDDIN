@@ -2,11 +2,38 @@
 
 import { motion } from 'framer-motion'
 import { Building2, Clock, GraduationCap, MapPin, Phone, Trophy, Users, Monitor, BookOpen, Dumbbell, Palette, Camera, CalendarDays } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Logo } from '@/components/shared/Logo'
 import Navbar from './Navbar'
 import Footer from './Footer'
+
+function SchoolPhoto({ src }: { src: string }) {
+  const [error, setError] = useState(false)
+
+  if (error) {
+    return (
+      <div className="rounded-xl aspect-video bg-gray-200 dark:bg-gray-800 flex flex-col items-center justify-center border border-dashed border-gray-300 dark:border-gray-700">
+        <Camera size={48} className="text-gray-400 dark:text-gray-600 mb-3" />
+        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Maktab rasmi</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-xl aspect-video relative overflow-hidden bg-gray-200 dark:bg-gray-800">
+      <Image
+        src={src}
+        alt="Maktab rasmi"
+        fill
+        sizes="(max-width: 768px) 100vw, 50vw"
+        className="object-cover"
+        onError={() => setError(true)}
+      />
+    </div>
+  )
+}
 
 export default function AboutPage() {
   const [activeLeader, setActiveLeader] = useState<number | null>(null)
@@ -17,9 +44,10 @@ export default function AboutPage() {
 
       <main className="flex-grow">
         {/* SECTION 1 — Hero banner */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-blue-900 to-indigo-800 py-24 sm:py-32">
-          <div className="absolute inset-0 bg-[url('/school-bg-new.jpg')] bg-cover bg-center opacity-10 mix-blend-overlay" />
-          <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/80 to-transparent" />
+        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-800 to-blue-900 py-24 sm:py-32">
+          {/* Subtle texture pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/90 to-indigo-800/70" />
           
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -31,7 +59,7 @@ export default function AboutPage() {
               >
                 <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
                   <span className="text-yellow-400">✧</span>
-                  <span className="text-sm font-medium">Buvayda tumani, Hakimto&apos;ra MFY</span>
+                  <span className="text-sm font-medium">Buvayda tumani, Farg&apos;ona viloyati</span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
                   46-sonli umumiy o&apos;rta ta&apos;lim maktabi
@@ -101,7 +129,7 @@ export default function AboutPage() {
                 <div className="absolute top-0 left-0 w-2 h-full bg-indigo-500 rounded-l-3xl" />
                 <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
                   <span className="block">46-sonli umumiy o&apos;rta ta&apos;lim maktabi 2008-yilda foydalanishga topshirilgan.</span>
-                  <span className="block">Maktab Navoiy viloyatining Buvayda tumanida, Hakimto&apos;ra MFY, Taraqiyot ko&apos;chasi 3A-uy manzilida joylashgan.</span>
+                  <span className="block">Maktab Farg&apos;ona viloyatining Buvayda tumanida, Hakimto&apos;ra MFY, Taraqiyot ko&apos;chasi 3A-uy manzilida joylashgan.</span>
                   <span className="block">Umumiy maydoni 1.1 gektarni tashkil etib, zamonaviy ta&apos;lim infratuzilmasiga ega.</span>
                   <span className="block">Maktabda sport zali va stadion mavjud bo&apos;lib, yaxshi holatda saqlanmoqda.</span>
                   <span className="block">Informatika xonasi zamonaviy kompyuter texnikasi bilan jihozlangan.</span>
@@ -149,15 +177,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Maktab hayotidan lavhalar</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {[1, 2, 3, 4].map(idx => (
-                <div 
-                  key={idx} 
-                  className="rounded-xl aspect-video bg-gray-200 dark:bg-gray-800 flex flex-col items-center justify-center border border-dashed border-gray-300 dark:border-gray-700 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <Camera size={48} className="text-gray-400 dark:text-gray-600 mb-4" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400 text-center px-4 font-medium">
-                    {`// TODO: Replace with real school photos`}
-                  </p>
-                </div>
+                <SchoolPhoto key={idx} src={`/images/school/school-${idx}.jpg`} />
               ))}
             </div>
           </div>

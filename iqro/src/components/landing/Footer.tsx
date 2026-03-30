@@ -13,8 +13,7 @@ export default function Footer() {
           <div>
             <Logo href="/" className="mb-4" textClassName="text-white" forceDark />
             <p className="text-gray-400 text-sm leading-relaxed mb-6">
-              O&apos;zbekiston maktablari uchun zamonaviy to&apos;garak va davomat
-              boshqaruv platformasi.
+              46-maktab uchun ishlab chiqilgan maxsus to&apos;garaklar platformasi.
             </p>
             {/* Social Icons */}
             <div className="flex items-center gap-3">
