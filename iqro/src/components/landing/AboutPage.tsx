@@ -44,12 +44,16 @@ export default function AboutPage() {
 
       <main className="flex-grow">
         {/* SECTION 1 — Hero banner */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-800 to-blue-900 py-24 sm:py-32">
-          {/* Subtle texture pattern overlay */}
-          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-900/90 to-indigo-800/70" />
+        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-indigo-800 to-blue-900 min-h-[calc(100vh-4rem)] flex items-center">
+          {/* Dot texture */}
+          <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+          {/* Diagonal gradient overlay for depth */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/60 via-transparent to-blue-900/80" />
+          {/* Glow accents */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl" />
           
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
               <motion.div 
                 initial={{ opacity: 0, x: -30 }}
@@ -75,7 +79,7 @@ export default function AboutPage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 flex flex-col items-center justify-center shrink-0"
               >
-                <Logo className="scale-125" textClassName="text-white text-3xl" />
+                <Logo className="scale-125" textClassName="text-white text-3xl" forceDark />
               </motion.div>
             </div>
           </div>
@@ -140,7 +144,59 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* SECTION FACILITIES — Maktab infratuzilmasi */}
+        {/* SECTION — Leadership (moved up, right after about text) */}
+        <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-800/50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Maktab rahbariyati</h2>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+              {[
+                { name: 'Toshmatova Nilufar', role: "O'quv ishlari bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'TN' },
+                { name: "Yo'ldasheva Go'yaxon Zokirovna", role: "Maktab direktori", desc: "Maktab direktori | Ish telefoni: +998 93 201 75 74 | info@iqro46.uz", center: true, initial: 'YG' },
+                { name: 'Xasanov Jahongir', role: "Tarbiya ishlari bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'XJ' },
+              ].map((ldr, i) => (
+                <div 
+                  key={i}
+                  className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
+                    ldr.center 
+                      ? 'md:scale-110 z-10 border-2 border-indigo-400 dark:border-indigo-500/60' 
+                      : 'border border-gray-100 dark:border-gray-700'
+                  }`}
+                  onClick={() => setActiveLeader(activeLeader === i ? null : i)}
+                >
+                  <div className="p-8 text-center pb-20">
+                    <div className={`w-24 h-24 rounded-full font-bold text-3xl flex items-center justify-center mx-auto mb-6 shadow-inner ${
+                      ldr.center 
+                        ? 'bg-indigo-600 text-white' 
+                        : 'bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400'
+                    }`}>
+                      {ldr.initial}
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{ldr.name}</h3>
+                    <p className={`text-sm ${ldr.center ? 'text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>{ldr.role}</p>
+                  </div>
+                  
+                  {/* Detail panel slides up */}
+                  <div className={`absolute bottom-0 left-0 right-0 bg-indigo-600 text-white p-4 transform transition-transform duration-300 ease-in-out flex items-center justify-center min-h-[80px] text-center ${
+                    activeLeader === i ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'
+                  }`}>
+                    <p className="text-sm font-medium leading-relaxed">{ldr.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* SECTION FACILITIES */}
         <section className="py-16 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Maktab infratuzilmasi</h2>
@@ -178,48 +234,6 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {[1, 2, 3, 4].map(idx => (
                 <SchoolPhoto key={idx} src={`/images/school/school-${idx}.jpg`} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 3 — School leadership */}
-        <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-800/50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Maktab rahbariyati</h2>
-            </motion.div>
-
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
-              {[
-                { name: 'Toshmatova Nilufar', role: "O'quv ishlari bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'TN' },
-                { name: "Yo'ldasheva Go'yaxon Zokirovna", role: "Maktab direktori", desc: "Maktab direktori | Ish telefoni: +998 93 201 75 74 | info@iqro46.uz", center: true, initial: 'YG' },
-                { name: 'Xasanov Jahongir', role: "Tarbiya ishlari bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'XJ' },
-              ].map((ldr, i) => (
-                <div 
-                  key={i}
-                  className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer ${ldr.center ? 'md:scale-110 z-10 border border-indigo-100 dark:border-indigo-500/30' : 'border border-gray-100 dark:border-gray-700'}`}
-                  onClick={() => setActiveLeader(activeLeader === i ? null : i)}
-                >
-                  <div className="p-8 text-center pb-20">
-                    <div className="w-24 h-24 rounded-full bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 font-bold text-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
-                      {ldr.initial}
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{ldr.name}</h3>
-                    <p className={`text-sm ${ldr.center ? 'text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>{ldr.role}</p>
-                  </div>
-                  
-                  {/* Detail panel */}
-                  <div className={`absolute bottom-0 left-0 right-0 bg-indigo-600 text-white p-4 transform transition-transform duration-300 ease-in-out flex items-center justify-center min-h-[80px] text-center ${activeLeader === i ? 'translate-y-0' : 'translate-y-full group-hover:translate-y-0'}`}>
-                    <p className="text-sm font-medium leading-relaxed">{ldr.desc}</p>
-                  </div>
-                </div>
               ))}
             </div>
           </div>
