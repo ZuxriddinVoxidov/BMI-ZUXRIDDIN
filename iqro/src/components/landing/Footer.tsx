@@ -79,15 +79,15 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <span>✉</span>
-                <span>info@iqro.uz</span>
+                <span>info@iqro46.uz</span>
               </li>
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <span>📞</span>
-                <span>+998 71 200 00 00</span>
+                <span>+998 93 201 75 74</span>
               </li>
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <span>📍</span>
-                <span>Toshkent, O&apos;zbekiston</span>
+                <span>Buvayda tumani, Hakimto&apos;ra MFY</span>
               </li>
             </ul>
           </div>

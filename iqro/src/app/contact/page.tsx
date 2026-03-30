@@ -71,9 +71,9 @@ export default function ContactPage() {
           {/* LEFT — Info Cards */}
           <div className="lg:col-span-2 space-y-4">
             {[
-              { icon: '📍', bg: 'bg-indigo-100 text-indigo-600', title: 'Maktab manzili', lines: ['Toshkent sh., Yunusobod tumani', '46-maktab'] },
-              { icon: '📞', bg: 'bg-emerald-100 text-emerald-600', title: 'Telefon raqam', lines: ['+998 (71) 234-56-78'], link: 'tel:+998712345678' },
-              { icon: '✉️', bg: 'bg-blue-100 text-blue-600', title: 'Email manzil', lines: ['admin@iqro.uz'], link: 'mailto:admin@iqro.uz' },
+              { icon: '📍', bg: 'bg-indigo-100 text-indigo-600', title: 'Maktab manzili', lines: ["Buvayda tumani, Hakimto'ra MFY", "Taraqiyot ko'chasi 3A-uy"] },
+              { icon: '📞', bg: 'bg-emerald-100 text-emerald-600', title: 'Telefon raqam', lines: ['+998 93 201 75 74'], link: 'tel:+998932017574' },
+              { icon: '✉️', bg: 'bg-blue-100 text-blue-600', title: 'Email manzil', lines: ['info@iqro46.uz'], link: 'mailto:info@iqro46.uz' },
               { icon: '🕐', bg: 'bg-amber-100 text-amber-600', title: 'Ish vaqti', lines: ['Dushanba — Juma: 8:00 — 17:00', 'Shanba: 9:00 — 13:00'] },
             ].map((card, i) => (
               <div key={i} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
