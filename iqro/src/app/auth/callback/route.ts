@@ -32,6 +32,17 @@ export async function GET(request: NextRequest) {
           await new Promise(r => setTimeout(r, 500))
         }
 
+        if (!profile) {
+          // 4th attempt after 1 second gracefully handling DB triggers
+          await new Promise(r => setTimeout(r, 1000))
+          const { data } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('user_id', user.id)
+            .single()
+          if (data) profile = data
+        }
+
         const role = profile?.role
         if (role === 'student') return NextResponse.redirect(new URL('/student', request.url))
         if (role === 'teacher') return NextResponse.redirect(new URL('/teacher', request.url))

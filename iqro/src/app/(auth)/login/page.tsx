@@ -21,8 +21,8 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { Logo } from '@/components/shared/Logo'
-import { useRouter } from 'next/navigation'
-import { useCallback, useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useState, useEffect, Suspense } from 'react'
 
 // ─── Password Strength ──────────────────────────────────────
 function getPasswordStrength(p: string) {
@@ -85,12 +85,13 @@ function RoleCard({
 // ═══════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
 
   // ── Shared state ────────────────────────────────────────
-  const [activeTab, setActiveTab] = useState('login')
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'login')
   const [loginRole, setLoginRole] = useState<'student' | 'teacher'>('student')
 
   // ── Login state ─────────────────────────────────────────
@@ -104,13 +105,15 @@ export default function LoginPage() {
   const [confirmedMsg, setConfirmedMsg] = useState('')
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const sp = new URLSearchParams(window.location.search)
-      if (sp.get('confirmed') === 'true') {
-        setConfirmedMsg('✅ Email tasdiqlandi! Endi tizimga kirishingiz mumkin.')
-      }
+    if (searchParams.get('confirmed') === 'true') {
+      setConfirmedMsg('✅ Email tasdiqlandi! Endi tizimga kirishingiz mumkin.')
+      const t = setTimeout(() => {
+        setConfirmedMsg('')
+        router.replace('/login')
+      }, 5000)
+      return () => clearTimeout(t)
     }
-  }, [])
+  }, [searchParams, router])
 
   // ── Register state ──────────────────────────────────────
   const [regName, setRegName] = useState('')
@@ -707,5 +710,17 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <Loader2 className="animate-spin text-indigo-600 w-10 h-10" />
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }
