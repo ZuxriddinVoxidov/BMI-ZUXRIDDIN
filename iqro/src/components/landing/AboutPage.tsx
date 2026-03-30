@@ -56,7 +56,7 @@ export default function AboutPage() {
               quality={80}
             />
             {/* Strong dark overlay so text is readable */}
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/85 via-indigo-900/80 to-blue-950/85" />
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/75 via-indigo-900/65 to-blue-950/75" />
             {/* Dot texture on top */}
             <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
           </div>

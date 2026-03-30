@@ -22,7 +22,7 @@ export function Logo({ collapsed = false, href = '/', className, textClassName, 
 
   useEffect(() => setMounted(true), [])
 
-  const isDark = mounted && (forceDark || theme === 'dark')
+  const isDark = forceDark || (mounted && theme === 'dark')
   const logoSrc = isDark && !imgError ? '/logo-dark.png' : '/logo.png'
 
   return (
@@ -34,7 +34,11 @@ export function Logo({ collapsed = false, href = '/', className, textClassName, 
             alt="IQRO Logo"
             fill
             sizes="(max-width: 768px) 150px, 200px"
-            className={cn("object-contain scale-[2] origin-left pointer-events-none", collapsed ? "object-center scale-[1.5]" : "object-left")}
+            className={cn(
+              "object-contain scale-[2] origin-left pointer-events-none transition-all duration-300",
+              collapsed ? "object-center scale-[1.5]" : "object-left",
+              isDark && "brightness-0 invert opacity-90"
+            )}
             priority
             onError={() => setImgError(true)}
           />
