@@ -8,6 +8,8 @@ import {
   saveMessage,
   deleteSession,
 } from '@/app/actions/ai-chat'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import {
   Download,
   Loader2,
@@ -599,8 +601,10 @@ export default function AIChatPage({
                          {msg.role === 'user' ? (
                             <p className="whitespace-pre-wrap">{msg.content}</p>
                          ) : (
-                            <div className="prose prose-sm prose-indigo max-w-none dark:text-gray-100">
-                               {renderMessageContent(msg.content)}
+                            <div className="prose prose-sm md:prose-base prose-indigo max-w-none dark:prose-invert">
+                               <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                 {msg.content}
+                               </ReactMarkdown>
                             </div>
                          )}
                       </div>

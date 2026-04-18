@@ -1,6 +1,8 @@
 'use client'
 import { Bot, Loader2, Send, Sparkles, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -130,13 +132,19 @@ export default function AIChatWidget({
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                       msg.role === 'user'
                         ? 'bg-indigo-600 text-white rounded-br-sm'
-                        : 'bg-white text-gray-800 shadow-sm rounded-bl-sm border border-gray-100'
+                        : 'bg-white text-gray-800 shadow-sm rounded-bl-sm border border-gray-100 prose prose-sm prose-indigo'
                     }`}
                   >
-                    {msg.content}
+                    {msg.role === 'user' ? (
+                       <p className="whitespace-pre-wrap">{msg.content}</p>
+                    ) : (
+                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                         {msg.content}
+                       </ReactMarkdown>
+                    )}
                   </div>
                 </div>
               ))}
