@@ -3,6 +3,9 @@ import { Bot, Loader2, Send, Sparkles, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -141,7 +144,10 @@ export default function AIChatWidget({
                     {msg.role === 'user' ? (
                        <p className="whitespace-pre-wrap">{msg.content}</p>
                     ) : (
-                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                       <ReactMarkdown
+                         remarkPlugins={[remarkGfm, remarkMath]}
+                         rehypePlugins={[rehypeKatex]}
+                       >
                          {msg.content}
                        </ReactMarkdown>
                     )}

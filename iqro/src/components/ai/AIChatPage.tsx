@@ -10,6 +10,9 @@ import {
 } from '@/app/actions/ai-chat'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 import {
   Download,
   Loader2,
@@ -600,9 +603,18 @@ export default function AIChatPage({
                       >
                          {msg.role === 'user' ? (
                             <p className="whitespace-pre-wrap">{msg.content}</p>
+                         ) : msg.id?.startsWith('temp-') && msg.content === '' ? (
+                            <div className="flex gap-1.5 py-1">
+                              <span className="w-2 h-2 bg-indigo-400 dark:bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <span className="w-2 h-2 bg-indigo-400 dark:bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <span className="w-2 h-2 bg-indigo-400 dark:bg-indigo-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
                          ) : (
                             <div className="prose prose-sm md:prose-base prose-indigo max-w-none dark:prose-invert">
-                               <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                               <ReactMarkdown
+                                 remarkPlugins={[remarkGfm, remarkMath]}
+                                 rehypePlugins={[rehypeKatex]}
+                               >
                                  {msg.content}
                                </ReactMarkdown>
                             </div>
@@ -645,31 +657,11 @@ export default function AIChatPage({
               ))}
             </AnimatePresence>
 
-            {/* TYPING INDICATOR */}
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col justify-start max-w-4xl mx-auto"
-              >
-                <div className="flex gap-3 max-w-[85%] md:max-w-[70%]">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm flex-shrink-0 mt-1">
-                    <span className="text-sm">🤖</span>
-                  </div>
-                  <div className="bg-white dark:bg-gray-900 rounded-2xl rounded-tl-sm border-l-[3px] border-indigo-400 dark:border-l-indigo-500 px-5 py-4 shadow-sm h-12 flex items-center">
-                     <div className="flex gap-1.5">
-                        <motion.div className="w-2 h-2 bg-indigo-400 dark:bg-gray-600 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
-                        <motion.div className="w-2 h-2 bg-indigo-400 dark:bg-gray-600 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} />
-                        <motion.div className="w-2 h-2 bg-indigo-400 dark:bg-gray-600 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
-                     </div>
-                  </div>
-                </div>
-                {slowResponse && (
-                  <p className="text-xs text-gray-400 animate-pulse mt-2 ml-11">
-                    AI javob tayyorlamoqda... Bu biroz vaqt olishi mumkin
-                  </p>
-                )}
-              </motion.div>
+            {/* Slow response hint (only shown when temp bubble is visible) */}
+            {isLoading && slowResponse && (
+              <p className="text-xs text-gray-400 animate-pulse ml-14 -mt-3 max-w-4xl mx-auto">
+                AI javob tayyorlamoqda... Bu biroz vaqt olishi mumkin
+              </p>
             )}
             
             <div ref={messagesEndRef} className="h-4" />
