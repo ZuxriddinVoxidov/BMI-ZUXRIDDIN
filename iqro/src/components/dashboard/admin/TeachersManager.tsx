@@ -1,11 +1,11 @@
 'use client'
 
 import { addTeacher, toggleBlockTeacher, updateTeacherInfo, deleteTeacher } from '@/app/actions/teachers'
-
+import { createClient } from '@/lib/supabase/client'
 import DataLoader from '@/components/ui/DataLoader'
 import { motion } from 'framer-motion'
-import { Copy, Eye, EyeOff, Search, UserPlus, Users } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Camera, Copy, Eye, EyeOff, Search, UserPlus, Users } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 interface Teacher {
   id: string
@@ -19,6 +19,7 @@ interface Teacher {
   created_at: string
   school_id?: string
   clubs: { id: string; name: string }[]
+  avatar_url?: string | null
 }
 
 export default function TeachersManager({ teachers, schoolId }: { teachers: Teacher[]; schoolId: string }) {
@@ -46,11 +47,16 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; userId: string; name: string } | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [teachersList, setTeachersList] = useState(teachers)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+  const [editingAvatarUrl, setEditingAvatarUrl] = useState<string | null>(null)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+  const supabase = createClient()
 
   useEffect(() => { setDataReady(true) }, [])
 
   function openTeacherEdit(teacher: Teacher) {
     setEditingTeacher(teacher)
+    setEditingAvatarUrl(teacher.avatar_url || null)
     setTeacherForm({
       full_name: teacher.full_name || '',
       phone: teacher.phone || '',
@@ -77,6 +83,7 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
       teacher_bio: teacherForm.teacher_bio,
       email: teacherForm.email || undefined,
       new_password: teacherForm.new_password || undefined,
+      avatar_url: editingAvatarUrl,
     })
     
     if (result.success) {
@@ -87,6 +94,7 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
           ...t, 
           full_name: teacherForm.full_name, 
           email: teacherForm.email || t.email,
+          avatar_url: editingAvatarUrl,
         } : t
       ))
     } else {
@@ -213,8 +221,15 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
                   <tr key={teacher.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="py-4 px-5">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm shrink-0">
-                          {initials}
+                        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-700">
+                          {teacher.avatar_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={teacher.avatar_url} alt={teacher.full_name} className="w-full h-full object-cover object-top" />
+                          ) : (
+                            <div className="w-full h-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+                              {initials}
+                            </div>
+                          )}
                         </div>
                         <p className="text-sm font-semibold text-gray-900 dark:text-white">{teacher.full_name}</p>
                       </div>
@@ -330,12 +345,59 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
             <div className="flex-1 pb-24 sm:pb-0">
             {/* Header */}
             <div className="flex items-center gap-3 p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
-              <div className="w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl shrink-0">
-                {(editingTeacher.full_name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+              {/* Clickable avatar with upload */}
+              <div className="relative shrink-0">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-800">
+                  {editingAvatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={editingAvatarUrl} alt={editingTeacher.full_name} className="w-full h-full object-cover object-top" />
+                  ) : (
+                    <div className="w-full h-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xl">
+                      {(editingTeacher.full_name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={avatarUploading}
+                  className="absolute -bottom-1 -right-1 w-6 h-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-md transition-colors disabled:opacity-50"
+                  title="Rasm yuklash"
+                >
+                  {avatarUploading ? (
+                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Camera size={12} />
+                  )}
+                </button>
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  className="hidden"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0]
+                    if (!file || !editingTeacher) return
+                    if (file.size > 5 * 1024 * 1024) { setTeacherToast({ message: 'Rasm 5MB dan kichik bo\'lsin', type: 'error' }); setTimeout(() => setTeacherToast(null), 3000); return }
+                    setAvatarUploading(true)
+                    const ext = file.name.split('.').pop()
+                    const path = `teachers/${editingTeacher.id}.${ext}`
+                    const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true })
+                    if (!error) {
+                      const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+                      setEditingAvatarUrl(publicUrl + '?t=' + Date.now())
+                    } else {
+                      setTeacherToast({ message: 'Yuklashda xatolik', type: 'error' })
+                      setTimeout(() => setTeacherToast(null), 3000)
+                    }
+                    setAvatarUploading(false)
+                    e.target.value = ''
+                  }}
+                />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1">{editingTeacher.full_name}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">O&apos;qituvchi ma&apos;lumotlarini tahrirlash</p>
+                <p className="text-xs text-indigo-500 mt-0.5">📷 Rasmni almashtirish uchun bosing</p>
               </div>
               <button onClick={() => setShowTeacherModal(false)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 text-xl">✕</button>
             </div>

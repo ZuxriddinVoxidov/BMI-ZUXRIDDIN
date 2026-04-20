@@ -1,6 +1,7 @@
 'use client'
 
 import { logout } from '@/app/actions/auth'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import {
     BarChart3,
@@ -35,9 +36,11 @@ const navItems = [
 export default function TeacherSidebar({
   fullName,
   clubCount,
+  avatarUrl,
 }: {
   fullName: string
   clubCount: number
+  avatarUrl?: string | null
 }) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
@@ -89,8 +92,22 @@ export default function TeacherSidebar({
 
       <div className={cn('px-4 py-4 border-b border-gray-100 dark:border-gray-800', collapsed && 'px-2')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm shrink-0">
-            {initials}
+          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-indigo-200 dark:border-indigo-800 shadow-sm relative">
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt={fullName}
+                fill
+                quality={90}
+                className="object-cover object-top"
+                sizes="40px"
+                unoptimized
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-sm">
+                {initials}
+              </div>
+            )}
           </div>
           {!collapsed && (
             <div>

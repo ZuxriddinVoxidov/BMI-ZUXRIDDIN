@@ -101,6 +101,7 @@ export async function updateTeacherInfo(data: {
   teacher_bio?: string
   email?: string
   new_password?: string
+  avatar_url?: string | null
 }) {
   const supabase = createAdminClient()
 
@@ -111,6 +112,7 @@ export async function updateTeacherInfo(data: {
       phone: data.phone || null,
       teacher_bio: data.teacher_bio || null,
       ...(data.new_password && { plain_password: data.new_password }),
+      ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
     })
     .eq('id', data.profile_id)
 

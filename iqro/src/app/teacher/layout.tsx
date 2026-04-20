@@ -28,6 +28,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
       <TeacherSidebar
         fullName={profile.full_name || 'O\'qituvchi'}
         clubCount={myClubs?.length || 0}
+        avatarUrl={profile.avatar_url || null}
       />
       <div className="lg:ml-[250px] transition-all duration-300">
         <div className="h-14 sm:h-16 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
@@ -47,9 +48,20 @@ export default async function TeacherLayout({ children }: { children: React.Reac
             <ThemeToggle />
             <NotificationBell userId={profile.id} />
             <div className="hidden sm:flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
-                {(profile.full_name?.split(' ')[0] || '?').charAt(0).toUpperCase()}
-              </div>
+              {profile.avatar_url ? (
+                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-800 shadow-sm relative flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={profile.avatar_url}
+                    alt={profile.full_name || ''}
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                  {(profile.full_name?.split(' ')[0] || '?').charAt(0).toUpperCase()}
+                </div>
+              )}
               <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                 {profile.full_name?.split(' ')[0]}
               </span>
