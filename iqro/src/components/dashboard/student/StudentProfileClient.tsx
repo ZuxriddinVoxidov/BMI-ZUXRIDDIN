@@ -91,8 +91,17 @@ export default function StudentProfileClient({ profile, email, school, regDate }
         .from('avatars')
         .getPublicUrl(path)
 
+      // ✅ Immediately save avatar_url to profiles table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', profile.id)
+
+      if (updateError) throw updateError
+
       setEditingAvatarUrl(publicUrl)
-      showToast("Rasm yuklandi. Saqlash tugmasini bosing.", 'success')
+      showToast("Profil rasmi saqlandi ✅", 'success')
+      router.refresh()
     } catch (err: any) {
       showToast(err.message || "Rasm yuklashda xatolik", 'error')
     } finally {
@@ -101,9 +110,21 @@ export default function StudentProfileClient({ profile, email, school, regDate }
     }
   }
 
-  const handleAvatarReset = () => {
-    setEditingAvatarUrl(null)
-    showToast("Profil rasmi olib tashlandi. Saqlashni bosing.", 'success')
+  const handleAvatarReset = async () => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: null })
+        .eq('id', profile.id)
+
+      if (error) throw error
+
+      setEditingAvatarUrl(null)
+      showToast("Profil rasmi olib tashlandi ✅", 'success')
+      router.refresh()
+    } catch (err: any) {
+      showToast(err.message || "Xatolik yuz berdi", 'error')
+    }
   }
 
   const handleCancel = () => {
