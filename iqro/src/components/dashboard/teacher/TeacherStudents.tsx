@@ -18,6 +18,7 @@ export interface EnrollmentItem {
     id: string
     full_name: string
     grade: string | null
+    avatar_url?: string | null
     student_points: { total_points: number }[] | null
   }
 }
@@ -31,6 +32,7 @@ interface StudentRow {
   points: number
   present: number
   total: number
+  avatarUrl?: string | null
 }
 interface Work {
   id: string
@@ -109,6 +111,7 @@ export default function TeacherStudents({
             : ((s.student_points as { total_points: number } | null)?.total_points ?? 0),
           present: 0,
           total: 0,
+          avatarUrl: s.avatar_url ?? null,
         }
       }
     })
@@ -463,9 +466,17 @@ function StudentTableRow({
     >
       <td className="py-3.5 px-5">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-white flex items-center justify-center font-bold text-xs shrink-0">
-            {initials}
-          </div>
+          {student.avatarUrl ? (
+            <img
+              src={student.avatarUrl}
+              alt={student.name}
+              className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-200 dark:border-gray-700"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-white flex items-center justify-center font-bold text-xs shrink-0">
+              {initials}
+            </div>
+          )}
           <span className="text-sm font-semibold text-gray-900 dark:text-white">{student.name}</span>
         </div>
       </td>
@@ -510,9 +521,17 @@ function StudentMobileCard({
 
   return (
     <div className="flex items-center gap-3 px-4 py-3.5">
-      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-white flex items-center justify-center font-bold text-sm shrink-0">
-        {initials}
-      </div>
+      {student.avatarUrl ? (
+        <img
+          src={student.avatarUrl}
+          alt={student.name}
+          className="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-200 dark:border-gray-700"
+        />
+      ) : (
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-white flex items-center justify-center font-bold text-sm shrink-0">
+          {initials}
+        </div>
+      )}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{student.name}</p>
         <div className="flex items-center gap-2 mt-1">

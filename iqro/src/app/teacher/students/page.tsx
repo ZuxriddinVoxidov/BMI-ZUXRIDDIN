@@ -34,7 +34,7 @@ export default async function TeacherStudentsPage() {
 
   const { data: enrollments } = await supabase
     .from('enrollments')
-    .select('club_id, student:profiles!student_id(id, full_name, grade, student_points(total_points))')
+    .select('club_id, student:profiles!student_id(id, full_name, grade, avatar_url, student_points(total_points))')
     .in('club_id', myClubIds)
     .eq('status', 'approved')
 
