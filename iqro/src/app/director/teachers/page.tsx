@@ -13,7 +13,7 @@ export default async function DirectorTeachersPage() {
 
   const { data: teachers } = await supabase
     .from('profiles')
-    .select('id, full_name, is_blocked, clubs:clubs(id, name)')
+    .select('id, full_name, is_blocked, avatar_url, clubs:clubs(id, name)')
     .eq('school_id', profile.school_id)
     .eq('role', 'teacher')
     .order('full_name')
@@ -30,7 +30,21 @@ export default async function DirectorTeachersPage() {
           return (
             <div key={t.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">{initials}</div>
+                {/* Avatar: rasm yoki initials */}
+                <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  {t.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={t.avatar_url}
+                      alt={t.full_name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 flex items-center justify-center font-bold text-sm">
+                      {initials}
+                    </div>
+                  )}
+                </div>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">{t.full_name}</p>
                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${t.is_blocked ? 'bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400'}`}>
