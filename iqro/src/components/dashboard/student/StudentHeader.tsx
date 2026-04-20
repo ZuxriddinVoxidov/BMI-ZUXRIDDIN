@@ -7,9 +7,11 @@ import { Logo } from '@/components/shared/Logo'
 export default function StudentHeader({
   fullName,
   profileId,
+  avatarUrl,
 }: {
   fullName: string
   profileId: string
+  avatarUrl?: string | null
   notifications?: unknown[]
   unreadCount?: number
 }) {
@@ -37,9 +39,17 @@ export default function StudentHeader({
         <ThemeToggle />
         <NotificationBell userId={profileId} />
         <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
-          <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm">
-            {initials}
-          </div>
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={fullName}
+              className="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm">
+              {initials}
+            </div>
+          )}
           <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{firstName}</span>
         </div>
       </div>

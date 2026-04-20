@@ -39,9 +39,11 @@ const navItems = [
 export default function StudentSidebar({
   fullName,
   points = 0,
+  avatarUrl,
 }: {
   fullName: string
   points?: number
+  avatarUrl?: string | null
 }) {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
@@ -97,9 +99,17 @@ export default function StudentSidebar({
       {/* User Profile */}
       <div className={cn('px-4 py-4 border-b border-gray-100 dark:border-gray-800', collapsed && 'px-2')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
-            {initials}
-          </div>
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={fullName}
+              className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
+              {initials}
+            </div>
+          )}
           {!collapsed && (
             <div className="min-w-0">
               <p className="font-semibold text-sm text-gray-900 dark:text-white truncate">

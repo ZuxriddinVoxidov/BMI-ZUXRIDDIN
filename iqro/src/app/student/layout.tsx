@@ -47,11 +47,12 @@ export default async function StudentLayout({
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950 overflow-x-hidden">
-      <StudentSidebar fullName={fullName} points={points} />
+      <StudentSidebar fullName={fullName} points={points} avatarUrl={profile?.avatar_url || null} />
       <div className="lg:ml-[250px] transition-all duration-300">
         <StudentHeader
           fullName={fullName}
           profileId={profile?.id || ''}
+          avatarUrl={profile?.avatar_url || null}
           notifications={(notifications || []) as { id: string; message: string; is_read: boolean; created_at: string }[]}
           unreadCount={unreadCount}
         />
