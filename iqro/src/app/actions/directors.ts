@@ -10,6 +10,7 @@ export async function updateDirectorInfo(
     phone?: string
     email?: string
     new_password?: string
+    avatar_url?: string | null
   }
 ) {
   const supabase = createAdminClient()
@@ -20,6 +21,9 @@ export async function updateDirectorInfo(
   }
   if (data.new_password) {
     updateData.plain_password = data.new_password
+  }
+  if (data.avatar_url !== undefined) {
+    updateData.avatar_url = data.avatar_url
   }
 
   const { error } = await supabase

@@ -3,6 +3,7 @@
 import { logout } from '@/app/actions/auth'
 import { cn } from '@/lib/utils'
 import { BarChart3, BookOpen, ChevronLeft, GraduationCap, Home, LogOut, Menu, School, Sparkles, User, Users, X } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
@@ -19,7 +20,7 @@ const NAV_ITEMS = [
 ]
 
 interface Props {
-  profile: { full_name?: string; school?: { name?: string } | null }
+  profile: { full_name?: string; school?: { name?: string } | null; avatar_url?: string | null }
 }
 
 export default function DirectorSidebar({ profile }: Props) {
@@ -42,7 +43,23 @@ export default function DirectorSidebar({ profile }: Props) {
 
         <div className={cn('px-4 py-4 border-b border-gray-100 dark:border-gray-800', collapsed && 'px-2')}>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm flex-shrink-0">{initials}</div>
+            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-amber-200 dark:border-amber-800 shadow-sm relative">
+              {profile.avatar_url ? (
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.full_name || 'Direktor'}
+                  fill
+                  quality={90}
+                  className="object-cover object-top"
+                  sizes="40px"
+                  unoptimized
+                />
+              ) : (
+                <div className="w-full h-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm">
+                  {initials}
+                </div>
+              )}
+            </div>
             {!collapsed && (
               <div>
                 <p className="font-semibold text-sm text-gray-900 dark:text-white">{profile.full_name || 'Direktor'}</p>

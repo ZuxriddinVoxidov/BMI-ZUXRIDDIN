@@ -40,7 +40,14 @@ export default async function DirectorLayout({ children }: { children: React.Rea
             <ThemeToggle />
             <NotificationBell userId={profile.id} />
             <div className="hidden sm:flex items-center gap-2">
-              <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">{initials}</div>
+              {profile.avatar_url ? (
+                <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-amber-200 dark:border-amber-800 shadow-sm flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={profile.avatar_url} alt={fullName} className="w-full h-full object-cover object-top" />
+                </div>
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-xs">{initials}</div>
+              )}
               <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{fullName.split(' ')[0]}</span>
             </div>
           </div>
