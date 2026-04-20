@@ -16,15 +16,14 @@ export async function GET(request: NextRequest) {
       type: type as any,
       token_hash,
     })
+    
     if (!error) {
-      // Get user role and redirect to correct dashboard
       const { data: { user } } = await supabase.auth.getUser()
+      
       if (user) {
-        // Sync Google avatar if it exists and profile doesn't have one
         const googleAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture
         
-        // Wait briefly for profile to be created (trigger may be async)
-        // Try up to 3 times with 500ms delay
+        // 1. Try to find profile in DB with retries
         let profile = null
         for (let i = 0; i < 3; i++) {
           const { data } = await supabase
@@ -37,7 +36,6 @@ export async function GET(request: NextRequest) {
         }
 
         if (!profile) {
-          // 4th attempt after 1 second gracefully handling DB triggers
           await new Promise(r => setTimeout(r, 1000))
           const { data } = await supabase
             .from('profiles')
@@ -47,28 +45,34 @@ export async function GET(request: NextRequest) {
           if (data) profile = data
         }
 
-        const role = profile?.role
+        // 2. Avatar Sync (Google only)
+        if (profile && googleAvatar && !profile.avatar_url) {
+          const admin = createAdminClient()
+          await admin
+            .from('profiles')
+            .update({ avatar_url: googleAvatar })
+            .eq('user_id', user.id)
+        }
+
+        // 3. Robust Redirect Logic
+        // Priority: Database Role > User Metadata Role
+        const role = profile?.role || (user.user_metadata?.role as string) || (user.app_metadata?.role as string)
         
-        if (profile) {
-          // Sync Google avatar if profile exists but doesn't have an avatar_url
-          if (googleAvatar && !profile.avatar_url) {
-            const admin = createAdminClient()
-            await admin
-              .from('profiles')
-              .update({ avatar_url: googleAvatar })
-              .eq('user_id', user.id)
+        if (role) {
+          if (role === 'student') return NextResponse.redirect(new URL('/student', request.url))
+          if (role === 'teacher') return NextResponse.redirect(new URL('/teacher', request.url))
+          if (role === 'director') return NextResponse.redirect(new URL('/director', request.url))
+          if (role === 'school_admin' || role === 'super_admin' || role === 'admin') {
+            return NextResponse.redirect(new URL('/dashboard', request.url))
           }
         }
-        if (role === 'student') return NextResponse.redirect(new URL('/student', request.url))
-        if (role === 'teacher') return NextResponse.redirect(new URL('/teacher', request.url))
-        if (role === 'director') return NextResponse.redirect(new URL('/director', request.url))
-        if (role === 'school_admin' || role === 'super_admin' || role === 'admin') return NextResponse.redirect(new URL('/dashboard', request.url))
         
-        // Profile not found yet — redirect to login, session is saved
+        // 4. Final Fallback if no role found
         return NextResponse.redirect(new URL('/login?confirmed=true', request.url))
       }
       return NextResponse.redirect(new URL('/login', request.url))
     }
   }
+  
   return NextResponse.redirect(new URL('/login?error=confirmation_failed', request.url))
 }

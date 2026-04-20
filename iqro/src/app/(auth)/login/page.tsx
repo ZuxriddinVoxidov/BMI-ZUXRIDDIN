@@ -516,8 +516,8 @@ function LoginContent() {
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                         ✅ Ro&apos;yxatdan o&apos;tdingiz!
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-300 mb-4">
-                        Emailingizga tasdiqlash xati yuborildi. Iltimos, emailingizni tekshiring va linkni bosing.
+                      <p className="text-gray-600 dark:text-gray-300 mb-4 whitespace-pre-line">
+                        Emailingizga yuborilgan xabardan <span className="font-bold text-indigo-600 dark:text-indigo-400">&quot;Confirm your email&quot;</span> ni ustiga bosish orqali hisobingizni tasdiqlang!
                       </p>
                       <p className="text-sm font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-4 py-2 rounded-lg">
                         ⚠️ Spam papkasini ham tekshiring
