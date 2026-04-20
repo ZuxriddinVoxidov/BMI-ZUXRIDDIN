@@ -104,15 +104,31 @@ export default function AdminProfileClient({ profile, email }: Props) {
           
           <div className="absolute -bottom-10 left-4 sm:left-8 z-20 w-24 h-24 shrink-0">
             <div className="w-full h-full rounded-full overflow-hidden border-4 border-white dark:border-gray-900 shadow-xl ring-2 ring-indigo-400/40 relative">
-              <Image
-                src="/admin-picture.png"
-                alt="Zuxriddin Voxidov"
-                fill
-                quality={100}
-                priority
-                className="object-cover object-top"
-                sizes="96px"
-              />
+              {profile.avatar_url ? (
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.full_name}
+                  fill
+                  quality={90}
+                  className="object-cover object-top"
+                  sizes="96px"
+                  unoptimized
+                />
+              ) : isAdmin ? (
+                <Image
+                  src="/admin-picture.png"
+                  alt="Admin"
+                  fill
+                  quality={100}
+                  priority
+                  className="object-cover object-top"
+                  sizes="96px"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-2xl font-bold">
+                  {initials}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -408,15 +408,16 @@ export default function AIChatPage({
         )}
       </AnimatePresence>
 
-      {/* LEFT SIDEBAR */}
-      <aside
-        className={`
-          fixed lg:relative inset-y-0 left-0 z-50 lg:z-0
-          w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col flex-shrink-0
-          transform transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none
-          ${showSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}
-      >
+      {/* LEFT SIDEBAR — always overlay */}
+      <AnimatePresence>
+        {showSidebar && (
+          <motion.aside
+            initial={{ x: -300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -300, opacity: 0 }}
+            transition={{ type: 'tween', duration: 0.25 }}
+            className="fixed inset-y-0 left-0 z-50 w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col flex-shrink-0 shadow-2xl"
+          >
         {/* Sidebar Header */}
         <div className="bg-gradient-to-br from-indigo-600 to-purple-700 p-5">
           <div className="flex items-center justify-between mb-4">
@@ -490,7 +491,9 @@ export default function AIChatPage({
             </div>
           )}
         </div>
-      </aside>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {/* RIGHT MAIN AREA */}
       <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-950 relative">
@@ -498,8 +501,9 @@ export default function AIChatPage({
         {/* HEADER */}
         <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm flex items-center px-4 md:px-6 flex-shrink-0 z-10 transition-all">
           <button
-            onClick={() => setShowSidebar(true)}
-            className="lg:hidden p-2 -ml-2 mr-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-300"
+            onClick={() => setShowSidebar(!showSidebar)}
+            className="p-2 -ml-2 mr-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-300 transition-colors"
+            title={showSidebar ? "Tarixni yopish" : "AI tarixini ko'rish"}
           >
             <Menu size={22} />
           </button>

@@ -397,7 +397,17 @@ export default function TeachersManager({ teachers, schoolId }: { teachers: Teac
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1">{editingTeacher.full_name}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">O&apos;qituvchi ma&apos;lumotlarini tahrirlash</p>
-                <p className="text-xs text-indigo-500 mt-0.5">📷 Rasmni almashtirish uchun bosing</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-xs text-indigo-500">📷 Rasmni almashtirish uchun bosing</p>
+                  {editingAvatarUrl && (
+                    <button
+                      onClick={() => setEditingAvatarUrl(null)}
+                      className="text-xs text-red-400 hover:text-red-600 underline transition-colors"
+                    >
+                      ✕ O&apos;chirish
+                    </button>
+                  )}
+                </div>
               </div>
               <button onClick={() => setShowTeacherModal(false)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 text-xl">✕</button>
             </div>

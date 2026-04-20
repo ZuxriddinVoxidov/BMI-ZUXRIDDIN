@@ -255,7 +255,17 @@ export default function DirectorsManager({ directors }: { directors: Director[] 
                 <div className="flex-1">
                   <h2 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1">{editingDirector.full_name}</h2>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Direktor ma&apos;lumotlarini tahrirlash</p>
-                  <p className="text-xs text-amber-500 mt-0.5">📷 Rasmni almashtirish uchun bosing</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <p className="text-xs text-amber-500">📷 Rasmni almashtirish uchun bosing</p>
+                    {editingAvatarUrl && (
+                      <button
+                        onClick={() => setEditingAvatarUrl(null)}
+                        className="text-xs text-red-400 hover:text-red-600 underline transition-colors"
+                      >
+                        ✕ O&apos;chirish
+                      </button>
+                    )}
+                  </div>
                 </div>
                 <button onClick={() => setShowModal(false)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 self-start">
                   <X size={20} />
