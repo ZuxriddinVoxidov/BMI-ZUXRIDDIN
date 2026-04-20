@@ -20,7 +20,7 @@ export default function DashboardHeader() {
         <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
           <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-800 shadow-sm">
               <img
-                src="/admin-picture.jpg"
+                src="/admin-picture.png"
                 alt="Admin"
                 className="w-full h-full object-cover object-top"
                 onError={(e) => {

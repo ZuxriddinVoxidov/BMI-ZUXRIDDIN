@@ -104,7 +104,7 @@ export default function AdminProfileClient({ profile, email }: Props) {
           <div className="absolute -bottom-10 left-4 sm:left-8 z-20 w-24 h-24 shrink-0">
             <div className="w-full h-full rounded-full overflow-hidden border-4 border-white dark:border-gray-900 shadow-xl ring-2 ring-indigo-400/40">
               <img
-                src="/admin-picture.jpg"
+                src="/admin-picture.png"
                 alt="Zuxriddin Voxidov"
                 className="w-full h-full object-cover object-top"
                 onError={(e) => {

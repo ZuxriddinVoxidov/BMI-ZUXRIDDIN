@@ -80,7 +80,7 @@ export default function Sidebar() {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-indigo-200 dark:border-indigo-800 shadow-sm">
             <img
-              src="/admin-picture.jpg"
+              src="/admin-picture.png"
               alt="Admin"
               className="w-full h-full object-cover object-top"
               onError={(e) => {
