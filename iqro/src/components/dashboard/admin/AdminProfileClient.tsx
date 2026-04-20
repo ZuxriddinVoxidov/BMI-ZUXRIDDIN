@@ -3,6 +3,7 @@
 import { updateAdminProfile } from '@/app/actions/profile'
 import { Copy, Eye, EyeOff, X } from 'lucide-react'
 import { useState, useTransition } from 'react'
+import Image from 'next/image'
 
 interface Props {
   profile: {
@@ -102,18 +103,15 @@ export default function AdminProfileClient({ profile, email }: Props) {
           <div className="absolute top-4 right-20 w-12 h-12 bg-white/10 rounded-full"/>
           
           <div className="absolute -bottom-10 left-4 sm:left-8 z-20 w-24 h-24 shrink-0">
-            <div className="w-full h-full rounded-full overflow-hidden border-4 border-white dark:border-gray-900 shadow-xl ring-2 ring-indigo-400/40">
-              <img
+            <div className="w-full h-full rounded-full overflow-hidden border-4 border-white dark:border-gray-900 shadow-xl ring-2 ring-indigo-400/40 relative">
+              <Image
                 src="/admin-picture.png"
                 alt="Zuxriddin Voxidov"
-                className="w-full h-full object-cover object-top"
-                onError={(e) => {
-                  const el = e.currentTarget
-                  el.style.display = 'none'
-                  if (el.parentElement) {
-                    el.parentElement.innerHTML = `<div class="w-full h-full rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center"><span class="text-4xl font-bold text-indigo-600">${initials}</span></div>`
-                  }
-                }}
+                fill
+                quality={100}
+                priority
+                className="object-cover object-top"
+                sizes="96px"
               />
             </div>
           </div>

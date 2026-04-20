@@ -3,6 +3,7 @@
 import NotificationBell from '@/components/shared/NotificationBell'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { Logo } from '@/components/shared/Logo'
+import Image from 'next/image'
 
 export default function DashboardHeader() {
   return (
@@ -18,18 +19,15 @@ export default function DashboardHeader() {
         <ThemeToggle />
         <NotificationBell />
         <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
-          <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-800 shadow-sm">
-              <img
+          <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-800 shadow-sm relative">
+              <Image
                 src="/admin-picture.png"
                 alt="Admin"
-                className="w-full h-full object-cover object-top"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  if (e.currentTarget.parentElement) {
-                    e.currentTarget.parentElement.className = 'w-9 h-9 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm';
-                    e.currentTarget.parentElement.textContent = 'ZV';
-                  }
-                }}
+                fill
+                quality={100}
+                priority
+                className="object-cover object-top"
+                sizes="36px"
               />
             </div>
           <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Admin</span>

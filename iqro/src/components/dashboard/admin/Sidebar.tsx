@@ -4,6 +4,7 @@ import { logout } from '@/app/actions/auth'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Logo } from '@/components/shared/Logo'
+import Image from 'next/image'
 
 import { cn } from '@/lib/utils'
 import {
@@ -78,18 +79,15 @@ export default function Sidebar() {
       {/* User Profile */}
       <div className={cn('px-4 py-4 border-b border-gray-100 dark:border-gray-800', collapsed && 'px-2')}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-indigo-200 dark:border-indigo-800 shadow-sm">
-            <img
+          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border-2 border-indigo-200 dark:border-indigo-800 shadow-sm relative">
+            <Image
               src="/admin-picture.png"
               alt="Admin"
-              className="w-full h-full object-cover object-top"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                if (e.currentTarget.parentElement) {
-                  e.currentTarget.parentElement.className = 'w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm flex-shrink-0';
-                  e.currentTarget.parentElement.textContent = 'ZV';
-                }
-              }}
+              fill
+              quality={100}
+              priority
+              className="object-cover object-top"
+              sizes="40px"
             />
           </div>
           {!collapsed && (
