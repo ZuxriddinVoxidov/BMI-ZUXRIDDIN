@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
@@ -19,13 +20,16 @@ export async function GET(request: NextRequest) {
       // Get user role and redirect to correct dashboard
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
+        // Sync Google avatar if it exists and profile doesn't have one
+        const googleAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture
+        
         // Wait briefly for profile to be created (trigger may be async)
         // Try up to 3 times with 500ms delay
         let profile = null
         for (let i = 0; i < 3; i++) {
           const { data } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, avatar_url')
             .eq('user_id', user.id)
             .single()
           if (data) { profile = data; break; }
@@ -37,13 +41,24 @@ export async function GET(request: NextRequest) {
           await new Promise(r => setTimeout(r, 1000))
           const { data } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, avatar_url')
             .eq('user_id', user.id)
             .single()
           if (data) profile = data
         }
 
         const role = profile?.role
+        
+        if (profile) {
+          // Sync Google avatar if profile exists but doesn't have an avatar_url
+          if (googleAvatar && !profile.avatar_url) {
+            const admin = createAdminClient()
+            await admin
+              .from('profiles')
+              .update({ avatar_url: googleAvatar })
+              .eq('user_id', user.id)
+          }
+        }
         if (role === 'student') return NextResponse.redirect(new URL('/student', request.url))
         if (role === 'teacher') return NextResponse.redirect(new URL('/teacher', request.url))
         if (role === 'director') return NextResponse.redirect(new URL('/director', request.url))

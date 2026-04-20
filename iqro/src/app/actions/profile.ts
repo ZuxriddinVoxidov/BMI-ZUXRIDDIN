@@ -108,6 +108,7 @@ export async function updateStudentProfile(data: {
   full_name: string
   phone: string
   grade: string
+  avatar_url?: string | null
 }): Promise<{ success: boolean; error?: string }> {
   const supabase = createClient()
   const admin = createAdminClient()
@@ -129,6 +130,7 @@ export async function updateStudentProfile(data: {
       full_name: data.full_name.trim(),
       phone: data.phone.trim() || null,
       grade: data.grade.trim() || null,
+      avatar_url: data.avatar_url === undefined ? undefined : data.avatar_url,
     })
     .eq('id', profile.id)
 
