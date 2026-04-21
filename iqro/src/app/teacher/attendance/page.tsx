@@ -221,7 +221,8 @@ export default function AttendancePage() {
   }
 
   const isPastDate = selectedDate < todayStr
-  const canEdit = !isPastDate && !attendanceExists
+  const isFutureDate = selectedDate > todayStr
+  const canEdit = !isPastDate && !isFutureDate && !attendanceExists
 
   return (
     <div className="space-y-6 max-w-full overflow-x-hidden pb-4">
@@ -250,7 +251,7 @@ export default function AttendancePage() {
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Sana</label>
-            <input type="date" value={selectedDate} min={todayStr} onChange={e => {
+            <input type="date" value={selectedDate} max={todayStr} onChange={e => {
               setSelectedDate(e.target.value)
               setStudents([]) // Clear students if date changes to avoid invalid saves
             }}
@@ -265,6 +266,12 @@ export default function AttendancePage() {
               <p className="text-xs text-amber-600 dark:text-amber-500 font-medium mt-1.5 flex items-start gap-1">
                 <Clock size={14} className="mt-0.5 shrink-0" />
                 O&apos;tgan kunlar uchun davomat saqlash taqiqlangan!
+              </p>
+            )}
+            {isFutureDate && (
+              <p className="text-xs text-red-500 dark:text-red-400 font-medium mt-1.5 flex items-start gap-1">
+                <X size={14} className="mt-0.5 shrink-0" />
+                Kelajakdagi kunlar uchun davomat olinmaydi!
               </p>
             )}
           </div>
