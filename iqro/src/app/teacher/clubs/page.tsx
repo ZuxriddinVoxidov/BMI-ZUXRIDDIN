@@ -19,7 +19,7 @@ export default async function TeacherClubsPage() {
       enrollments:enrollments(
         id, status, created_at,
         student:profiles!student_id(
-          id, full_name,
+          id, full_name, avatar_url,
           student_points(total_points)
         )
       ),
@@ -33,8 +33,8 @@ export default async function TeacherClubsPage() {
     .from('club_messages')
     .select(`
       *,
-      sender:profiles!sender_id(id, full_name, role),
-      receiver:profiles!receiver_id(id, full_name, role)
+      sender:profiles!sender_id(id, full_name, role, avatar_url),
+      receiver:profiles!receiver_id(id, full_name, role, avatar_url)
     `)
     .or(`receiver_id.eq.${profile.id},sender_id.eq.${profile.id}`)
     .order('created_at', { ascending: true })

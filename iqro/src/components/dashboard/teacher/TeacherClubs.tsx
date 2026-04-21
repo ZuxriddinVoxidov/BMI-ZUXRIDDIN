@@ -452,9 +452,17 @@ export default function TeacherClubs({ clubs }: { clubs: Record<string, unknown>
                                 <tr key={e.id as string} className="border-t border-gray-50 dark:border-gray-800">
                                   <td className="py-3">
                                       <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
-                                          {(student?.full_name as string || '?').charAt(0).toUpperCase()}
-                                        </div>
+                                        {student?.avatar_url as string ? (
+                                          <img
+                                            src={student?.avatar_url as string}
+                                            alt={student?.full_name as string}
+                                            className="w-8 h-8 rounded-full object-cover shrink-0 border border-indigo-200 dark:border-indigo-800"
+                                          />
+                                        ) : (
+                                          <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                                            {(student?.full_name as string || '?').charAt(0).toUpperCase()}
+                                          </div>
+                                        )}
                                         <span className="text-sm font-medium text-gray-900 dark:text-white">{student?.full_name as string}</span>
                                       </div>
                                   </td>

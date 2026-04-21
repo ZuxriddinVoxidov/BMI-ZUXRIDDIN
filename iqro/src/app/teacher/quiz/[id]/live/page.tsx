@@ -37,7 +37,7 @@ export default async function TeacherLiveQuizPage({ params }: { params: { id: st
     .from('quiz_participants')
     .select(`
       *,
-      profiles!student_id(full_name)
+      profiles!student_id(full_name, avatar_url)
     `)
     .eq('quiz_id', params.id)
 

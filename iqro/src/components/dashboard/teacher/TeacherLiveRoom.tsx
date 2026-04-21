@@ -15,6 +15,7 @@ interface Participant {
   finished_at: string | null
   profiles: {
     full_name: string
+    avatar_url?: string | null
   }
 }
 
@@ -54,7 +55,7 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
         if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
           const { data } = await supabase
             .from('quiz_participants')
-            .select('*, profiles!student_id(full_name)')
+            .select('*, profiles!student_id(full_name, avatar_url)')
             .eq('id', payload.new.id)
             .single()
             
@@ -184,9 +185,15 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
               <AnimatePresence>
                 {participants.map(p => (
                   <motion.div key={p.id} initial={{scale:0.8, opacity:0}} animate={{scale:1, opacity:1}} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-sm">
-                    <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg mb-3">
-                      {p.profiles?.full_name?.charAt(0)}
-                    </div>
+                    {p.profiles?.avatar_url ? (
+                      <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-indigo-200 dark:border-indigo-800 mb-3 shadow-md shrink-0">
+                        <img src={p.profiles.avatar_url} alt={p.profiles.full_name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-lg mb-3 shrink-0">
+                        {p.profiles?.full_name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                      </div>
+                    )}
                     <span className="font-bold text-gray-800 dark:text-gray-200 text-sm line-clamp-1">{p.profiles?.full_name}</span>
                   </motion.div>
                 ))}
@@ -244,10 +251,14 @@ export default function TeacherLiveRoom({ quiz, initialParticipants }: TeacherLi
                     <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                           <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">
-                            {p.profiles?.full_name?.charAt(0)}
-                          </div>
-                          <span className="font-bold text-gray-800">{p.profiles?.full_name}</span>
+                           {p.profiles?.avatar_url ? (
+                            <img src={p.profiles.avatar_url} alt={p.profiles.full_name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                              {p.profiles?.full_name?.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                            </div>
+                           )}
+                          <span className="font-bold text-gray-800 dark:text-gray-200">{p.profiles?.full_name}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">

@@ -34,6 +34,7 @@ interface Participant {
   student_id: string
   score: number
   full_name: string
+  avatar_url?: string | null
 }
 
 interface QuizPlayProps {
@@ -147,6 +148,16 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
     return () => clearInterval(poll)
   }, [status, quiz.id, supabase, fetchResultsData])
 
+  // Poll for waiting room participants
+  useEffect(() => {
+    if (status !== 'waiting') return
+    fetchResultsData()
+    const poll = setInterval(() => {
+      fetchResultsData()
+    }, 3000)
+    return () => clearInterval(poll)
+  }, [status, fetchResultsData])
+
   // Timer for active quiz
   useEffect(() => {
     let timer: NodeJS.Timeout
@@ -217,6 +228,33 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Barcha o&apos;quvchilar qo&apos;shilgach, test boshlanadi.</p>
             </div>
+            
+            {/* Waiting Participants */}
+            {leaderboard.length > 0 && (
+              <div className="mt-8 text-left max-h-48 overflow-y-auto no-scrollbar border-t border-gray-100 dark:border-gray-800 pt-6">
+                <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Qo&apos;shilgan ishtirokchilar ({leaderboard.length})</p>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {leaderboard.map(p => {
+                    const isMe = p.student_id === participation?.student_id
+                    const initials = p.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+                    return (
+                      <div key={p.student_id} className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${isMe ? 'border-indigo-200 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-900/50' : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800'}`}>
+                        {p.avatar_url ? (
+                          <img src={p.avatar_url} alt={p.full_name} className="w-5 h-5 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[9px] shrink-0 ${isMe ? 'bg-indigo-200 text-indigo-700 dark:bg-indigo-700 dark:text-indigo-200' : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
+                            {initials}
+                          </div>
+                        )}
+                        <span className={`text-xs font-semibold ${isMe ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                          {p.full_name} {isMe && '(Siz)'}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -445,7 +483,16 @@ export default function StudentQuizPlay({ quiz, participation }: QuizPlayProps) 
                                 {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`}
                               </td>
                               <td className={`px-4 py-3 font-bold ${isMe ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-800 dark:text-gray-200'}`}>
-                                {p.full_name} {isMe && <span className="ml-1 text-[10px] bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 px-2 py-0.5 rounded-full">Siz</span>}
+                                <div className="flex items-center gap-3">
+                                  {p.avatar_url ? (
+                                    <img src={p.avatar_url} alt={p.full_name} className="w-6 h-6 rounded-full object-cover shrink-0" />
+                                  ) : (
+                                    <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 flex items-center justify-center text-[10px] shrink-0 font-bold">
+                                      {p.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                                    </div>
+                                  )}
+                                  <span>{p.full_name} {isMe && <span className="ml-1 text-[10px] bg-indigo-200 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 px-2 py-0.5 rounded-full">Siz</span>}</span>
+                                </div>
                               </td>
                               <td className="px-4 py-3 text-right font-bold text-gray-600 dark:text-gray-300">
                                 {p.score}/{totalQ}

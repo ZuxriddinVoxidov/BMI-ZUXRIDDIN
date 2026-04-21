@@ -13,7 +13,7 @@ export default async function DirectorStudentsPage() {
 
   const { data: students } = await supabase
     .from('profiles')
-    .select('id, full_name, grade, is_blocked')
+    .select('id, full_name, grade, is_blocked, avatar_url')
     .eq('school_id', profile.school_id)
     .eq('role', 'student')
     .order('grade')
@@ -78,9 +78,17 @@ export default async function DirectorStudentsPage() {
               <tr key={s.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                 <td className="py-3 px-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
-                      {(s.full_name || '?')[0].toUpperCase()}
-                    </div>
+                    {s.avatar_url ? (
+                      <img
+                        src={s.avatar_url}
+                        alt={s.full_name}
+                        className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-200 dark:border-gray-700"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 flex items-center justify-center font-bold text-xs shrink-0">
+                        {(s.full_name || '?')[0].toUpperCase()}
+                      </div>
+                    )}
                     <span className="text-sm font-medium text-gray-900 dark:text-white">{s.full_name}</span>
                   </div>
                 </td>

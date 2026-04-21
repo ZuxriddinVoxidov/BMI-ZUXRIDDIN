@@ -320,14 +320,30 @@ export default function DashboardContent({
                     : i === 2 ? 'bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900'
                     : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                   }`}>
-                  <span className="text-xl w-8 text-center">
+                  <span className="text-xl w-8 text-center flex-shrink-0">
                     {i < 3 ? medals[i] : (
                       <span className="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 text-xs font-bold inline-flex items-center justify-center">
                         {i + 1}
                       </span>
                     )}
                   </span>
-                  <div className="flex-1 min-w-0">
+                  
+                  {/* Avatar */}
+                  <div className="w-9 h-9 rounded-full overflow-hidden flex-shrink-0 border border-gray-200 dark:border-gray-700">
+                    {(s as Record<string, unknown>).avatar_url ? (
+                      <img
+                        src={(s as Record<string, unknown>).avatar_url as string}
+                        alt={(s as Record<string, unknown>).full_name as string}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 flex items-center justify-center font-bold text-xs">
+                        {((s as Record<string, unknown>).full_name as string || '?')[0].toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0 ml-1">
                     <p className="font-semibold text-gray-900 dark:text-white text-sm truncate">
                       {(s as Record<string, unknown>).full_name as string || "Noma'lum"}
                     </p>

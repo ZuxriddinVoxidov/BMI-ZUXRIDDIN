@@ -7,8 +7,8 @@ import { Check, CheckCircle, Clock, Star, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 interface Club { id: string; name: string; schedule: string }
-interface Student { id: string; full_name: string; grade: string | null }
-interface AttendanceRecord { student_id: string; status: string; full_name?: string; grade: string | null }
+interface Student { id: string; full_name: string; grade: string | null; avatar_url?: string | null }
+interface AttendanceRecord { student_id: string; status: string; full_name?: string; grade: string | null; avatar_url?: string | null }
 interface Reward { student_id: string }
 
 export default function AttendancePage() {
@@ -99,7 +99,7 @@ export default function AttendancePage() {
         .select(`
           student_id,
           status,
-          profiles:student_id (full_name, grade)
+          profiles:student_id (full_name, grade, avatar_url)
         `)
         .eq('club_id', selectedClub)
         .eq('date', selectedDate)
@@ -109,7 +109,8 @@ export default function AttendancePage() {
           student_id: row.student_id,
           status: row.status,
           full_name: row.profiles?.full_name || "Noma'lum",
-          grade: row.profiles?.grade || null
+          grade: row.profiles?.grade || null,
+          avatar_url: row.profiles?.avatar_url || null
         }))
         .filter((r: { grade: string | null }) => (r.grade || 'Boshqa') === selectedGrade)
 
@@ -125,7 +126,7 @@ export default function AttendancePage() {
     const supabase = createClient()
     const { data: enrollments } = await supabase
       .from('enrollments')
-      .select('student:profiles!student_id(id, full_name, grade)')
+      .select('student:profiles!student_id(id, full_name, grade, avatar_url)')
       .eq('club_id', selectedClub)
       .eq('status', 'approved')
 
@@ -325,7 +326,15 @@ export default function AttendancePage() {
                       return (
                         <div key={`hist-${record.student_id}`} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950/50 border border-gray-100 dark:border-gray-800/50 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0 shadow-sm">{initials}</div>
+                            {record.avatar_url ? (
+                              <img
+                                src={record.avatar_url}
+                                alt={record.full_name}
+                                className="w-8 h-8 rounded-full object-cover shrink-0 border border-indigo-200 dark:border-indigo-800"
+                              />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-[10px] shrink-0 shadow-sm">{initials}</div>
+                            )}
                             <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{record.full_name}</span>
                           </div>
                           <div>{badge}</div>
@@ -376,7 +385,15 @@ export default function AttendancePage() {
                     <motion.div key={student.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}
                       className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 gap-3 border border-transparent dark:border-gray-800">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs flex-shrink-0">{initials}</div>
+                        {student.avatar_url ? (
+                          <img
+                            src={student.avatar_url}
+                            alt={student.full_name}
+                            className="w-9 h-9 rounded-full object-cover shrink-0 border border-blue-200 dark:border-blue-800"
+                          />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs flex-shrink-0">{initials}</div>
+                        )}
                         <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{student.full_name}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -436,7 +453,15 @@ export default function AttendancePage() {
               return (
                 <div key={student.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-950 border border-transparent dark:border-gray-800 gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs shrink-0">{initials}</div>
+                    {student.avatar_url ? (
+                      <img
+                        src={student.avatar_url}
+                        alt={student.full_name}
+                        className="w-9 h-9 rounded-full object-cover shrink-0 border border-amber-200 dark:border-amber-800"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-xs shrink-0">{initials}</div>
+                    )}
                     <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{student.full_name}</span>
                   </div>
                   {alreadyRewarded ? (

@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 interface Student {
   id: string
   full_name: string
+  avatar_url?: string | null
   email?: string
   user_id?: string
   plain_password?: string
@@ -208,8 +209,18 @@ export default function StudentsManager({ students }: { students: Student[] }) {
                 return (
                   <tr key={student.id} className="border-b border-gray-50 dark:border-gray-800 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/50">
                     <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-[10px]">{initials}</div>
+                      <div className="flex items-center gap-3">
+                        {student.avatar_url ? (
+                          <img
+                            src={student.avatar_url}
+                            alt={student.full_name}
+                            className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-200 dark:border-gray-700"
+                          />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-[10px] shrink-0">
+                            {initials}
+                          </div>
+                        )}
                         <p className="text-sm font-semibold text-gray-900 dark:text-white">{student.full_name}</p>
                       </div>
                     </td>
@@ -284,9 +295,17 @@ export default function StudentsManager({ students }: { students: Student[] }) {
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
-                    {(editStudent.full_name || '?')[0].toUpperCase()}
-                  </div>
+                  {editStudent.avatar_url ? (
+                    <img
+                      src={editStudent.avatar_url}
+                      alt={editStudent.full_name}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+                      {(editStudent.full_name || '?')[0].toUpperCase()}
+                    </div>
+                  )}
                   <div>
                     <h2 className="text-lg font-bold text-gray-900 dark:text-white">✏️ {editStudent.full_name}</h2>
                     <p className="text-xs text-gray-500 dark:text-gray-400">O&apos;quvchi ma&apos;lumotlarini tahrirlash</p>

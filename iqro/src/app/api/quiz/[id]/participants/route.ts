@@ -14,7 +14,7 @@ export async function GET(
       score,
       finished_at,
       joined_at,
-      profiles!student_id(full_name)
+      profiles!student_id(full_name, avatar_url)
     `)
     .eq('quiz_id', params.id)
     .order('score', { ascending: false })
@@ -30,6 +30,7 @@ export async function GET(
   const mapped = (participants || []).map(p => ({
     student_id: p.student_id,
     full_name: (p.profiles as any)?.full_name || (p.profiles as any)?.[0]?.full_name || 'Noma\'lum',
+    avatar_url: (p.profiles as any)?.avatar_url || (p.profiles as any)?.[0]?.avatar_url || null,
     score: p.score || 0,
     finished_at: p.finished_at,
     total_questions: totalQuestions

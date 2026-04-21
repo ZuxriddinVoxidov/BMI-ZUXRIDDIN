@@ -68,6 +68,7 @@ export default async function DashboardPage() {
       id,
       full_name,
       grade,
+      avatar_url,
       student_points!inner(total_points)
     `)
     .eq('role', 'student')
@@ -81,6 +82,7 @@ export default async function DashboardPage() {
     student_id: s.id,
     full_name: s.full_name,
     grade: s.grade,
+    avatar_url: s.avatar_url,
     total_points: (s.student_points as any)?.total_points ?? 0,
   }))
 

@@ -9,6 +9,7 @@ interface Participant {
   student_id: string
   score: number
   full_name: string
+  avatar_url?: string | null
   total_questions: number
   finished_at?: string
 }
@@ -88,7 +89,18 @@ export default function QuizResults({ participants }: QuizResultsProps) {
                   <td className="px-6 py-4 text-center text-lg">
                     {i === 0 ? '🥇 1' : i === 1 ? '🥈 2' : i === 2 ? '🥉 3' : <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{i + 1}</span>}
                   </td>
-                  <td className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200">{p.full_name}</td>
+                  <td className="px-6 py-4 font-bold text-gray-800 dark:text-gray-200">
+                    <div className="flex items-center gap-3">
+                      {p.avatar_url ? (
+                        <img src={p.avatar_url} alt={p.full_name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs shrink-0">
+                          {p.full_name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)}
+                        </div>
+                      )}
+                      <span>{p.full_name}</span>
+                    </div>
+                  </td>
                   <td className="px-6 py-4 font-bold text-gray-600 dark:text-gray-300 text-center">
                     <span className="text-indigo-600 dark:text-indigo-400">{p.score}</span>
                     <span className="text-gray-400 dark:text-gray-500 text-xs ml-1">/{p.total_questions}</span>
