@@ -42,7 +42,13 @@ export async function POST(request: Request) {
     })
 
     if (authError || !authData.user) {
-      return NextResponse.json({ error: 'Email yoki parol noto\'g\'ri' }, { status: 401 })
+      if (authError?.message?.includes('Email not confirmed')) {
+        return NextResponse.json({ 
+          error: "Emailingiz hali tasdiqlanmagan. Email qutingizni tekshiring va tasdiqlash kodini kiriting.",
+          code: 'email_not_confirmed'
+        }, { status: 401 })
+      }
+      return NextResponse.json({ error: "Email yoki parol noto'g'ri" }, { status: 401 })
     }
 
     const { data: profile } = await supabase
