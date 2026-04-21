@@ -21,8 +21,9 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Logo } from '@/components/shared/Logo'
+import { useAvatarStore } from '@/store/avatarStore'
 
 const navItems = [
   { label: 'Bosh sahifa', href: '/student', icon: Home },
@@ -48,6 +49,20 @@ export default function StudentSidebar({
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  
+  // Real-time avatar sync via Zustand
+  const storeAvatarUrl = useAvatarStore((s) => s.avatarUrl)
+  const setStoreAvatar = useAvatarStore((s) => s.setAvatarUrl)
+  
+  // Initialize store with server-side value on mount
+  useEffect(() => {
+    if (avatarUrl && !storeAvatarUrl) {
+      setStoreAvatar(avatarUrl)
+    }
+  }, [avatarUrl, storeAvatarUrl, setStoreAvatar])
+  
+  // Use store value if available, otherwise fall back to prop
+  const displayAvatarUrl = storeAvatarUrl ?? avatarUrl
 
   const level = getStudentLevel(points)
   const progress = getProgressToNextLevel(points)
@@ -99,9 +114,9 @@ export default function StudentSidebar({
       {/* User Profile */}
       <div className={cn('px-4 py-4 border-b border-gray-100 dark:border-gray-800', collapsed && 'px-2')}>
         <div className="flex items-center gap-3">
-          {avatarUrl ? (
+          {displayAvatarUrl ? (
             <img
-              src={avatarUrl}
+              src={displayAvatarUrl}
               alt={fullName}
               className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700 flex-shrink-0"
             />

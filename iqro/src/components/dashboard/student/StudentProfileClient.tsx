@@ -2,6 +2,7 @@
 
 import { updateStudentProfile } from '@/app/actions/profile'
 import { createClient } from '@/lib/supabase/client'
+import { useAvatarStore } from '@/store/avatarStore'
 import { Camera, X } from 'lucide-react'
 import { useState, useTransition, useRef } from 'react'
 import { useRouter } from 'next/navigation'
@@ -34,6 +35,9 @@ export default function StudentProfileClient({ profile, email, school, regDate }
   const [editingAvatarUrl, setEditingAvatarUrl] = useState<string | null>(profile.avatar_url)
   const [avatarUploading, setAvatarUploading] = useState(false)
   const avatarInputRef = useRef<HTMLInputElement>(null)
+  
+  // Zustand store for real-time sync across sidebar & header
+  const setStoreAvatar = useAvatarStore((s) => s.setAvatarUrl)
   
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -100,6 +104,7 @@ export default function StudentProfileClient({ profile, email, school, regDate }
       if (updateError) throw updateError
 
       setEditingAvatarUrl(publicUrl)
+      setStoreAvatar(publicUrl)  // ← instantly update sidebar & header
       showToast("Profil rasmi saqlandi ✅", 'success')
       router.refresh()
     } catch (err: any) {
@@ -120,7 +125,8 @@ export default function StudentProfileClient({ profile, email, school, regDate }
       if (error) throw error
 
       setEditingAvatarUrl(null)
-      showToast("Profil rasmi olib tashlandi ✅", 'success')
+      setStoreAvatar(null)  // ← clear from sidebar & header too
+      showToast("Profil rasmi o'chirildi", 'success')
       router.refresh()
     } catch (err: any) {
       showToast(err.message || "Xatolik yuz berdi", 'error')

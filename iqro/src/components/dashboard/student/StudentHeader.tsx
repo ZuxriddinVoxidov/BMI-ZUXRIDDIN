@@ -3,6 +3,8 @@
 import NotificationBell from '@/components/shared/NotificationBell'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { Logo } from '@/components/shared/Logo'
+import { useAvatarStore } from '@/store/avatarStore'
+import { useEffect } from 'react'
 
 export default function StudentHeader({
   fullName,
@@ -19,6 +21,18 @@ export default function StudentHeader({
   const initials = fullName
     ? fullName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2)
     : 'OQ'
+
+  // Real-time avatar sync via Zustand
+  const storeAvatarUrl = useAvatarStore((s) => s.avatarUrl)
+  const setStoreAvatar = useAvatarStore((s) => s.setAvatarUrl)
+
+  useEffect(() => {
+    if (avatarUrl && !storeAvatarUrl) {
+      setStoreAvatar(avatarUrl)
+    }
+  }, [avatarUrl, storeAvatarUrl, setStoreAvatar])
+
+  const displayAvatarUrl = storeAvatarUrl ?? avatarUrl
 
   return (
     <header className="h-14 sm:h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40">
@@ -39,9 +53,9 @@ export default function StudentHeader({
         <ThemeToggle />
         <NotificationBell userId={profileId} />
         <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-gray-200 dark:border-gray-700">
-          {avatarUrl ? (
+          {displayAvatarUrl ? (
             <img
-              src={avatarUrl}
+              src={displayAvatarUrl}
               alt={fullName}
               className="w-9 h-9 rounded-full object-cover border border-gray-200 dark:border-gray-700"
             />
