@@ -41,8 +41,19 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
     const emoji = club.emoji || getDefaultEmoji(club.category)
     const catColor = getCategoryColor(club.category)
 
+    const CATEGORY_STYLES: Record<string, { bg: string; hoverBg: string; border: string; hoverBorder: string; shadow: string }> = {
+      "Til":         { bg: "bg-blue-50 dark:bg-blue-950/25",     hoverBg: "hover:bg-blue-100 dark:hover:bg-blue-900/40",     border: "border-blue-300 dark:border-blue-700/70",     hoverBorder: "hover:border-blue-500 dark:hover:border-blue-400",     shadow: "hover:shadow-blue-300/40 dark:hover:shadow-blue-900/30" },
+      "Fan":         { bg: "bg-indigo-50 dark:bg-indigo-950/25", hoverBg: "hover:bg-indigo-100 dark:hover:bg-indigo-900/40", border: "border-indigo-300 dark:border-indigo-700/70", hoverBorder: "hover:border-indigo-500 dark:hover:border-indigo-400", shadow: "hover:shadow-indigo-300/40 dark:hover:shadow-indigo-900/30" },
+      "Sport":       { bg: "bg-orange-50 dark:bg-orange-950/25", hoverBg: "hover:bg-orange-100 dark:hover:bg-orange-900/40", border: "border-orange-300 dark:border-orange-700/70", hoverBorder: "hover:border-orange-500 dark:hover:border-orange-400", shadow: "hover:shadow-orange-300/40 dark:hover:shadow-orange-900/30" },
+      "Texnologiya": { bg: "bg-emerald-50 dark:bg-emerald-950/25", hoverBg: "hover:bg-emerald-100 dark:hover:bg-emerald-900/40", border: "border-emerald-300 dark:border-emerald-700/70", hoverBorder: "hover:border-emerald-500 dark:hover:border-emerald-400", shadow: "hover:shadow-emerald-300/40 dark:hover:shadow-emerald-900/30" },
+      "San'at":      { bg: "bg-pink-50 dark:bg-pink-950/25",    hoverBg: "hover:bg-pink-100 dark:hover:bg-pink-900/40",    border: "border-pink-300 dark:border-pink-700/70",    hoverBorder: "hover:border-pink-500 dark:hover:border-pink-400",    shadow: "hover:shadow-pink-300/40 dark:hover:shadow-pink-900/30" },
+      "Boshqa":      { bg: "bg-amber-50 dark:bg-amber-950/25",  hoverBg: "hover:bg-amber-100 dark:hover:bg-amber-900/40",  border: "border-amber-300 dark:border-amber-700/70",  hoverBorder: "hover:border-amber-500 dark:hover:border-amber-400",  shadow: "hover:shadow-amber-300/40 dark:hover:shadow-amber-900/30" },
+    }
+
+    const style = CATEGORY_STYLES[club.category] || { bg: "bg-gray-50 dark:bg-gray-800/40", hoverBg: "hover:bg-gray-100 dark:hover:bg-gray-700/50", border: "border-gray-300 dark:border-gray-600/70", hoverBorder: "hover:border-indigo-400 dark:hover:border-indigo-400", shadow: "hover:shadow-indigo-200/30" }
+
     const cardContent = (
-      <div className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-shadow duration-300 h-full flex flex-col">
+      <div className={`${style.bg} ${style.hoverBg} rounded-2xl overflow-hidden shadow-md border-2 ${style.border} ${style.hoverBorder} ${style.shadow} hover:shadow-2xl hover:-translate-y-3 hover:scale-[1.025] transition-all duration-300 h-full flex flex-col group`}>
         {/* Card Header */}
         <div className="relative w-full aspect-video shrink-0 bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
           {club.cover_image_url ? (
@@ -70,7 +81,7 @@ export default function ClubsSection({ clubs }: { clubs?: any[] }) {
 
         {/* Card Body */}
         <div className="p-5 flex flex-col flex-grow">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1 border-b border-transparent">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
             {club.name}
           </h3>
           {/* Price & Grade badges */}

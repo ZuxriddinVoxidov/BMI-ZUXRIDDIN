@@ -1,8 +1,12 @@
 'use client'
 
 import { sendContactMessage } from '@/app/actions/contact'
+import Navbar from '@/components/landing/Navbar'
+import Footer from '@/components/landing/Footer'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { MapPin, Phone, Mail, Clock } from 'lucide-react'
 
 const SUBJECTS = [
   'Umumiy savol',
@@ -42,82 +46,81 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Navbar */}
-      <nav className="absolute top-0 left-0 right-0 z-20 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-white font-bold text-lg">← Bosh sahifa</Link>
-        </div>
-      </nav>
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      <Navbar />
 
-      {/* Hero */}
-      <div className="relative bg-gradient-to-br from-indigo-600 via-blue-500 to-cyan-400 pt-24 pb-32 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-sm font-medium px-4 py-1.5 rounded-full mb-4">
-            📬 Bog&apos;lanish
-          </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3">
-            Biz bilan bog&apos;laning
-          </h1>
-          <p className="text-white/80 max-w-md mx-auto">
-            Savollaringiz bormi? Biz yordam berishga doimo tayyormiz!
-          </p>
+      {/* Full-page background with form overlaid */}
+      <div className="relative min-h-screen bg-indigo-950 overflow-hidden">
+        {/* Background school photo */}
+        <div className="absolute inset-0">
+          <Image
+            src="/school-bg-new.jpg"
+            alt="Maktab"
+            fill
+            className="object-cover object-center"
+            priority
+            quality={80}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950/80 via-indigo-900/75 to-blue-950/80" />
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
         </div>
-      </div>
+        {/* Glows */}
+        <div className="absolute top-1/3 -left-32 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-1/4 -right-24 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Main */}
-      <div className="max-w-6xl mx-auto px-4 -mt-16 relative z-10 pb-16">
+        {/* Content on top of background */}
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 pt-28 pb-20">
+          {/* Title */}
+          <div className="text-center mb-12">
+            <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-sm font-medium px-4 py-1.5 rounded-full mb-4">
+              📬 Bog&apos;lanish
+            </span>
+            <h1 className="text-4xl sm:text-5xl font-black text-white mb-3 tracking-tight">
+              Biz bilan bog&apos;laning
+            </h1>
+            <p className="text-white/80 max-w-md mx-auto">
+              Savollaringiz bormi? Biz yordam berishga doimo tayyormiz!
+            </p>
+          </div>
+
+          {/* Form grid */}
         <div className="grid lg:grid-cols-5 gap-8">
           {/* LEFT — Info Cards */}
           <div className="lg:col-span-2 space-y-4">
             {[
-              { icon: '📍', bg: 'bg-indigo-100 text-indigo-600', title: 'Maktab manzili', lines: ["Buvayda tumani, Hakimto'ra MFY", "Taraqiyot ko'chasi 3A-uy"] },
-              { icon: '📞', bg: 'bg-emerald-100 text-emerald-600', title: 'Telefon raqam', lines: ['+998 93 201 75 74'], link: 'tel:+998932017574' },
-              { icon: '✉️', bg: 'bg-blue-100 text-blue-600', title: 'Email manzil', lines: ['info@iqro46.uz'], link: 'mailto:info@iqro46.uz' },
-              { icon: '🕐', bg: 'bg-amber-100 text-amber-600', title: 'Ish vaqti', lines: ['Dushanba — Juma: 8:00 — 17:00', 'Shanba: 9:00 — 13:00'] },
+              { Icon: MapPin,  iconBg: 'bg-indigo-500/30', iconColor: 'text-indigo-200',  title: 'Maktab manzili',  lines: ["Buvayda tumani, Hakimto'ra MFY", "Taraqiyot ko'chasi 3A-uy"] },
+              { Icon: Phone,   iconBg: 'bg-emerald-500/30', iconColor: 'text-emerald-200', title: 'Telefon raqam',   lines: ['+998 93 201 75 74'], link: 'tel:+998932017574' },
+              { Icon: Mail,    iconBg: 'bg-blue-500/30',    iconColor: 'text-blue-200',    title: 'Email manzil',   lines: ['info@iqro46.uz'], link: 'mailto:info@iqro46.uz' },
+              { Icon: Clock,   iconBg: 'bg-amber-500/30',   iconColor: 'text-amber-200',   title: 'Ish vaqti',      lines: ['Dush — Juma: 8:00 — 17:00', 'Shanba: 9:00 — 13:00'] },
             ].map((card, i) => (
-              <div key={i} className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className={`w-10 h-10 rounded-xl ${card.bg} flex items-center justify-center text-lg`}>
-                    {card.icon}
+                  <div className={`w-11 h-11 rounded-xl ${card.iconBg} ${card.iconColor} flex items-center justify-center flex-shrink-0`}>
+                    <card.Icon size={20} strokeWidth={1.8} />
                   </div>
-                  <h3 className="font-bold text-gray-900 text-sm">{card.title}</h3>
+                  <h3 className="font-semibold text-white text-sm">{card.title}</h3>
                 </div>
                 {card.lines.map((line, j) => (
                   card.link ? (
-                    <a key={j} href={card.link} className="block text-sm text-indigo-600 hover:text-indigo-700">{line}</a>
+                    <a key={j} href={card.link} className="block text-sm text-indigo-200 hover:text-white transition-colors">{line}</a>
                   ) : (
-                    <p key={j} className="text-sm text-gray-600">{line}</p>
+                    <p key={j} className="text-sm text-white/75">{line}</p>
                   )
                 ))}
               </div>
             ))}
-
-            {/* Social Links */}
-            <div className="flex gap-3">
-              {[
-                { label: 'Telegram', bg: 'bg-blue-500 hover:bg-blue-600', icon: '✈️', href: 'https://t.me/iqro46' },
-                { label: 'Instagram', bg: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600', icon: '📷', href: '#' },
-                { label: 'YouTube', bg: 'bg-red-500 hover:bg-red-600', icon: '▶️', href: '#' },
-              ].map(s => (
-                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
-                  className={`flex-1 py-3 ${s.bg} text-white text-sm font-medium rounded-xl text-center transition-all`}>
-                  {s.icon} {s.label}
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* RIGHT — Form */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/30">
               {sent ? (
                 <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-3xl">✅</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Xabaringiz yuborildi!</h2>
-                  <p className="text-gray-500 mb-6">Tez orada siz bilan bog&apos;lanamiz.</p>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Xabaringiz yuborildi!</h2>
+                  <p className="text-gray-500 dark:text-gray-400 mb-6">Tez orada siz bilan bog&apos;lanamiz.</p>
                   <Link href="/" className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors">
                     Bosh sahifaga qaytish
                   </Link>
@@ -128,7 +131,7 @@ export default function ContactPage() {
                   <p className="text-sm text-gray-500 mb-6">Formani to&apos;ldiring, 24 soat ichida javob beramiz</p>
 
                   {errors.submit && (
-                    <div className="bg-red-50 text-red-600 text-sm p-3 rounded-xl mb-4">{errors.submit}</div>
+                    <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm p-3 rounded-xl mb-4">{errors.submit}</div>
                   )}
 
                   <form onSubmit={handleSubmit} className="space-y-4">
@@ -136,13 +139,13 @@ export default function ContactPage() {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">To&apos;liq ism *</label>
                         <input value={form.full_name} onChange={e => setForm(p => ({ ...p, full_name: e.target.value }))}
-                          placeholder="Ism Familiya" className={`w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400 ${errors.full_name ? 'border-red-300' : 'border-gray-200'}`} />
+                          placeholder="Ism Familiya" className={`w-full bg-white border rounded-xl px-4 py-2.5 text-sm outline-none text-gray-900 placeholder:text-gray-400 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-100 ${errors.full_name ? 'border-red-300' : 'border-gray-200'}`} />
                         {errors.full_name && <p className="text-xs text-red-500 mt-1">{errors.full_name}</p>}
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                         <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                          placeholder="email@example.com" className={`w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400 ${errors.email ? 'border-red-300' : 'border-gray-200'}`} />
+                          placeholder="email@example.com" className={`w-full bg-white border rounded-xl px-4 py-2.5 text-sm outline-none text-gray-900 placeholder:text-gray-400 focus:border-indigo-400 focus:ring-1 focus:ring-indigo-100 ${errors.email ? 'border-red-300' : 'border-gray-200'}`} />
                         {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                       </div>
                     </div>
@@ -151,12 +154,12 @@ export default function ContactPage() {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
                         <input value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-                          placeholder="+998 90 123 45 67" className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400" />
+                          placeholder="+998 90 123 45 67" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none text-gray-900 placeholder:text-gray-400 focus:border-indigo-400" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Mavzu *</label>
                         <select value={form.subject} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))}
-                          className={`w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400 bg-white ${errors.subject ? 'border-red-300' : 'border-gray-200'}`}>
+                          className={`w-full bg-white border rounded-xl px-4 py-2.5 text-sm outline-none text-gray-900 focus:border-indigo-400 ${errors.subject ? 'border-red-300' : 'border-gray-200'}`}>
                           <option value="">Tanlang...</option>
                           {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
@@ -168,7 +171,7 @@ export default function ContactPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Xabar *</label>
                       <textarea value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
                         placeholder="Xabaringizni bu yerga yozing..." rows={5}
-                        className={`w-full border rounded-xl px-4 py-2.5 text-sm outline-none focus:border-indigo-400 resize-none ${errors.message ? 'border-red-300' : 'border-gray-200'}`} />
+                        className={`w-full bg-white border rounded-xl px-4 py-2.5 text-sm outline-none text-gray-900 placeholder:text-gray-400 focus:border-indigo-400 resize-none ${errors.message ? 'border-red-300' : 'border-gray-200'}`} />
                       {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
                     </div>
 
@@ -186,7 +189,10 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+        </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

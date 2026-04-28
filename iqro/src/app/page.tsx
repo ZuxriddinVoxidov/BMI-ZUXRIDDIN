@@ -3,8 +3,8 @@ import ClubsSection from '@/components/landing/ClubsSection'
 import FeaturesSection from '@/components/landing/FeaturesSection'
 import Footer from '@/components/landing/Footer'
 import HeroSection from '@/components/landing/HeroSection'
+import LeaderboardSection from '@/components/landing/LeaderboardSection'
 import Navbar from '@/components/landing/Navbar'
-import StatsSection from '@/components/landing/StatsSection'
 import TestimonialsSection from '@/components/landing/TestimonialsSection'
 import { createClient } from '@/lib/supabase/server'
 
@@ -48,6 +48,26 @@ export default async function Home() {
     }]
   })) || []
 
+  // Fetch top 10 students for leaderboard (initial SSR data)
+  const { data: topStudentsRaw } = await supabase
+    .from('profiles')
+    .select('id, full_name, grade, avatar_url, student_points!inner(total_points)')
+    .eq('role', 'student')
+    .order('student_points(total_points)', { ascending: false })
+    .limit(10)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const leaderboardData = (topStudentsRaw || []).map((s: any, i: number) => ({
+    rank: i + 1,
+    student_id: s.id,
+    full_name: s.full_name || "Noma'lum",
+    grade: s.grade,
+    avatar_url: s.avatar_url,
+    total_points: s.student_points?.total_points ?? 0,
+    weekly_points: s.student_points?.weekly_points ?? 0,
+    monthly_points: s.student_points?.monthly_points ?? 0,
+  }))
+
   // Fetch reviews
   const { data: reviews } = await supabase
     .from('reviews')
@@ -56,7 +76,7 @@ export default async function Home() {
       rating,
       comment,
       created_at,
-      student:profiles!student_id(full_name, grade),
+      student:profiles!student_id(full_name, grade, avatar_url),
       club:clubs(name, category)
     `)
     .order('rating', { ascending: false })
@@ -73,11 +93,7 @@ export default async function Home() {
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <ClubsSection clubs={(clubs || []) as any[]} />
       <FeaturesSection />
-      <StatsSection
-        studentsCount={studentsCount || 0}
-        clubsCount={clubsCount || 0}
-        avgRating={avgRating}
-      />
+      <LeaderboardSection initialData={leaderboardData} />
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <TestimonialsSection reviews={(reviews || []) as any[]} />
       <Footer />

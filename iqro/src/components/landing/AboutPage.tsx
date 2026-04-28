@@ -1,37 +1,52 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Building2, Clock, GraduationCap, MapPin, Phone, Trophy, Users, Monitor, BookOpen, Dumbbell, Palette, Camera, CalendarDays } from 'lucide-react'
+import { Building2, CalendarDays, GraduationCap, MapPin, Phone, Clock, Trophy, Users, Monitor, BookOpen, Dumbbell, Palette, Camera } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Logo } from '@/components/shared/Logo'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
-function SchoolPhoto({ src }: { src: string }) {
+function SchoolPhoto({ src, index }: { src: string; index: number }) {
   const [error, setError] = useState(false)
+
+  const delays = [0, 0.1, 0.15, 0.2]
 
   if (error) {
     return (
-      <div className="rounded-xl aspect-video bg-gray-200 dark:bg-gray-800 flex flex-col items-center justify-center border border-dashed border-gray-300 dark:border-gray-700">
-        <Camera size={48} className="text-gray-400 dark:text-gray-600 mb-3" />
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Maktab rasmi</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: delays[index] ?? 0 }}
+        className="group rounded-2xl aspect-video bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-xl hover:-translate-y-3 hover:scale-[1.02] transition-all duration-300 cursor-default overflow-hidden"
+      >
+        <Camera size={48} className="text-gray-400 dark:text-gray-500 mb-3 group-hover:scale-110 group-hover:text-indigo-400 transition-all duration-300" />
+        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium group-hover:text-indigo-500 transition-colors duration-200">Maktab rasmi</p>
+      </motion.div>
     )
   }
 
   return (
-    <div className="rounded-xl aspect-video relative overflow-hidden bg-gray-200 dark:bg-gray-800">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: delays[index] ?? 0 }}
+      className="group rounded-2xl aspect-video relative overflow-hidden bg-gray-200 dark:bg-gray-800 shadow-md hover:shadow-2xl hover:shadow-indigo-500/20 hover:-translate-y-3 hover:scale-[1.02] border-2 border-transparent hover:border-indigo-400/60 dark:hover:border-indigo-500/50 transition-all duration-300"
+    >
       <Image
         src={src}
         alt="Maktab rasmi"
         fill
         sizes="(max-width: 768px) 100vw, 50vw"
-        className="object-cover"
+        className="object-cover group-hover:scale-105 transition-transform duration-500"
         onError={() => setError(true)}
       />
-    </div>
+      {/* Subtle overlay on hover */}
+      <div className="absolute inset-0 bg-indigo-900/0 group-hover:bg-indigo-900/15 transition-colors duration-300" />
+    </motion.div>
   )
 }
 
@@ -39,12 +54,12 @@ export default function AboutPage() {
   const [activeLeader, setActiveLeader] = useState<number | null>(null)
 
   return (
-    <div className="min-h-screen flex flex-col pt-16 dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col dark:bg-gray-900">
       <Navbar />
 
       <main className="flex-grow">
         {/* SECTION 1 — Hero banner */}
-        <section className="relative overflow-hidden bg-indigo-950 min-h-[calc(100vh-4rem)] flex items-center">
+        <section className="relative overflow-hidden bg-indigo-950 min-h-screen flex items-center">
           {/* Real school background photo */}
           <div className="absolute inset-0">
             <Image
@@ -85,73 +100,72 @@ export default function AboutPage() {
               </motion.div>
               
               <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 flex flex-col items-center justify-center shrink-0"
+                initial={{ opacity: 0, scale: 0.9, x: 30 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+                className="bg-white/10 backdrop-blur-md p-7 rounded-3xl border border-white/25 shrink-0 w-full max-w-sm lg:max-w-md shadow-2xl"
               >
-                <Logo className="scale-125" textClassName="text-white text-3xl" forceDark />
+                {/* Glass card header */}
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-1.5 h-5 bg-indigo-400 rounded-full" />
+                  <span className="text-white/80 text-xs font-semibold tracking-widest uppercase">Maktab haqida</span>
+                </div>
+                {/* Single paragraph */}
+                <p className="text-white/95 text-base sm:text-lg leading-relaxed font-medium">
+                  46-sonli umumiy o&apos;rta ta&apos;lim maktabi 2008-yilda foydalanishga topshirilgan. 
+                  Maktab Farg&apos;ona viloyatining Buvayda tumanida, Hakimto&apos;ra MFY, 
+                  Taraqiyot ko&apos;chasi 3A-uy manzilida joylashgan. Umumiy maydoni 1.1 gektarni tashkil etib, 
+                  zamonaviy ta&apos;lim infratuzilmasiga ega. Maktabda sport zali va stadion mavjud bo&apos;lib, 
+                  yaxshi holatda saqlanmoqda. Informatika xonasi zamonaviy kompyuter texnikasi bilan jihozlangan. 
+                  Maktabimiz 390 nafar o&apos;quvchi va 50 nafar malakali o&apos;qituvchini birlashtiradi.
+                </p>
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* SECTION 2 — Statistics cards */}
-        <section className="py-12 bg-gray-50 dark:bg-gray-800/50 -mt-10 relative z-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-              {[
-                { icon: Users, value: '390', label: "O'quvchilar", color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-                { icon: GraduationCap, value: '50', label: "O'qituvchilar", color: 'text-indigo-600', bg: 'bg-indigo-50 dark:bg-indigo-900/20' },
-                { icon: Building2, value: '20', label: 'Sinflar', color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-                { icon: Trophy, value: '12', label: "To'garaklar", color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-                { icon: CalendarDays, value: '2008', label: "Tashkil etilgan", color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-900/20' },
-                { icon: MapPin, value: '1.1 ga', label: "Maydon", color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-900/20' },
-              ].map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="bg-white dark:bg-gray-900 rounded-2xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col items-center text-center gap-3"
-                >
-                  <div className={`w-12 h-12 rounded-xl ${stat.bg} ${stat.color} dark:text-white flex items-center justify-center shrink-0 mb-1`}>
-                    <stat.icon size={24} />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{stat.label}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* SECTION 4 — About the school */}
-        <section className="py-16 sm:py-24 bg-white dark:bg-gray-900">
+        {/* SECTION — About the school */}
+        <section className="py-16 sm:py-20 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="max-w-4xl mx-auto text-center"
+              className="text-center mb-10"
             >
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 tracking-tight">Maktabimiz haqida</h2>
-              <div className="bg-indigo-50/50 dark:bg-indigo-900/10 rounded-3xl p-8 sm:p-12 border border-indigo-100 dark:border-indigo-900/50 text-left relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-2 h-full bg-indigo-500 rounded-l-3xl" />
-                <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-                  <span className="block">46-sonli umumiy o&apos;rta ta&apos;lim maktabi 2008-yilda foydalanishga topshirilgan.</span>
-                  <span className="block">Maktab Farg&apos;ona viloyatining Buvayda tumanida, Hakimto&apos;ra MFY, Taraqiyot ko&apos;chasi 3A-uy manzilida joylashgan.</span>
-                  <span className="block">Umumiy maydoni 1.1 gektarni tashkil etib, zamonaviy ta&apos;lim infratuzilmasiga ega.</span>
-                  <span className="block">Maktabda sport zali va stadion mavjud bo&apos;lib, yaxshi holatda saqlanmoqda.</span>
-                  <span className="block">Informatika xonasi zamonaviy kompyuter texnikasi bilan jihozlangan.</span>
-                  <span className="block font-medium mt-4">Maktabimiz 390 nafar o&apos;quvchi va 50 nafar malakali o&apos;qituvchini birlashtiradi.</span>
-                </p>
-              </div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Maktabimiz haqida</h2>
             </motion.div>
+            {/* Stats grid in place of text */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
+              {[
+                { icon: Users,         value: '390',    label: "O'quvchilar",     iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',    cardBg: 'bg-blue-100 dark:bg-blue-950/30',    border: 'border-blue-300 dark:border-blue-700/60',    hoverBorder: 'hover:border-blue-500',    shadow: 'hover:shadow-blue-300/40',    text: 'text-blue-800 dark:text-blue-200' },
+                { icon: GraduationCap, value: '50',     label: "O'qituvchilar",   iconBg: 'bg-gradient-to-br from-indigo-500 to-violet-600',  cardBg: 'bg-indigo-100 dark:bg-indigo-950/30', border: 'border-indigo-300 dark:border-indigo-700/60', hoverBorder: 'hover:border-indigo-500', shadow: 'hover:shadow-indigo-300/40', text: 'text-indigo-800 dark:text-indigo-200' },
+                { icon: Building2,     value: '20',     label: 'Sinflar',         iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',  cardBg: 'bg-emerald-100 dark:bg-emerald-950/30', border: 'border-emerald-300 dark:border-emerald-700/60', hoverBorder: 'hover:border-emerald-500', shadow: 'hover:shadow-emerald-300/40', text: 'text-emerald-800 dark:text-emerald-200' },
+                { icon: Trophy,        value: '12',     label: "To'garaklar",     iconBg: 'bg-gradient-to-br from-amber-500 to-orange-600',  cardBg: 'bg-amber-100 dark:bg-amber-950/30',  border: 'border-amber-300 dark:border-amber-700/60',  hoverBorder: 'hover:border-amber-500',  shadow: 'hover:shadow-amber-300/40',  text: 'text-amber-800 dark:text-amber-200' },
+                { icon: CalendarDays,  value: '2008',   label: "Tashkil etilgan", iconBg: 'bg-gradient-to-br from-purple-500 to-fuchsia-600', cardBg: 'bg-purple-100 dark:bg-purple-950/30', border: 'border-purple-300 dark:border-purple-700/60', hoverBorder: 'hover:border-purple-500', shadow: 'hover:shadow-purple-300/40', text: 'text-purple-800 dark:text-purple-200' },
+                { icon: MapPin,        value: '1.1 ga', label: "Maydon",          iconBg: 'bg-gradient-to-br from-rose-500 to-pink-600',     cardBg: 'bg-rose-100 dark:bg-rose-950/30',    border: 'border-rose-300 dark:border-rose-700/60',    hoverBorder: 'hover:border-rose-500',    shadow: 'hover:shadow-rose-300/40',    text: 'text-rose-800 dark:text-rose-200' },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -10, scale: 1.06 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.08 }}
+                  style={{ cursor: 'default' }}
+                  className={`group ${stat.cardBg} rounded-2xl p-5 border-2 ${stat.border} ${stat.hoverBorder} shadow-md flex flex-col items-center text-center gap-3 ${stat.shadow} hover:shadow-2xl transition-shadow duration-300`}
+                >
+                  <div className={`w-12 h-12 rounded-xl ${stat.iconBg} text-white flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+                    <stat.icon size={20} strokeWidth={1.8} />
+                  </div>
+                  <div>
+                    <h3 className={`text-2xl font-extrabold ${stat.text}`}>{stat.value}</h3>
+                    <p className="text-xs text-gray-600 dark:text-gray-300 font-semibold mt-0.5">{stat.label}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -176,10 +190,10 @@ export default function AboutPage() {
               ].map((ldr, i) => (
                 <div 
                   key={i}
-                  className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
+                  className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-3 hover:scale-[1.03] cursor-pointer ${
                     ldr.center 
-                      ? 'md:scale-110 z-10 border-2 border-indigo-400 dark:border-indigo-500/60' 
-                      : 'border border-gray-100 dark:border-gray-700'
+                      ? 'md:scale-110 z-10 border-2 border-indigo-500 dark:border-indigo-400 shadow-indigo-200/50 dark:shadow-indigo-900/40 hover:shadow-indigo-400/30' 
+                      : 'border-2 border-gray-200 dark:border-gray-600 hover:border-indigo-400 dark:hover:border-indigo-500 hover:shadow-gray-200/40'
                   }`}
                   onClick={() => setActiveLeader(activeLeader === i ? null : i)}
                 >
@@ -191,8 +205,8 @@ export default function AboutPage() {
                     }`}>
                       {ldr.initial}
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{ldr.name}</h3>
-                    <p className={`text-sm ${ldr.center ? 'text-indigo-600 dark:text-indigo-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>{ldr.role}</p>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors">{ldr.name}</h3>
+                    <p className={`text-sm font-semibold ${ldr.center ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300'}`}>{ldr.role}</p>
                   </div>
                   
                   {/* Detail panel slides up */}
@@ -213,25 +227,27 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Maktab infratuzilmasi</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
               {[
-                { icon: Dumbbell, title: 'Sport zali', desc: "Zamonaviy sport mashg'ulotlari uchun" },
-                { icon: Trophy, title: 'Stadion', desc: "Ochiq havoda sport o'yinlari uchun" },
-                { icon: Monitor, title: 'Informatika', desc: 'Zamonaviy kompyuter texnikasi bilan jihozlangan xona' },
-                { icon: BookOpen, title: 'Kutubxona', desc: 'Boy kitob fondiga ega qulay maskan' },
-                { icon: Palette, title: "To'garak xonalari", desc: 'Ijodiy faoliyatni rivojlantirish uchun' },
+                { icon: Dumbbell, title: 'Sport zali',   desc: "Zamonaviy sport mashg'ulotlari uchun",            iconBg: 'bg-gradient-to-br from-orange-400 to-red-500',    cardBg: 'bg-orange-50 dark:bg-orange-950/25',   border: 'border-orange-300 dark:border-orange-800/60',   hoverBorder: 'hover:border-orange-500',   shadow: 'hover:shadow-orange-300/40' },
+                { icon: Trophy,   title: 'Stadion',       desc: "Ochiq havoda sport o'yinlari uchun",              iconBg: 'bg-gradient-to-br from-amber-400 to-yellow-500',  cardBg: 'bg-amber-50 dark:bg-amber-950/25',     border: 'border-amber-300 dark:border-amber-800/60',     hoverBorder: 'hover:border-amber-500',    shadow: 'hover:shadow-amber-300/40' },
+                { icon: Monitor,  title: 'Informatika',   desc: 'Zamonaviy kompyuter texnikasi bilan jihozlangan', iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',   cardBg: 'bg-blue-50 dark:bg-blue-950/25',       border: 'border-blue-300 dark:border-blue-800/60',       hoverBorder: 'hover:border-blue-500',     shadow: 'hover:shadow-blue-300/40' },
+                { icon: BookOpen, title: 'Kutubxona',     desc: 'Boy kitob fondiga ega qulay maskan',              iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600', cardBg: 'bg-emerald-50 dark:bg-emerald-950/25', border: 'border-emerald-300 dark:border-emerald-800/60', hoverBorder: 'hover:border-emerald-500',  shadow: 'hover:shadow-emerald-300/40' },
+                { icon: Palette,  title: "To'garak xonalari", desc: 'Ijodiy faoliyatni rivojlantirish uchun',    iconBg: 'bg-gradient-to-br from-purple-500 to-pink-600',   cardBg: 'bg-purple-50 dark:bg-purple-950/25',   border: 'border-purple-300 dark:border-purple-800/60',   hoverBorder: 'hover:border-purple-500',   shadow: 'hover:shadow-purple-300/40' },
               ].map((f, i) => (
                 <motion.div 
                   key={i} 
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -12, scale: 1.05 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition-shadow"
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  style={{ cursor: 'default' }}
+                  className={`group ${f.cardBg} border-2 ${f.border} ${f.hoverBorder} ${f.shadow} rounded-2xl p-6 text-center shadow-md hover:shadow-2xl transition-shadow duration-300`}
                 >
-                  <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-5 rotate-3 hover:rotate-6 transition-transform">
-                    <f.icon size={32} />
+                  <div className={`w-16 h-16 rounded-2xl ${f.iconBg} text-white flex items-center justify-center mx-auto mb-5 shadow-lg group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-xl transition-all duration-300`}>
+                    <f.icon size={28} strokeWidth={1.8} />
                   </div>
                   <h3 className="font-bold text-gray-900 dark:text-white mb-2">{f.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{f.desc}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">{f.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -243,8 +259,8 @@ export default function AboutPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Maktab hayotidan lavhalar</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-              {[1, 2, 3, 4].map(idx => (
-                <SchoolPhoto key={idx} src={`/images/school/school-${idx}.jpg`} />
+              {[1, 2, 3, 4].map((idx, i) => (
+                <SchoolPhoto key={idx} src={`/images/school/school-${idx}.jpg`} index={i} />
               ))}
             </div>
           </div>
@@ -265,23 +281,25 @@ export default function AboutPage() {
 
             <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-16">
               {[
-                { icon: MapPin, title: 'Manzil', value: "Buvayda tumani, Hakimto'ra MFY, Taraqiyot ko'chasi 3A", bg: 'bg-indigo-50 dark:bg-indigo-900/30', text: 'text-indigo-600 dark:text-indigo-400' },
-                { icon: Phone, title: 'Telefon', value: '+998 93 201 75 74', bg: 'bg-emerald-50 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400' },
-                { icon: Clock, title: 'Email', value: 'info@iqro46.uz', bg: 'bg-blue-50 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-400' },
+                { icon: MapPin, title: 'Manzil',  value: "Buvayda tumani, Hakimto'ra MFY, Taraqiyot ko'chasi 3A", iconBg: 'bg-gradient-to-br from-indigo-500 to-violet-600',  cardBg: 'bg-indigo-50 dark:bg-indigo-950/30',   border: 'border-indigo-200 dark:border-indigo-800/50',   hoverBorder: 'hover:border-indigo-500 dark:hover:border-indigo-400',   shadow: 'hover:shadow-indigo-300/40',   titleColor: 'group-hover:text-indigo-700 dark:group-hover:text-indigo-300' },
+                { icon: Phone,  title: 'Telefon', value: '+998 93 201 75 74',                                      iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',  cardBg: 'bg-emerald-50 dark:bg-emerald-950/30', border: 'border-emerald-200 dark:border-emerald-800/50', hoverBorder: 'hover:border-emerald-500 dark:hover:border-emerald-400', shadow: 'hover:shadow-emerald-300/40', titleColor: 'group-hover:text-emerald-700 dark:group-hover:text-emerald-300' },
+                { icon: Clock,  title: 'Email',   value: 'info@iqro46.uz',                                         iconBg: 'bg-gradient-to-br from-blue-500 to-cyan-600',     cardBg: 'bg-blue-50 dark:bg-blue-950/30',       border: 'border-blue-200 dark:border-blue-800/50',       hoverBorder: 'hover:border-blue-500 dark:hover:border-blue-400',       shadow: 'hover:shadow-blue-300/40',     titleColor: 'group-hover:text-blue-700 dark:group-hover:text-blue-300' },
               ].map((item, i) => (
                 <motion.div
                   key={item.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -12, scale: 1.05 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm text-center hover:shadow-md transition-shadow"
+                  transition={{ duration: 0.4, delay: i * 0.1 }}
+                  style={{ cursor: 'default' }}
+                  className={`group ${item.cardBg} p-7 rounded-2xl border-2 ${item.border} ${item.hoverBorder} ${item.shadow} shadow-md text-center hover:shadow-2xl transition-shadow duration-300`}
                 >
-                  <div className={`w-12 h-12 mx-auto rounded-full ${item.bg} ${item.text} flex items-center justify-center mb-4`}>
-                    <item.icon size={24} />
+                  <div className={`w-14 h-14 mx-auto rounded-2xl ${item.iconBg} text-white flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-xl transition-all duration-300`}>
+                    <item.icon size={24} strokeWidth={1.8} />
                   </div>
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.value}</p>
+                  <h3 className={`font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-200 ${item.titleColor}`}>{item.title}</h3>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-medium">{item.value}</p>
                 </motion.div>
               ))}
             </div>
