@@ -237,7 +237,7 @@ function LoginContent() {
   )
 
   // ══════════════════════════════════════════════════════════
-  // REGISTER HANDLER — sends OTP
+  // REGISTER HANDLER — uses Admin API (no rate limit, no OTP)
   // ══════════════════════════════════════════════════════════
   const handleRegister = useCallback(
     async (e: React.FormEvent) => {
@@ -258,39 +258,50 @@ function LoginContent() {
       setRegErrors({})
       setRegLoading(true)
 
-      const { error } = await supabase.auth.signUp({
-        email: regEmail,
-        password: regPassword,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: { full_name: regName, role: 'student', grade: regGrade || undefined, school_id: '00000000-0000-0000-0000-000000000001' },
-        },
-      })
+      try {
+        // Step 1: Create user via Admin API (no email limit, instant confirm)
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: regEmail,
+            password: regPassword,
+            full_name: regName,
+            grade: regGrade || null,
+          }),
+        })
 
-      setRegLoading(false)
-      if (error) {
-        const errorMap: Record<string, string> = {
-          'User already registered': "Bu email allaqachon ro'yxatdan o'tgan",
-          'email rate limit exceeded': "Juda ko'p urinish. Iltimos, biroz kutib qayta urinib ko'ring",
-          'Password should be at least 6 characters': "Parol kamida 6 ta belgidan iborat bo'lishi kerak",
-          'Unable to validate email address: invalid format': "Email formati noto'g'ri",
-          'Signup requires a valid password': "To'g'ri parol kiriting",
+        const data = await res.json()
+
+        if (!res.ok) {
+          setRegError(data.error || "Ro'yxatdan o'tishda xatolik yuz berdi")
+          setRegLoading(false)
+          return
         }
-        const uzMessage = Object.entries(errorMap).find(([key]) =>
-          error.message.toLowerCase().includes(key.toLowerCase())
-        )
-        setRegError(uzMessage ? uzMessage[1] : `Xatolik yuz berdi: ${error.message}`)
-        return
-      }
 
-      // ✅ Success — show OTP input screen
-      setPendingEmail(regEmail)
-      setOtpCode('')
-      setOtpError('')
-      setOtpResendCooldown(60)
-      setOtpStep(true)
+        // Step 2: Auto sign-in after successful registration
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: regEmail,
+          password: regPassword,
+        })
+
+        setRegLoading(false)
+
+        if (signInError) {
+          // User created but couldn't auto-login — redirect to login
+          setActiveTab('login')
+          setRegError('')
+          return
+        }
+
+        // Redirect to student dashboard
+        router.push('/student')
+      } catch {
+        setRegLoading(false)
+        setRegError("Tarmoq xatosi yuz berdi. Qayta urinib ko'ring.")
+      }
     },
-    [regName, regEmail, regPassword, regConfirm, regGrade, supabase]
+    [regName, regEmail, regPassword, regConfirm, regGrade, supabase, router]
   )
 
   // ══════════════════════════════════════════════════════════
