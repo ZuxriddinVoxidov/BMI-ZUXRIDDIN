@@ -17,15 +17,14 @@ export async function POST(req: NextRequest) {
       process.env.GEMINI_API_KEY_4,
     ].filter(Boolean) as string[]
 
-    const fallbackModels = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
     let rawText = ''
     let lastError = ''
 
-    outer: for (const modelName of fallbackModels) {
+    outer: for (let attempt = 0; attempt < 2; attempt++) {
       for (const key of apiKeys) {
         try {
           const genAI = new GoogleGenerativeAI(key)
-          const model = genAI.getGenerativeModel({ model: modelName })
+          const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
           const prompt = `Generate ${count} multiple choice quiz questions about "${topic}" for ${clubName || 'school'} club${targetGrades ? ` (grades ${targetGrades})` : ''}.
 
@@ -44,15 +43,16 @@ RULES:
 
           const result = await model.generateContent(prompt)
           rawText = result.response.text()
-          console.log(`✅ Quiz generated via model: ${modelName}`)
           break outer
         } catch (e) {
           lastError = String(e)
-          console.error(`Quiz model [${modelName}] failed:`, e)
           continue
         }
       }
+      // 2-urinishdan oldin 2 soniya kut
+      if (attempt === 0) await new Promise(r => setTimeout(r, 2000))
     }
+
 
     if (!rawText) {
       return NextResponse.json({ error: lastError || 'AI javob bermadi' }, { status: 500 })
