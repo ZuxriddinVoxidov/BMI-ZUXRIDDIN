@@ -17,15 +17,17 @@ export async function POST(req: NextRequest) {
       process.env.GEMINI_API_KEY_4,
     ].filter(Boolean) as string[]
 
+    const fallbackModels = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
     let rawText = ''
     let lastError = ''
 
-    for (const key of apiKeys) {
-      try {
-        const genAI = new GoogleGenerativeAI(key)
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+    outer: for (const modelName of fallbackModels) {
+      for (const key of apiKeys) {
+        try {
+          const genAI = new GoogleGenerativeAI(key)
+          const model = genAI.getGenerativeModel({ model: modelName })
 
-        const prompt = `Generate ${count} multiple choice quiz questions about "${topic}" for ${clubName || 'school'} club${targetGrades ? ` (grades ${targetGrades})` : ''}.
+          const prompt = `Generate ${count} multiple choice quiz questions about "${topic}" for ${clubName || 'school'} club${targetGrades ? ` (grades ${targetGrades})` : ''}.
 
 STRICT OUTPUT FORMAT - return ONLY this JSON, nothing else:
 {"questions":[{"question":"Q1 text","option_a":"A text","option_b":"B text","option_c":"C text","option_d":"D text","correct_answer":"A"},{"question":"Q2 text","option_a":"A text","option_b":"B text","option_c":"C text","option_d":"D text","correct_answer":"B"}]}
@@ -40,12 +42,15 @@ RULES:
 - correct_answer must be exactly A, B, C, or D
 - Return ONLY the JSON object, no markdown, no backticks, no explanation`
 
-        const result = await model.generateContent(prompt)
-        rawText = result.response.text()
-        break
-      } catch (e) {
-        lastError = String(e)
-        continue
+          const result = await model.generateContent(prompt)
+          rawText = result.response.text()
+          console.log(`✅ Quiz generated via model: ${modelName}`)
+          break outer
+        } catch (e) {
+          lastError = String(e)
+          console.error(`Quiz model [${modelName}] failed:`, e)
+          continue
+        }
       }
     }
 
