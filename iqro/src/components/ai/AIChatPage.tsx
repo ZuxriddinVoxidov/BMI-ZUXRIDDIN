@@ -519,7 +519,7 @@ export default function AIChatPage({
                   {config.badge}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 font-medium">Gemini 3.1 Flash Lite</p>
+              <p className="text-xs text-gray-500 font-medium">Gemini 2.5 Flash</p>
             </div>
           </div>
           
@@ -695,7 +695,7 @@ export default function AIChatPage({
               </button>
             </div>
             <div className="flex items-center justify-between mt-2 px-2">
-               <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium tracking-wide">IQRO AI · Gemini 3.1 Flash Lite</p>
+               <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium tracking-wide">IQRO AI · Gemini 2.5 Flash</p>
                <p className="text-[10px] text-gray-400 dark:text-gray-500 hidden sm:block">
                  <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 mx-0.5">Enter</kbd> yuborish, <kbd className="font-sans px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 mx-0.5">Shift+Enter</kbd> yangi qator
                </p>

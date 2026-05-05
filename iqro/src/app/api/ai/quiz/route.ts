@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     for (const key of apiKeys) {
       try {
         const genAI = new GoogleGenerativeAI(key)
-        const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 
         const prompt = `Generate ${count} multiple choice quiz questions about "${topic}" for ${clubName || 'school'} club${targetGrades ? ` (grades ${targetGrades})` : ''}.
 

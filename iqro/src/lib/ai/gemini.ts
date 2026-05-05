@@ -28,7 +28,7 @@ export async function askGemini(
 
   for (const apiKey of GEMINI_KEYS) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`
 
       const response = await fetch(url, {
         method: 'POST',
@@ -88,7 +88,7 @@ export async function askGeminiStream(
     try {
       const genAI = new GoogleGenerativeAI(apiKey)
       const model = genAI.getGenerativeModel({
-        model: 'gemini-3.1-flash-lite',
+        model: 'gemini-2.5-flash',
         systemInstruction: systemPrompt,
       })
 
@@ -120,6 +120,6 @@ export function getGeminiModel() {
   const apiKey = GEMINI_KEYS[0]
   if (!apiKey) throw new Error("API kalit topilmadi")
   const genAI = new GoogleGenerativeAI(apiKey)
-  // Defaulting to valid gemini-3.1-flash-lite to fix 404 Not Found error
-  return genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' })
+  // gemini-2.5-flash is the working model
+  return genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
 }
