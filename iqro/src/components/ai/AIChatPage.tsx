@@ -577,7 +577,7 @@ export default function AIChatPage({
           )}
 
           {/* MESSAGES LIST */}
-          <div className="space-y-6 max-w-4xl mx-auto pb-4">
+          <div className="space-y-6 max-w-6xl mx-auto pb-4">
             <AnimatePresence initial={false}>
               {messages.map((msg, i) => (
                 <motion.div
@@ -587,7 +587,7 @@ export default function AIChatPage({
                   transition={{ duration: 0.3 }}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`flex gap-3 max-w-[85%] md:max-w-[70%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className={`flex gap-3 max-w-[95%] md:max-w-[88%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                     
                     {/* AVATAR FOR AI */}
                     {msg.role === 'assistant' && (
@@ -674,7 +674,7 @@ export default function AIChatPage({
 
         {/* INPUT AREA */}
         <div className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 p-4 shrink-0 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.05)] dark:shadow-none relative z-20">
-          <div className="max-w-4xl mx-auto relative">
+          <div className="max-w-6xl mx-auto relative">
             <div className="flex gap-3 items-end bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-2 focus-within:border-indigo-400 dark:focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-50 dark:focus-within:ring-indigo-900/20 transition-all shadow-sm">
               <textarea
                 ref={textareaRef}
