@@ -12,7 +12,8 @@ const GEMINI_KEYS = [
   process.env.GEMINI_API_KEY_4,
 ].filter(Boolean) as string[]
 
-const MODEL = 'gemini-2.5-flash'
+// gemini-2.5-flash-lite: 1000 RPD, bepul, ishlayapti
+const MODEL = 'gemini-2.5-flash-lite'
 
 function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -32,7 +33,6 @@ export async function askGemini(
 
   let lastError: Error | null = null
 
-  // Har bir key bilan 2 marta urinib ko'ramiz (503 bo'lsa 1s kutib qayta)
   for (let attempt = 0; attempt < 2; attempt++) {
     for (const apiKey of GEMINI_KEYS) {
       try {
@@ -59,8 +59,7 @@ export async function askGemini(
         const data = await response.json()
 
         if (response.status === 503 || response.status === 429) {
-          // Serverda yuklanish ko'p — qayta urinamiz
-          console.warn(`Gemini ${response.status}, retrying with next key...`)
+          console.warn(`Gemini ${response.status}, retrying...`)
           throw new Error(`HTTP ${response.status}: ${data.error?.message}`)
         }
 
@@ -72,7 +71,6 @@ export async function askGemini(
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text
         if (text) return text
 
-        console.error('Gemini empty response:', JSON.stringify(data))
         throw new Error('Empty response from Gemini')
       } catch (error) {
         console.error(`Gemini attempt ${attempt + 1}, key failed:`, error)
@@ -81,9 +79,7 @@ export async function askGemini(
       }
     }
 
-    // Birinchi tur muvaffaqiyatsiz bo'lsa, 2 soniya kutib 2-turni boshlaydi
     if (attempt === 0) {
-      console.warn('All keys failed on attempt 1, waiting 2s before retry...')
       await sleep(2000)
     }
   }
@@ -136,7 +132,6 @@ export async function askGeminiStream(
     }
 
     if (attempt === 0) {
-      console.warn('All stream keys failed on attempt 1, waiting 2s...')
       await sleep(2000)
     }
   }
