@@ -1,52 +1,37 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Building2, CalendarDays, GraduationCap, MapPin, Phone, Clock, Trophy, Users, Monitor, BookOpen, Dumbbell, Palette, Camera } from 'lucide-react'
+import { Building2, CalendarDays, GraduationCap, MapPin, Phone, Clock, Trophy, Users, Monitor, BookOpen, Dumbbell, Palette } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
-function SchoolPhoto({ src, index }: { src: string; index: number }) {
+function LeaderAvatar({ src, initials, isCenter }: { src: string; initials: string; isCenter?: boolean }) {
   const [error, setError] = useState(false)
-
-  const delays = [0, 0.1, 0.15, 0.2]
 
   if (error) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: delays[index] ?? 0 }}
-        className="group rounded-2xl aspect-video bg-gray-100 dark:bg-gray-800 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:shadow-xl hover:-translate-y-3 hover:scale-[1.02] transition-all duration-300 cursor-default overflow-hidden"
-      >
-        <Camera size={48} className="text-gray-400 dark:text-gray-500 mb-3 group-hover:scale-110 group-hover:text-indigo-400 transition-all duration-300" />
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium group-hover:text-indigo-500 transition-colors duration-200">Maktab rasmi</p>
-      </motion.div>
+      <div className={`w-24 h-24 rounded-full font-bold text-3xl flex items-center justify-center mx-auto mb-6 shadow-inner ${
+        isCenter ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400'
+      }`}>
+        {initials}
+      </div>
     )
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: delays[index] ?? 0 }}
-      className="group rounded-2xl aspect-video relative overflow-hidden bg-gray-200 dark:bg-gray-800 shadow-md hover:shadow-2xl hover:shadow-indigo-500/20 hover:-translate-y-3 hover:scale-[1.02] border-2 border-transparent hover:border-indigo-400/60 dark:hover:border-indigo-500/50 transition-all duration-300"
-    >
+    <div className="w-24 h-24 rounded-full mx-auto mb-6 overflow-hidden shadow-inner relative">
       <Image
         src={src}
-        alt="Maktab rasmi"
+        alt={initials}
         fill
-        sizes="(max-width: 768px) 100vw, 50vw"
-        className="object-cover group-hover:scale-105 transition-transform duration-500"
+        sizes="96px"
+        className="object-cover object-top"
         onError={() => setError(true)}
       />
-      {/* Subtle overlay on hover */}
-      <div className="absolute inset-0 bg-indigo-900/0 group-hover:bg-indigo-900/15 transition-colors duration-300" />
-    </motion.div>
+    </div>
   )
 }
 
@@ -184,9 +169,9 @@ export default function AboutPage() {
 
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
               {[
-                { name: 'Toshmatova Nilufar', role: "O'quv ishlari bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'TN' },
-                { name: "Yo'ldasheva Go'yaxon Zokirovna", role: "Maktab direktori", desc: "Maktab direktori | Ish telefoni: +998 93 201 75 74 | info@iqro46.uz", center: true, initial: 'YG' },
-                { name: 'Xasanov Jahongir', role: "Tarbiya ishlari bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'XJ' },
+                { name: "To'ychiyev Ikromjon", role: "Ma'naviy ma'rifiy ishlar bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'TI', photo: '/orinbosar-2.jpg' },
+                { name: "Yo'ldasheva Go'yaxon Zokirovna", role: "Maktab direktori", desc: "Maktab direktori | Ish telefoni: +998 93 201 75 74 | info@iqro46.uz", center: true, initial: 'YG', photo: '/director.jpg' },
+                { name: 'Turdiyev Zuxriddin', role: "O'quv ishlari bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'TZ', photo: '/orinbosar-1.jpg' },
               ].map((ldr, i) => (
                 <div 
                   key={i}
@@ -198,13 +183,7 @@ export default function AboutPage() {
                   onClick={() => setActiveLeader(activeLeader === i ? null : i)}
                 >
                   <div className="p-8 text-center pb-20">
-                    <div className={`w-24 h-24 rounded-full font-bold text-3xl flex items-center justify-center mx-auto mb-6 shadow-inner ${
-                      ldr.center 
-                        ? 'bg-indigo-600 text-white' 
-                        : 'bg-slate-100 dark:bg-slate-700 text-indigo-600 dark:text-indigo-400'
-                    }`}>
-                      {ldr.initial}
-                    </div>
+                    <LeaderAvatar src={ldr.photo} initials={ldr.initial} isCenter={ldr.center} />
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors">{ldr.name}</h3>
                     <p className={`text-sm font-semibold ${ldr.center ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300'}`}>{ldr.role}</p>
                   </div>
@@ -254,17 +233,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* SECTION PHOTOS */}
-        <section className="py-16 bg-white dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-white">Maktab hayotidan lavhalar</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-              {[1, 2, 3, 4].map((idx, i) => (
-                <SchoolPhoto key={idx} src={`/images/school/school-${idx}.jpg`} index={i} />
-              ))}
-            </div>
-          </div>
-        </section>
+
 
         {/* SECTION 5 — Contact information & Back to home */}
         <section className="py-16 sm:py-24 bg-white dark:bg-gray-900">

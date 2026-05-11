@@ -113,12 +113,6 @@ export default function TestimonialsSection({ reviews }: { reviews?: any[] }) {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <Badge
-            variant="outline"
-            className="text-indigo-600 border-indigo-200 bg-indigo-50 mb-4 px-4 py-1"
-          >
-            Fikrlar ({data.length})
-          </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
             O&apos;quvchilar fikri
           </h2>
