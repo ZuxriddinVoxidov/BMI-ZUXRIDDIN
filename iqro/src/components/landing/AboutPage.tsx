@@ -170,7 +170,7 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
               {[
                 { name: "To'ychiyev Ikromjon", role: "Ma'naviy ma'rifiy ishlar bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'TI', photo: '/orinbosar-2.jpg' },
-                { name: "Yo'ldasheva Go'yaxon Zokirovna", role: "Maktab direktori", desc: "Maktab direktori | Ish telefoni: +998 93 201 75 74 | info@iqro46.uz", center: true, initial: 'YG', photo: '/director.jpg' },
+                { name: "Yo'ldasheva Go'yoxon Zokirovna", role: "Maktab direktori", desc: "Maktab direktori | Ish telefoni: +998 93 201 75 74 | info@iqro46.uz", center: true, initial: 'YG', photo: 'https://hwwsbwvvlkqqwbjemwhz.supabase.co/storage/v1/object/public/avatars/directors/9bcb4a8f-f116-4d87-b7a5-1a113a32e159.png' },
                 { name: 'Turdiyev Zuxriddin', role: "O'quv ishlari bo'yicha direktor o'rinbosari", desc: "O'rinbosar | Buvayda tumani, 46-son maktab", initial: 'TZ', photo: '/orinbosar-1.jpg' },
               ].map((ldr, i) => (
                 <div 
