@@ -1,0 +1,17 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # Har kuni UTC vaqti bilan soat 00:00 da (Toshkent vaqti bilan 05:00 da) ishlaydi
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Qo'lda ishga tushirish imkoniyati
+
+jobs:
+  ping-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Saytga kirib ko'rish (Baza bilan aloqa qilish)
+        run: |
+          echo "Saytga so'rov yuborilmoqda..."
+          curl -s https://iqro46.vercel.app > /dev/null
+          echo "So'rov muvaffaqiyatli yakunlandi. Supabase aktiv holatda qoladi!"
